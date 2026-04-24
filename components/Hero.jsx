@@ -228,12 +228,15 @@ export default function Hero() {
   }, [fetchEvents]);
 
   return (
-    <section className="min-h-screen bg-[#0a0a0a] text-[#e8e4dc]">
-      <div className="grid min-h-screen grid-cols-1 md:grid-cols-2">
-        <div className="flex flex-col justify-between border-b border-[#1e1e1e] px-6 py-8 md:border-b-0 md:border-r md:px-10 md:py-10">
+    <section
+      className="bg-[#0a0a0a] text-[#e8e4dc]"
+      style={{ height: "calc(100vh - 57px)", minHeight: "600px", overflow: "hidden", display: "flex", flexDirection: "column" }}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2">
+        <div className="flex h-full flex-col justify-between border-b border-[#1e1e1e] px-10 py-8 md:border-b-0 md:border-r">
           <div className="space-y-8">
             <p className="font-mono text-[9px] uppercase tracking-[0.35em] text-[#444440]">
-              <span style={{ color: "#C586C0" }}>PRODUCT DESIGNER · 10 YEARS · </span>
+              <span style={{ color: "#C586C0" }}>SR PRODUCT DESIGNER · 10 YEARS · </span>
               <span style={{ color: "#C586C0" }}>DESIGN × CODE × AI</span>
             </p>
 
@@ -250,7 +253,7 @@ export default function Hero() {
             </p>
 
             <div className="flex flex-wrap gap-2">
-              {["figma", "claude code", "cursor", "v0", "vercel"].map((tool) => (
+              {["FIGMA", "CLAUDE", "CURSOR", "V0", "FIRECRAWL", "VERCEL"].map((tool) => (
                 <span
                   key={tool}
                   className="rounded border border-[#2e2e2e] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#666660]"
@@ -259,9 +262,34 @@ export default function Hero() {
                 </span>
               ))}
             </div>
+            <a
+              href="#work"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                marginTop: "32px",
+                fontFamily: "monospace",
+                fontSize: "11px",
+                color: "#4ade80",
+                letterSpacing: "0.08em",
+                textDecoration: "none",
+                border: "0.5px solid #1a3d1a",
+                padding: "8px 16px",
+                transition: "border-color 0.2s, color 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "#4ade80";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "#1a3d1a";
+              }}
+            >
+              VIEW WORK ↓
+            </a>
           </div>
 
-          <div className="mt-10 grid grid-cols-3 border border-[#1e1e1e]">
+          <div className="grid grid-cols-3 border border-[#1e1e1e]">
             <div className="border-r border-[#1e1e1e] px-3 py-3">
               <p className="font-mono text-[18px] text-[#e8e4dc]">{stats.yearsExp}</p>
               <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#555550]">
@@ -284,9 +312,10 @@ export default function Hero() {
         </div>
 
         <div
-          className={`flex min-h-[50vh] flex-col bg-[#050505] transition-colors duration-500 ${
+          className={`flex max-h-[300px] flex-col bg-[#050505] md:max-h-none md:overflow-hidden transition-colors duration-500 ${
             isPanePulsing ? "bg-[#07100a]" : "bg-[#050505]"
           }`}
+          style={{ maxHeight: "300px" }}
         >
           <div className="flex items-center justify-between border-b border-[#0e0e0e] px-5 py-4 font-mono text-[11px] text-[#9a9a9a]">
             <div className="flex items-center gap-2">
@@ -297,7 +326,7 @@ export default function Hero() {
             <span className="text-[#7c7c7c]">{clock}</span>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto min-h-0">
             {events.map((event) => (
               <div
                 key={event.id}
