@@ -1,0 +1,52 @@
+Project context
+This is a personal portfolio site for Sam Havas — senior product designer & builder. The site's central concept is Concept 03 "The Build Log": a split-pane hero where the left side is polished editorial copy and the right side is a live GitHub activity feed (samhavasdesign). The portfolio IS the proof of concept — every design and code decision should be intentional and defensible.
+Stack
+Next.js, React, Tailwind (core utilities only), deployed on Vercel. Single-file components where possible.
+Design system
+
+Background: #0a0a0a
+Text primary: #e8e4dc
+Text secondary: #555
+Text muted: #2e2e2e
+Accent green (live status): #22c55e
+Borders: #1a1a1a to #1e1e1e
+Feed background: #050505
+Font headlines: Georgia, serif
+Font labels/data/nav: monospace
+Motion: subtle only — fade + 3–4px translateY on entry, nothing decorative
+
+Component: Hero
+
+Split-pane: grid-template-columns: 1fr 1fr
+Left: eyebrow label → h1 → bio → tool chips → stat strip (years exp, commits 30d, repos active)
+Right: live GitHub feed via api.github.com/users/samhavasdesign/events/public
+Feed polls every 60 seconds, pulses faintly green (#07100a) on new events
+Graceful fallback to placeholder feed if API unavailable or rate-limited
+For production: GitHub personal access token via NEXT_PUBLIC_GITHUB_TOKEN env variable
+
+Copy (do not change without instruction)
+
+Eyebrow: SENIOR PRODUCT DESIGNER — STAFF CANDIDATE
+H1: Designing the thing / and building the thing / used to be two jobs. (third line dimmed to #2e2e2e)
+Bio: 8 years in product design. The last 2 collapsing the gap between Figma and production using AI — so what I imagine is what ships. Looking for a staff IC role where craft and speed aren't in tension.
+Tool chips: figma claude code cursor v0 vercel
+Nav status: available — staff roles
+
+Code rules
+
+No localStorage or sessionStorage
+No external UI libraries (no shadcn, no Radix unless explicitly requested)
+No stock photography, no placeholder avatars
+Keep all animations under 400ms
+Every fetch wrapped in try/catch with graceful fallback
+Relative timestamps on feed entries (e.g. "3m ago", "2d ago")
+Feed rows: time | type tag | repo name + commit message
+
+What not to do
+
+No purple gradients
+No Inter or Roboto
+No generic Framer/Webflow template patterns
+No decorative elements that don't serve a function
+Don't add a skills section listing tools
+Don't password-protect anything
