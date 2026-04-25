@@ -234,7 +234,7 @@ export default function ContactModal({ triggerClassName = "", triggerLabel = "Le
 
               <div>
                 <label htmlFor="contact-inquiry" className="mb-2 block font-mono text-[12px] uppercase tracking-[0.12em] text-[var(--c-text)]">
-                  What are you looking for?
+                  What are you getting in touch about?
                 </label>
                 <div ref={inquiryRef} className="relative">
                   <button

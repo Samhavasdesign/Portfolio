@@ -1,10 +1,10 @@
 import Hero from "@/components/Hero";
 import Nav from "@/components/Nav";
 import Chatbot from "@/components/Chatbot";
+import AboutSection from "@/components/AboutSection";
 import ClientLogoMarquee from "@/components/ClientLogoMarquee";
 import Footer from "@/components/Footer";
 import WorkGrid from "@/components/WorkGrid";
-import WorkShowcase from "@/components/WorkShowcase";
 import { labProjects } from "@/lib/lab";
 
 export default function Home() {
@@ -21,7 +21,7 @@ export default function Home() {
         id="lab"
         linkPrefix="/lab"
       />
-      <WorkShowcase />
+      <AboutSection />
       <Footer />
       <Chatbot />
     </div>

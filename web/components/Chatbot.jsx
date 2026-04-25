@@ -386,6 +386,12 @@ export default function Chatbot() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen]);
 
+  useEffect(() => {
+    const onOpen = () => setIsOpen(true);
+    window.addEventListener("open-ask-sam", onOpen);
+    return () => window.removeEventListener("open-ask-sam", onOpen);
+  }, []);
+
   const sendMessage = async (rawText) => {
     const text = rawText.trim();
     if (!text || isLoading) return;
