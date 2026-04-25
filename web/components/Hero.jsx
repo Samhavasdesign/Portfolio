@@ -353,10 +353,10 @@ export default function Hero() {
   return (
     <section
       ref={heroSectionRef}
-      className="bg-[#0a0a0a] text-[#e8e4dc] flex flex-col md:h-[calc(100vh-72px)] md:min-h-[600px] md:overflow-hidden"
+      className="bg-[#0a0a0a] text-[#e8e4dc] flex flex-col md:h-[calc(100vh-72px-clamp(7.5rem,10vh,11rem))] md:min-h-[520px] md:overflow-hidden"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 md:flex-1 md:min-h-0">
-        <div className="hero-at-wide-left relative flex flex-col gap-y-[50px] max-md:justify-between md:h-full md:justify-start md:gap-y-16 lg:gap-y-20 overflow-hidden border-b border-[#1e1e1e] pb-8 md:border-b-0 md:border-r md:pb-10 lg:pb-12">
+        <div className="hero-at-wide-left relative flex flex-col gap-y-[50px] max-md:justify-between md:h-full md:justify-start md:gap-y-10 lg:gap-y-14 overflow-hidden border-b border-[#1e1e1e] pb-8 md:border-b-0 md:border-r md:pb-6 lg:pb-8">
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
             <motion.div
               className="will-change-transform absolute -left-28 -top-32 h-[400px] w-[400px] rounded-full bg-[#c58ad6] opacity-[0.16] blur-[86px]"
@@ -484,19 +484,23 @@ export default function Hero() {
               }
             />
           </div>
-          <div className="relative z-10 space-y-6 md:space-y-8">
+          <div className="relative z-10 space-y-5 md:space-y-6">
             <p data-hero-reveal className="hero-eyebrow">
-              <span className="hero-eyebrow-accent">SR PRODUCT DESIGNER · AVAILABLE FOR HIRE</span>
+              <span className="hero-eyebrow-accent">PRODUCT DESIGNER · AI-NATIVE</span>
             </p>
             <h1 data-hero-reveal className="hero-display">
-              <span className="block">Designed it.</span>
-              <span className="block">Built it.</span>
-              <span className="hero-display-highlight block">Shipped it.</span>
+              <span className="block">0 → 1 products.</span>
+              <span className="block">
+                Designed. Built.{" "}
+                <span className="hero-display-highlight">Shipped.</span>
+              </span>
             </h1>
             <p data-hero-reveal className="hero-intro max-w-[56ch]">
-              Hi, I&apos;m Sam. I use AI across the full design process — research, prototyping, and production — to ship fast.
+              I design and ship AI products for early-stage teams —
+              <br />
+              from idea to live in days.
             </p>
-            <div data-hero-reveal className="flex flex-col gap-y-[calc(1rem+25px)]">
+            <div data-hero-reveal className="flex flex-col gap-y-[calc(1rem+18px)] md:gap-y-[calc(1rem+12px)]">
               <div className="flex flex-wrap gap-2">
                 {["FIGMA", "CLAUDE", "CURSOR", "V0", "FIRECRAWL", "VERCEL"].map((tool) => (
                   <motion.span
@@ -574,7 +578,7 @@ export default function Hero() {
               ? [0, 1, 2, 3].map((i) => (
                   <div
                     key={`github-skeleton-${i}`}
-                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${i >= 3 ? "hidden lg:grid" : "grid"} grid-cols-[70px_78px_1fr] items-center gap-3 py-3 lg:py-5 xl:py-6`}
+                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${i >= 3 ? "hidden lg:grid" : "grid"} grid-cols-[70px_78px_1fr] items-center gap-3 py-3 lg:py-4 xl:py-5`}
                     aria-hidden="true"
                   >
                     <span className="h-3 w-10 rounded-sm bg-[#1a1a1a]" />
@@ -590,7 +594,7 @@ export default function Hero() {
                     key={event.id}
                     whileHover={{ y: -2 }}
                     transition={{ type: "spring", stiffness: 500, damping: 28 }}
-                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${index >= 3 ? "hidden lg:grid" : "grid"} grid-cols-[70px_78px_1fr] items-start gap-3 py-3 lg:py-5 xl:py-6`}
+                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${index >= 3 ? "hidden lg:grid" : "grid"} grid-cols-[70px_78px_1fr] items-start gap-3 py-3 lg:py-4 xl:py-5`}
                   >
                     <span>{toRelativeTime(event.created_at)}</span>
                     <span className="hero-event-pill inline-flex w-fit rounded-full bg-[#090f09] px-2 py-[2px]">

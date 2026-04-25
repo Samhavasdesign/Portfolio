@@ -274,6 +274,84 @@ body {
   padding-right: var(--grid-margin);
 }
 
+/* ── Client logo marquee (under hero) ────────────────────────────── */
+@keyframes client-logo-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.client-logo-marquee {
+  border-top: 0.5px solid var(--c-border);
+  background: var(--c-bg);
+  padding-block: 1.75rem;
+}
+
+@media (min-width: 768px) {
+  .client-logo-marquee {
+    padding-block: 1.5rem;
+  }
+}
+
+.client-logo-marquee-inner {
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+}
+
+.client-logo-marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: client-logo-marquee 72s linear infinite;
+}
+
+.client-logo-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.client-logo-marquee-set {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: clamp(2rem, 5vw, 3.5rem);
+  padding-inline: clamp(1.25rem, 3vw, 2rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .client-logo-marquee-track {
+    animation: none;
+    margin-inline: auto;
+    width: auto;
+    max-width: 100%;
+    justify-content: center;
+  }
+
+  .client-logo-marquee-track .client-logo-marquee-set:last-of-type {
+    display: none;
+  }
+
+  .client-logo-marquee-inner {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+}
+
 /* ── Shared section layout ───────────────────────────────────────── */
 .section-container {
   padding-top: var(--section-pad-y);

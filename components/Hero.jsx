@@ -149,21 +149,88 @@ function getTypeLabel(type) {
   }
 }
 
-/** GitHub PushEvent truncates `payload.commits`; true count is `payload.size`. */
+/**
+ * Commits in a push. Prefer `payload.size`, then `commits.length`.
+ * Public GET /users/{user}/events often omits both; then count the push as 1 commit minimum.
+ */
 function pushEventCommitCount(payload) {
   if (!payload || typeof payload !== "object") return 0;
   if (typeof payload.size === "number") return payload.size;
-  return Array.isArray(payload.commits) ? payload.commits.length : 0;
+  if (Array.isArray(payload.commits) && payload.commits.length > 0) {
+    return payload.commits.length;
+  }
+  if (payload.head && payload.before && payload.head !== payload.before) return 1;
+  if (payload.push_id != null || payload.head) return 1;
+  return 0;
+}
+
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+    const onChange = () => setReduced(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return reduced;
+}
+
+function useCountUpStat(target, reducedMotion) {
+  const [display, setDisplay] = useState(0);
+  const lastEnd = useRef(0);
+
+  useEffect(() => {
+    if (target == null) return;
+    if (target <= 0) {
+      setDisplay(target);
+      lastEnd.current = target;
+      return;
+    }
+    if (reducedMotion) {
+      setDisplay(target);
+      lastEnd.current = target;
+      return;
+    }
+    const from = lastEnd.current;
+    if (from >= target) {
+      setDisplay(target);
+      lastEnd.current = target;
+      return;
+    }
+    const durationMs = Math.min(1600, 420 + target * 36);
+    let raf = 0;
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / durationMs);
+      const eased = 1 - (1 - t) ** 3;
+      const next = Math.round(from + (target - from) * eased);
+      setDisplay(next);
+      if (t < 1) raf = requestAnimationFrame(tick);
+      else {
+        setDisplay(target);
+        lastEnd.current = target;
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, reducedMotion]);
+
+  if (target == null) return null;
+  if (target <= 0) return target;
+  return display;
 }
 
 export default function Hero() {
-  const [feedEvents, setFeedEvents] = useState(FALLBACK_EVENTS);
-  const [statsTimelineEvents, setStatsTimelineEvents] = useState(FALLBACK_EVENTS);
+  const [feedEvents, setFeedEvents] = useState([]);
+  const [statsTimelineEvents, setStatsTimelineEvents] = useState([]);
+  const [githubMode, setGithubMode] = useState("loading");
   const [clock, setClock] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [didUseFallback, setDidUseFallback] = useState(true);
+  const [didUseFallback, setDidUseFallback] = useState(false);
   const [isPanePulsing, setIsPanePulsing] = useState(false);
-  const previousTopEventId = useRef(FALLBACK_EVENTS[0]?.id || null);
+  const previousTopEventId = useRef(null);
+  const githubFetchCount = useRef(0);
 
   const updateClock = useCallback(() => {
     try {
@@ -178,8 +245,9 @@ export default function Hero() {
   }, []);
 
   const fetchEvents = useCallback(async () => {
+    const showBusyRefresh = githubFetchCount.current > 0;
+    if (showBusyRefresh) setIsRefreshing(true);
     try {
-      setIsRefreshing(true);
       const headers = { Accept: "application/vnd.github+json" };
       if (process.env.NEXT_PUBLIC_GITHUB_TOKEN) {
         headers.Authorization = `Bearer ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`;
@@ -203,17 +271,24 @@ export default function Hero() {
       setFeedEvents(feedSlice);
       setStatsTimelineEvents(filtered);
       setDidUseFallback(false);
+      setGithubMode("live");
     } catch (error) {
       setFeedEvents(FALLBACK_EVENTS);
       setStatsTimelineEvents(FALLBACK_EVENTS);
+      previousTopEventId.current = FALLBACK_EVENTS[0]?.id ?? null;
       setDidUseFallback(true);
+      setGithubMode("fallback");
     } finally {
       setIsRefreshing(false);
+      githubFetchCount.current += 1;
     }
   }, []);
 
   const stats = useMemo(() => {
     try {
+      if (githubMode === "loading") {
+        return { yearsExp: null, commits30d: null, reposActive: null };
+      }
       const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
       let commits30d = 0;
       const repoSet = new Set();
@@ -239,7 +314,12 @@ export default function Hero() {
         reposActive: 0,
       };
     }
-  }, [statsTimelineEvents]);
+  }, [statsTimelineEvents, githubMode]);
+
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const statYears = useCountUpStat(stats.yearsExp, prefersReducedMotion);
+  const statCommits = useCountUpStat(stats.commits30d, prefersReducedMotion);
+  const statRepos = useCountUpStat(stats.reposActive, prefersReducedMotion);
 
   useEffect(() => {
     try {
@@ -262,27 +342,29 @@ export default function Hero() {
   }, [fetchEvents]);
 
   return (
-    <section className="bg-[#0a0a0a] text-[#e8e4dc] flex flex-col md:h-[calc(100vh-57px)] md:min-h-[600px] md:overflow-hidden">
+    <section className="bg-[#0a0a0a] text-[#e8e4dc] flex flex-col md:h-[calc(100vh-72px-clamp(7.5rem,10vh,11rem))] md:min-h-[520px] md:overflow-hidden">
       <div className="grid grid-cols-1 md:grid-cols-2 md:flex-1 md:min-h-0">
-        <div className="hero-at-wide-left flex h-full flex-col gap-y-[50px] max-md:justify-between md:justify-start md:gap-y-16 lg:gap-y-20 overflow-hidden border-b border-[#1e1e1e] px-5 py-6 sm:px-8 sm:py-8 md:border-b-0 md:border-r md:px-10 md:py-8 lg:px-12 lg:py-10">
-          <div className="space-y-8">
+        <div className="hero-at-wide-left flex h-full flex-col gap-y-[50px] max-md:justify-between md:justify-start md:gap-y-10 lg:gap-y-14 overflow-hidden border-b border-[#1e1e1e] px-5 py-6 sm:px-8 sm:py-8 md:border-b-0 md:border-r md:px-10 md:py-8 lg:px-12 lg:py-10">
+          <div className="space-y-5 md:space-y-6">
             <p className="font-mono text-[9px] uppercase tracking-[0.35em] text-[#444440]">
-              <span style={{ color: "#C586C0" }}>SR PRODUCT DESIGNER · DESIGN × CODE × AI</span>
+              <span style={{ color: "#C586C0" }}>PRODUCT DESIGNER · AI-NATIVE</span>
             </p>
 
-            <h1 className="font-[Georgia,serif] text-[34px] font-normal leading-[1.02] tracking-[-0.01em] text-[#e8e4dc] md:text-[40px]">
-              <span className="block">Designed it.</span>
-              <span className="block">Built it.</span>
-              <span className="block text-[#f0ece4]">Shipped it.</span>
+            <h1 className="font-[Georgia,serif] text-[calc(34px+2pt)] font-normal leading-[1.02] tracking-[-0.01em] text-[#e8e4dc] md:text-[calc(40px+2pt)]">
+              <span className="block">0 → 1 products.</span>
+              <span className="block">
+                Designed. Built.{" "}
+                <span className="text-[#f0ece4]">Shipped.</span>
+              </span>
             </h1>
 
             <p className="max-w-[56ch] font-mono text-[13px] leading-relaxed text-[#888880]">
-              Hi, I'm Sam. I use AI across the full design process —
-              research, prototyping, and production — to ship fast.
-              Available for staff roles and freelance.
+              I design and ship AI products for early-stage teams —
+              <br />
+              from idea to live in days.
             </p>
 
-            <div className="flex flex-col gap-y-[calc(1rem+25px)]">
+            <div className="flex flex-col gap-y-[calc(1rem+18px)] md:gap-y-[calc(1rem+12px)]">
               <div className="flex flex-wrap gap-2">
                 {["FIGMA", "CLAUDE", "CURSOR", "V0", "FIRECRAWL", "VERCEL"].map((tool) => (
                   <span
@@ -302,21 +384,21 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 border border-[#1e1e1e]">
-            <div className="border-r border-[#1e1e1e] px-3 py-3">
-              <p className="font-mono text-[18px] text-[#e8e4dc]">{stats.yearsExp}</p>
+          <div className="box-border grid grid-cols-3 border-[0.5px] border-solid border-[rgba(232,228,220,0.16)]">
+            <div className="border-r-[0.5px] border-solid border-[rgba(232,228,220,0.12)] px-3 py-3">
+              <p className="font-mono text-[18px] tabular-nums text-[#e8e4dc]">{statYears ?? "—"}</p>
               <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#555550]">
                 years exp.
               </p>
             </div>
-            <div className="border-r border-[#1e1e1e] px-3 py-3">
-              <p className="font-mono text-[18px] text-[#e8e4dc]">{stats.commits30d}</p>
+            <div className="border-r-[0.5px] border-solid border-[rgba(232,228,220,0.12)] px-3 py-3">
+              <p className="font-mono text-[18px] tabular-nums text-[#e8e4dc]">{statCommits ?? "—"}</p>
               <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#555550]">
                 commits (30d)
               </p>
             </div>
             <div className="px-3 py-3">
-              <p className="font-mono text-[18px] text-[#e8e4dc]">{stats.reposActive}</p>
+              <p className="font-mono text-[18px] tabular-nums text-[#e8e4dc]">{statRepos ?? "—"}</p>
               <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#555550]">
                 repos active
               </p>
@@ -325,13 +407,14 @@ export default function Hero() {
         </div>
 
         <div
+          aria-busy={githubMode === "loading"}
           className={`hero-at-wide-right flex max-h-[300px] flex-col md:max-h-none md:overflow-hidden transition-colors duration-500 ${
             isPanePulsing ? "bg-[#07100a]" : "bg-[#050505]"
           }`}
         >
-          <div className="hero-at-wide-github flex items-center justify-between border-b border-[#0e0e0e] px-5 py-4 sm:px-8 md:px-10 lg:px-12 font-mono text-[11px] text-[#9a9a9a]">
+          <div className="hero-at-wide-github flex items-center justify-between border-b-0 shadow-[inset_0_-1px_0_0_rgba(232,228,220,0.16)] px-5 py-4 sm:px-8 md:px-10 lg:px-12 font-mono text-[11px] text-[#9a9a9a]">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#22c55e] animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-[#22c55e] opacity-90" />
               <span className="uppercase tracking-[0.12em] text-[#22c55e]">LIVE</span>
               <span className="text-[#6b6b6b]">- github.com/samhavasdesign</span>
             </div>
@@ -339,26 +422,43 @@ export default function Hero() {
           </div>
 
           <div className="flex-1 overflow-y-auto min-h-0">
-            {feedEvents.map((event) => (
-              <div
-                key={event.id}
-                className="hero-at-wide-github grid grid-cols-[70px_78px_1fr] items-start gap-3 border-b border-[#0e0e0e] px-5 py-3 sm:px-8 md:px-10 lg:px-12 font-mono text-[11px] text-[#7a7a7a] opacity-100 translate-y-0 transition duration-300"
-              >
-                <span>{toRelativeTime(event.created_at)}</span>
-                <span className="inline-flex w-fit rounded-full bg-[#090f09] px-2 py-[2px] text-[10px] uppercase tracking-[0.1em] text-[#1a3d1a]">
-                  {getTypeLabel(event.type)}
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate text-[#bdbdbd]">{event.repo?.name || "unknown/repo"}</p>
-                  <p className="truncate text-[#606060]">{getEventMessage(event)}</p>
-                </div>
-              </div>
-            ))}
+            {githubMode === "loading"
+              ? [0, 1, 2, 3].map((i) => (
+                  <div
+                    key={`github-skeleton-${i}`}
+                    className="hero-at-wide-github grid grid-cols-[70px_78px_1fr] items-center gap-3 border-b-0 shadow-[inset_0_-1px_0_0_rgba(232,228,220,0.16)] px-5 py-3 sm:px-8 md:px-10 lg:px-12"
+                    aria-hidden="true"
+                  >
+                    <span className="h-3 w-10 rounded-sm bg-[#1a1a1a]" />
+                    <span className="h-5 w-14 rounded-full bg-[#141414]" />
+                    <div className="min-w-0 space-y-2">
+                      <span className="block h-3 max-w-[220px] rounded-sm bg-[#1a1a1a]" />
+                      <span className="block h-3 max-w-[180px] rounded-sm bg-[#141414]" />
+                    </div>
+                  </div>
+                ))
+              : feedEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className="hero-at-wide-github grid grid-cols-[70px_78px_1fr] items-start gap-3 border-b-0 shadow-[inset_0_-1px_0_0_rgba(232,228,220,0.16)] px-5 py-3 sm:px-8 md:px-10 lg:px-12 font-mono text-[11px] text-[#7a7a7a] opacity-100 translate-y-0 transition duration-300"
+                  >
+                    <span>{toRelativeTime(event.created_at)}</span>
+                    <span className="inline-flex w-fit rounded-full bg-[#090f09] px-2 py-[2px] text-[10px] uppercase tracking-[0.1em] text-[#1a3d1a]">
+                      {getTypeLabel(event.type)}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate text-[#bdbdbd]">{event.repo?.name || "unknown/repo"}</p>
+                      <p className="truncate text-[#606060]">{getEventMessage(event)}</p>
+                    </div>
+                  </div>
+                ))}
           </div>
 
-          <div className="hero-at-wide-github flex items-center justify-between border-t border-[#0e0e0e] px-5 py-4 sm:px-8 md:px-10 lg:px-12 font-mono text-[11px] text-[#666666]">
+          <div className="hero-at-wide-github flex items-center justify-between px-5 py-4 sm:px-8 md:px-10 lg:px-12 font-mono text-[11px] text-[#666666]">
             <span>
-              {feedEvents.length} events {didUseFallback ? "(fallback)" : ""}
+              {githubMode === "loading"
+                ? "…"
+                : `${feedEvents.length} events${didUseFallback ? " (fallback)" : ""}`}
             </span>
             <button
               type="button"
