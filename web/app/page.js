@@ -2,13 +2,14 @@ import Hero from "@/components/Hero";
 import Nav from "@/components/Nav";
 import Chatbot from "@/components/Chatbot";
 import ClientLogoMarquee from "@/components/ClientLogoMarquee";
+import Footer from "@/components/Footer";
 import WorkGrid from "@/components/WorkGrid";
 import WorkShowcase from "@/components/WorkShowcase";
 import { labProjects } from "@/lib/lab";
 
 export default function Home() {
   return (
-    <div style={{ paddingTop: "72px", background: "#0a0a0a" }}>
+    <div style={{ paddingTop: "78px", background: "var(--c-bg)" }}>
       <Nav />
       <Hero />
       <ClientLogoMarquee />
@@ -21,6 +22,7 @@ export default function Home() {
         linkPrefix="/lab"
       />
       <WorkShowcase />
+      <Footer />
       <Chatbot />
     </div>
   );

@@ -54,7 +54,14 @@ export default function WorkShowcase() {
     <div
       ref={rootRef}
       className="section-container border-t"
-      style={{ borderColor: "var(--c-border)", background: "var(--c-bg)", color: "var(--c-text)" }}
+      style={{
+        borderColor: "var(--c-border)",
+        background: "var(--c-bg)",
+        color: "var(--c-text)",
+        // Decorative glow — local scope only, not part of the global token system
+        "--blob-blue": "#6f8dff",
+        "--blob-purple": "#c58ad6",
+      }}
     >
       <section id="how-work-ships" aria-labelledby="work-heading" className="mx-auto max-w-5xl">
         <p className="section-eyebrow">Portfolio</p>
@@ -93,11 +100,11 @@ export default function WorkShowcase() {
           ref={dashboardRef}
           data-dashboard-panel
           className="relative mt-20 overflow-hidden rounded-xl border p-6 md:p-8"
-          style={{ borderColor: "#242424", background: "#080808" }}
+          style={{ borderColor: "var(--c-border-mid)", background: "var(--c-bg)" }}
         >
           <div className="pointer-events-none absolute inset-0 opacity-[0.35]" aria-hidden>
-            <div className="absolute -right-16 top-0 h-48 w-48 rounded-full bg-[#6f8dff] opacity-20 blur-[70px]" />
-            <div className="absolute bottom-0 left-1/4 h-40 w-40 rounded-full bg-[#c58ad6] opacity-15 blur-[60px]" />
+            <div className="absolute -right-16 top-0 h-48 w-48 rounded-full bg-[var(--blob-blue)] opacity-20 blur-[70px]" />
+            <div className="absolute bottom-0 left-1/4 h-40 w-40 rounded-full bg-[var(--blob-purple)] opacity-15 blur-[60px]" />
           </div>
           <div className="relative z-10 flex flex-col gap-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -106,7 +113,7 @@ export default function WorkShowcase() {
                 className="rounded-full border px-2 py-1 font-mono text-[12px] uppercase tracking-[0.12em]"
                 style={{
                   fontFamily: "var(--font-mono)",
-                  borderColor: "#1e3d1e",
+                  borderColor: "var(--c-green-border)",
                   color: "var(--c-green)",
                 }}
               >
@@ -116,24 +123,24 @@ export default function WorkShowcase() {
             <div className="grid gap-4 md:grid-cols-[1.2fr_1fr]">
               <div
                 className="space-y-3 rounded-lg border p-4"
-                style={{ borderColor: "var(--c-border)", background: "#0c0c0c" }}
+                style={{ borderColor: "var(--c-border)", background: "var(--c-bg)" }}
               >
-                <div className="h-2 w-24 rounded-full bg-[#2a2a2a]" />
-                <div className="h-28 rounded-md bg-[#101010] ring-1 ring-[#1a1a1a]" />
+                <div className="h-2 w-24 rounded-full bg-[var(--c-border-bright)]" />
+                <div className="h-28 rounded-md bg-[var(--c-bg-raised)] ring-1 ring-[var(--c-border)]" />
                 <div className="flex gap-2">
-                  <div className="h-2 flex-1 rounded-full bg-[#1f1f1f]" />
-                  <div className="h-2 flex-1 rounded-full bg-[#1f1f1f]" />
-                  <div className="h-2 w-10 rounded-full bg-[#1f1f1f]" />
+                  <div className="h-2 flex-1 rounded-full bg-[var(--c-border)]" />
+                  <div className="h-2 flex-1 rounded-full bg-[var(--c-border)]" />
+                  <div className="h-2 w-10 rounded-full bg-[var(--c-border)]" />
                 </div>
               </div>
               <div
                 className="space-y-3 rounded-lg border p-4"
-                style={{ borderColor: "var(--c-border)", background: "#0c0c0c" }}
+                style={{ borderColor: "var(--c-border)", background: "var(--c-bg)" }}
               >
                 {[72, 54, 88, 64].map((w, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <div className="h-2 w-2 rounded-full" style={{ background: "var(--c-green)" }} />
-                    <div className="h-2 rounded-full bg-[#222]" style={{ width: `${w}%` }} />
+                    <div className="h-2 rounded-full bg-[var(--c-border-mid)]" style={{ width: `${w}%` }} />
                   </div>
                 ))}
               </div>

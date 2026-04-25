@@ -37,7 +37,7 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
       >
         <div
           className="absolute inset-0 z-0 flex items-center justify-center"
-          style={{ background: "linear-gradient(135deg, #161616 0%, #1a1a1a 100%)" }}
+          style={{ background: "linear-gradient(135deg, var(--c-bg-surface) 0%, var(--c-border) 100%)" }}
           aria-hidden
         >
           <span className="card-placeholder-label">{project.company.toUpperCase()}</span>

@@ -3,7 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 const GITHUB_USERNAME = "samhavasdesign";
 const GITHUB_EVENTS_PER_PAGE = 100;
 const GITHUB_EVENTS_MAX_PAGES = 3;
-const FEED_EVENT_LIMIT = 20;
+/** Max rows in hero GitHub panel (newest first). Stats still use the full filtered timeline. */
+const HERO_GITHUB_PANEL_EVENT_LIMIT = 5;
 
 function userPublicEventsUrl(page) {
   return `https://api.github.com/users/${GITHUB_USERNAME}/events/public?per_page=${GITHUB_EVENTS_PER_PAGE}&page=${page}`;
@@ -268,12 +269,12 @@ export default function Hero() {
       }
       previousTopEventId.current = nextTopId;
 
-      setFeedEvents(feedSlice);
+      setFeedEvents(filtered.slice(0, HERO_GITHUB_PANEL_EVENT_LIMIT));
       setStatsTimelineEvents(filtered);
       setDidUseFallback(false);
       setGithubMode("live");
     } catch (error) {
-      setFeedEvents(FALLBACK_EVENTS);
+      setFeedEvents(FALLBACK_EVENTS.slice(0, HERO_GITHUB_PANEL_EVENT_LIMIT));
       setStatsTimelineEvents(FALLBACK_EVENTS);
       previousTopEventId.current = FALLBACK_EVENTS[0]?.id ?? null;
       setDidUseFallback(true);
@@ -342,7 +343,7 @@ export default function Hero() {
   }, [fetchEvents]);
 
   return (
-    <section className="bg-[#0a0a0a] text-[#e8e4dc] flex flex-col md:h-[calc(100vh-72px-clamp(7.5rem,10vh,11rem))] md:min-h-[520px] md:overflow-hidden">
+    <section className="bg-[#0a0a0a] text-[#e8e4dc] flex flex-col md:h-[calc(100vh-78px-clamp(7.5rem,10vh,11rem))] md:min-h-[520px] md:overflow-hidden">
       <div className="grid grid-cols-1 md:grid-cols-2 md:flex-1 md:min-h-0">
         <div className="hero-at-wide-left flex h-full flex-col gap-y-[50px] max-md:justify-between md:justify-start md:gap-y-10 lg:gap-y-14 overflow-hidden border-b border-[#1e1e1e] px-5 py-6 sm:px-8 sm:py-8 md:border-b-0 md:border-r md:px-10 md:py-8 lg:px-12 lg:py-10">
           <div className="space-y-5 md:space-y-6">
@@ -359,9 +360,7 @@ export default function Hero() {
             </h1>
 
             <p className="max-w-[56ch] font-mono text-[13px] leading-relaxed text-[#888880]">
-              I design and ship AI products for early-stage teams —
-              <br />
-              from idea to live in days.
+              I design and ship AI products for early-stage teams — from idea to live in days.
             </p>
 
             <div className="flex flex-col gap-y-[calc(1rem+18px)] md:gap-y-[calc(1rem+12px)]">
@@ -423,10 +422,10 @@ export default function Hero() {
 
           <div className="flex-1 overflow-y-auto min-h-0">
             {githubMode === "loading"
-              ? [0, 1, 2, 3].map((i) => (
+              ? [0, 1, 2, 3, 4].map((i) => (
                   <div
                     key={`github-skeleton-${i}`}
-                    className="hero-at-wide-github grid grid-cols-[70px_78px_1fr] items-center gap-3 border-b-0 shadow-[inset_0_-1px_0_0_rgba(232,228,220,0.16)] px-5 py-3 sm:px-8 md:px-10 lg:px-12"
+                    className={`hero-at-wide-github grid grid-cols-[70px_78px_1fr] items-center gap-3 border-b-0 shadow-[inset_0_-1px_0_0_rgba(232,228,220,0.16)] px-5 py-3 sm:px-8 md:px-10 md:py-4 lg:px-12 xl:py-5 ${i >= 3 ? "hidden md:grid" : ""}`}
                     aria-hidden="true"
                   >
                     <span className="h-3 w-10 rounded-sm bg-[#1a1a1a]" />
@@ -437,10 +436,10 @@ export default function Hero() {
                     </div>
                   </div>
                 ))
-              : feedEvents.map((event) => (
+              : feedEvents.map((event, index) => (
                   <div
                     key={event.id}
-                    className="hero-at-wide-github grid grid-cols-[70px_78px_1fr] items-start gap-3 border-b-0 shadow-[inset_0_-1px_0_0_rgba(232,228,220,0.16)] px-5 py-3 sm:px-8 md:px-10 lg:px-12 font-mono text-[11px] text-[#7a7a7a] opacity-100 translate-y-0 transition duration-300"
+                    className={`hero-at-wide-github grid grid-cols-[70px_78px_1fr] items-start gap-3 border-b-0 shadow-[inset_0_-1px_0_0_rgba(232,228,220,0.16)] px-5 py-3 sm:px-8 md:px-10 md:py-4 lg:px-12 xl:py-5 font-mono text-[11px] text-[#7a7a7a] opacity-100 translate-y-0 transition duration-300 ${index >= 3 ? "hidden md:grid" : ""}`}
                   >
                     <span>{toRelativeTime(event.created_at)}</span>
                     <span className="inline-flex w-fit rounded-full bg-[#090f09] px-2 py-[2px] text-[10px] uppercase tracking-[0.1em] text-[#1a3d1a]">

@@ -49,12 +49,18 @@ export default function WorkGrid({
       ref={rootRef}
       id={id}
       className="section-container relative overflow-hidden"
-      style={{ background: "var(--c-bg)" }}
+      style={{
+        background: "var(--c-bg)",
+        // Decorative glow — local scope only, not part of the global token system
+        "--blob-blue": "#6f8dff",
+        "--blob-purple": "#c58ad6",
+        "--blob-indigo": "#4a6fa5",
+      }}
     >
       <div className="pointer-events-none absolute inset-0 opacity-40" aria-hidden>
-        <div className="absolute -left-24 top-1/4 h-72 w-72 rounded-full bg-[#6f8dff] opacity-25 blur-[88px]" />
-        <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-[#c58ad6] opacity-20 blur-[80px]" />
-        <div className="absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-[#4a6fa5] opacity-15 blur-[72px]" />
+        <div className="absolute -left-24 top-1/4 h-72 w-72 rounded-full bg-[var(--blob-blue)] opacity-25 blur-[88px]" />
+        <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-[var(--blob-purple)] opacity-20 blur-[80px]" />
+        <div className="absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-[var(--blob-indigo)] opacity-15 blur-[72px]" />
       </div>
 
       <div className="relative z-10">

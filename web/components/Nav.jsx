@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { MenuToggleIcon } from "@/components/ui/menu-toggle-icon";
+import ContactModal from "@/components/ContactModal";
 
-const NAV_LINKS = ["Work", "Lab", "Resume", "About"];
+const NAV_LINKS = ["Work", "AI Lab", "Resume", "About"];
 
 export default function Nav() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -39,7 +40,7 @@ export default function Nav() {
           <img
             src="/samantha-havas-logo.png"
             alt="Samantha Havas logo"
-            className="block h-9 w-auto max-w-[180px] object-contain object-left md:h-10 md:max-w-[220px]"
+            className="block h-10 w-auto max-w-[200px] object-contain object-left md:h-11 md:max-w-[240px]"
             decoding="async"
           />
         </a>
@@ -53,9 +54,7 @@ export default function Nav() {
           ))}
         </div>
 
-        <a href="#contact" className="nav-cta hidden md:inline-flex">
-          {"Let's talk →"}
-        </a>
+        <ContactModal triggerClassName="nav-cta hidden md:inline-flex" triggerLabel="Let's talk →" />
 
         <button
           type="button"
@@ -87,9 +86,11 @@ export default function Nav() {
           </a>
         ))}
         <div className="nav-mobile-cta-wrap">
-          <a href="#contact" className="nav-cta" onClick={() => setMobileOpen(false)}>
-            {"Let's talk →"}
-          </a>
+          <ContactModal
+            triggerClassName="nav-cta"
+            triggerLabel="Let's talk →"
+            onOpen={() => setMobileOpen(false)}
+          />
         </div>
       </div>
     </nav>

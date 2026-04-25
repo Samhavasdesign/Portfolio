@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 415 420" width="415" height="420">
+  <g transform="scale(0.78, 1)">
+    <text x="32" y="115" font-family="Arial Black, sans-serif" font-weight="900" font-size="148" fill="white">SA</text>
+    <text x="32" y="238" font-family="Arial Black, sans-serif" font-weight="900" font-size="148" fill="white">RANK</text>
+    <text x="32" y="358" font-family="Arial Black, sans-serif" font-weight="900" font-size="148" fill="white">CO</text>
+  </g>
+  <circle cx="228" cy="340" r="17" fill="white"/>
+  <line x1="25" y1="382" x2="195" y2="382" stroke="white" stroke-width="11"/>
+</svg>

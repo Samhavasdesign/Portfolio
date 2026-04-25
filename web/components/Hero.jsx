@@ -11,7 +11,8 @@ const GITHUB_USERNAME = "samhavasdesign";
 /** GitHub caps a user’s public timeline at 300 events; use max pages × per_page to match. */
 const GITHUB_EVENTS_PER_PAGE = 100;
 const GITHUB_EVENTS_MAX_PAGES = 3;
-const FEED_EVENT_LIMIT = 20;
+/** Max rows shown in the hero GitHub panel (desktop); mobile shows first 3, lg+ shows all up to this cap. */
+const HERO_GITHUB_PANEL_EVENT_LIMIT = 5;
 
 function userPublicEventsUrl(page) {
   return `https://api.github.com/users/${GITHUB_USERNAME}/events/public?per_page=${GITHUB_EVENTS_PER_PAGE}&page=${page}`;
@@ -248,20 +249,19 @@ export default function Hero() {
       const filtered = raw.filter((item) => ALLOWED_EVENT_TYPES.has(item?.type));
       if (filtered.length === 0) throw new Error("No events returned");
 
-      const feedSlice = filtered.slice(0, FEED_EVENT_LIMIT);
-      const nextTopId = feedSlice[0]?.id || null;
+      const nextTopId = filtered[0]?.id || null;
       if (previousTopEventId.current && nextTopId !== previousTopEventId.current) {
         setIsPanePulsing(true);
         window.setTimeout(() => setIsPanePulsing(false), 500);
       }
       previousTopEventId.current = nextTopId;
 
-      setFeedEvents(feedSlice);
+      setFeedEvents(filtered.slice(0, HERO_GITHUB_PANEL_EVENT_LIMIT));
       setStatsTimelineEvents(filtered);
       setDidUseFallback(false);
       setGithubMode("live");
     } catch {
-      setFeedEvents(FALLBACK_EVENTS);
+      setFeedEvents(FALLBACK_EVENTS.slice(0, HERO_GITHUB_PANEL_EVENT_LIMIT));
       setStatsTimelineEvents(FALLBACK_EVENTS);
       previousTopEventId.current = FALLBACK_EVENTS[0]?.id ?? null;
       setDidUseFallback(true);
@@ -353,13 +353,25 @@ export default function Hero() {
   return (
     <section
       ref={heroSectionRef}
-      className="bg-[#0a0a0a] text-[#e8e4dc] flex flex-col md:h-[calc(100vh-72px-clamp(7.5rem,10vh,11rem))] md:min-h-[520px] md:overflow-hidden"
+      className="flex flex-col md:h-[calc(100vh-78px-clamp(7.5rem,10vh,11rem))] md:min-h-[520px] md:overflow-hidden"
+      style={{
+        background: "var(--c-bg)",
+        color: "var(--c-text)",
+        // Decorative glow + hero-specific pane colors — local scope only, not global tokens
+        "--blob-purple": "#c58ad6",
+        "--blob-blue": "#6f8dff",
+        "--blob-pink": "#ef8bc8",
+        "--blob-teal": "#4bc0bc",
+        "--hero-pane-bg": "#050505",
+        "--hero-pane-live": "#07100a",
+        "--hero-pill-bg": "#090f09",
+      }}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 md:flex-1 md:min-h-0">
-        <div className="hero-at-wide-left relative flex flex-col gap-y-[50px] max-md:justify-between md:h-full md:justify-start md:gap-y-10 lg:gap-y-14 overflow-hidden border-b border-[#1e1e1e] pb-8 md:border-b-0 md:border-r md:pb-6 lg:pb-8">
+        <div className="hero-at-wide-left relative flex flex-col gap-y-[50px] max-md:justify-between md:h-full md:justify-start md:gap-y-10 lg:gap-y-14 overflow-hidden border-b border-[var(--c-border-mid)] pb-8 md:border-b-0 md:border-r md:pb-6 lg:pb-8">
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
             <motion.div
-              className="will-change-transform absolute -left-28 -top-32 h-[400px] w-[400px] rounded-full bg-[#c58ad6] opacity-[0.16] blur-[86px]"
+              className="will-change-transform absolute -left-28 -top-32 h-[400px] w-[400px] rounded-full bg-[var(--blob-purple)] opacity-[0.16] blur-[86px]"
               initial={
                 ambientPulseOnly ? { opacity: 0.16 } : { opacity: 0.16, x: 0, y: 0, scale: 1 }
               }
@@ -384,7 +396,7 @@ export default function Hero() {
               }
             />
             <motion.div
-              className="will-change-transform absolute right-[-100px] top-[16%] h-[360px] w-[360px] rounded-full bg-[#6f8dff] opacity-[0.14] blur-[88px]"
+              className="will-change-transform absolute right-[-100px] top-[16%] h-[360px] w-[360px] rounded-full bg-[var(--blob-blue)] opacity-[0.14] blur-[88px]"
               initial={ambientPulseOnly ? { opacity: 0.14 } : { opacity: 0.14, x: 0, y: 0, scale: 1 }}
               animate={
                 ambientDrift
@@ -407,7 +419,7 @@ export default function Hero() {
               }
             />
             <motion.div
-              className="will-change-transform absolute left-[18%] bottom-[-130px] h-[380px] w-[380px] rounded-full bg-[#ef8bc8] opacity-[0.13] blur-[92px]"
+              className="will-change-transform absolute left-[18%] bottom-[-130px] h-[380px] w-[380px] rounded-full bg-[var(--blob-pink)] opacity-[0.13] blur-[92px]"
               initial={ambientPulseOnly ? { opacity: 0.13 } : { opacity: 0.13, x: 0, y: 0, scale: 1 }}
               animate={
                 ambientDrift
@@ -430,7 +442,7 @@ export default function Hero() {
               }
             />
             <motion.div
-              className="will-change-transform absolute right-[10%] bottom-[8%] h-[300px] w-[300px] rounded-full bg-[#4bc0bc] opacity-[0.12] blur-[82px]"
+              className="will-change-transform absolute right-[10%] bottom-[8%] h-[300px] w-[300px] rounded-full bg-[var(--blob-teal)] opacity-[0.12] blur-[82px]"
               initial={ambientPulseOnly ? { opacity: 0.12 } : { opacity: 0.12, x: 0, y: 0, scale: 1 }}
               animate={
                 ambientDrift
@@ -496,9 +508,7 @@ export default function Hero() {
               </span>
             </h1>
             <p data-hero-reveal className="hero-intro max-w-[56ch]">
-              I design and ship AI products for early-stage teams —
-              <br />
-              from idea to live in days.
+              I design and ship AI products for early-stage teams — from idea to live in days.
             </p>
             <div data-hero-reveal className="flex flex-col gap-y-[calc(1rem+18px)] md:gap-y-[calc(1rem+12px)]">
               <div className="flex flex-wrap gap-2">
@@ -507,7 +517,7 @@ export default function Hero() {
                     key={tool}
                     whileHover={{ y: -2, scale: 1.04 }}
                     transition={{ type: "spring", stiffness: 460, damping: 22 }}
-                    className="hero-chip rounded border border-[#2e2e2e] px-2 py-1"
+                    className="hero-chip rounded border border-[var(--c-border-bright)] px-2 py-1"
                   >
                     {tool}
                   </motion.span>
@@ -558,12 +568,12 @@ export default function Hero() {
         <div
           data-hero-right
           aria-busy={githubMode === "loading"}
-          className={`hero-at-wide-right flex flex-col overflow-hidden transition-colors duration-500 ${isPanePulsing ? "bg-[#07100a]" : "bg-[#050505]"}`}
+          className={`hero-at-wide-right flex flex-col overflow-hidden transition-colors duration-500 ${isPanePulsing ? "bg-[var(--hero-pane-live)]" : "bg-[var(--hero-pane-bg)]"}`}
         >
           <div className="hero-at-wide-github hero-github hero-github-header hero-github-divider-b flex items-center justify-between pb-4">
             <div className="flex items-center gap-2">
               <motion.span
-                className="block h-2 w-2 rounded-full bg-[#22c55e]"
+                className="block h-2 w-2 rounded-full bg-[var(--c-green-live)]"
                 animate={{ scale: [1, 1.25, 1], opacity: [0.45, 1, 0.45] }}
                 transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
                 aria-hidden="true"
@@ -575,17 +585,17 @@ export default function Hero() {
           </div>
           <div>
             {githubMode === "loading"
-              ? [0, 1, 2, 3].map((i) => (
+              ? [0, 1, 2, 3, 4].map((i) => (
                   <div
                     key={`github-skeleton-${i}`}
-                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${i >= 3 ? "hidden lg:grid" : "grid"} grid-cols-[70px_78px_1fr] items-center gap-3 py-3 lg:py-4 xl:py-5`}
+                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${i >= 3 ? "hidden md:grid" : "grid"} grid-cols-[70px_78px_1fr] items-center gap-3 py-3 md:py-4 xl:py-5`}
                     aria-hidden="true"
                   >
-                    <span className="h-3 w-10 rounded-sm bg-[#1a1a1a]" />
-                    <span className="h-5 w-14 rounded-full bg-[#141414]" />
+                    <span className="h-3 w-10 rounded-sm bg-[var(--c-border)]" />
+                    <span className="h-5 w-14 rounded-full bg-[var(--c-bg-surface)]" />
                     <div className="min-w-0 space-y-2">
-                      <span className="block h-3 max-w-[min(100%,220px)] rounded-sm bg-[#1a1a1a]" />
-                      <span className="block h-3 max-w-[min(100%,180px)] rounded-sm bg-[#141414]" />
+                      <span className="block h-3 max-w-[min(100%,220px)] rounded-sm bg-[var(--c-border)]" />
+                      <span className="block h-3 max-w-[min(100%,180px)] rounded-sm bg-[var(--c-bg-surface)]" />
                     </div>
                   </div>
                 ))
@@ -594,10 +604,10 @@ export default function Hero() {
                     key={event.id}
                     whileHover={{ y: -2 }}
                     transition={{ type: "spring", stiffness: 500, damping: 28 }}
-                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${index >= 3 ? "hidden lg:grid" : "grid"} grid-cols-[70px_78px_1fr] items-start gap-3 py-3 lg:py-4 xl:py-5`}
+                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${index >= 3 ? "hidden md:grid" : "grid"} grid-cols-[70px_78px_1fr] items-start gap-3 py-3 md:py-4 xl:py-5`}
                   >
                     <span>{toRelativeTime(event.created_at)}</span>
-                    <span className="hero-event-pill inline-flex w-fit rounded-full bg-[#090f09] px-2 py-[2px]">
+                    <span className="hero-event-pill inline-flex w-fit rounded-full bg-[var(--hero-pill-bg)] px-2 py-[2px]">
                       {getTypeLabel(event.type)}
                     </span>
                     <div className="min-w-0">
