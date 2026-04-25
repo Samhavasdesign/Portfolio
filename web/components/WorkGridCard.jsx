@@ -8,167 +8,67 @@ const MotionLink = motion.create(Link);
 
 /** @typedef {import("@/lib/work").CaseStudy} CaseStudy */
 
-/**
- * Single case-study tile for the work grid. Keeps layout, motion, and media
- * handling isolated so the parent grid can focus on section-level behavior.
- *
- * @param {{ project: CaseStudy }} props
- */
-export default function WorkGridCard({ project }) {
+/** @param {{ project: CaseStudy, linkPrefix?: string }} props */
+export default function WorkGridCard({ project, linkPrefix = "/work" }) {
   const [imgFailed, setImgFailed] = useState(false);
 
   return (
     <MotionLink
       data-work-card
-      href={`/work/${project.slug}`}
-      className="group block border-solid bg-[#0d0d0d] text-inherit no-underline"
+      href={`${linkPrefix}/${project.slug}`}
+      className="group block border-solid no-underline"
       style={{
+        background: "var(--c-bg-raised)",
+        color: "inherit",
         borderWidth: "0.5px",
-        borderColor: "#1a1a1a",
+        borderColor: "var(--c-border)",
       }}
       whileHover={{
         y: -6,
-        borderColor: "#2a2a2a",
-        backgroundColor: "#111",
+        borderColor: "var(--c-purple-border)",
+        backgroundColor: "var(--c-bg-surface)",
         transition: { type: "spring", stiffness: 420, damping: 28 },
       }}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
     >
       <div
-        style={{
-          width: "100%",
-          aspectRatio: "16/9",
-          background: "#1a1a1a",
-          overflow: "hidden",
-          position: "relative",
-        }}
+        className="relative w-full overflow-hidden"
+        style={{ aspectRatio: "16/9", background: "var(--c-border)" }}
       >
         <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 0,
-            background: "linear-gradient(135deg, #161616 0%, #1a1a1a 100%)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+          className="absolute inset-0 z-0 flex items-center justify-center"
+          style={{ background: "linear-gradient(135deg, #161616 0%, #1a1a1a 100%)" }}
           aria-hidden
         >
-          <span
-            style={{
-              fontFamily: "monospace",
-              fontSize: "10px",
-              color: "#2a2a2a",
-              letterSpacing: "0.1em",
-            }}
-          >
-            {project.company.toUpperCase()}
-          </span>
+          <span className="card-placeholder-label">{project.company.toUpperCase()}</span>
         </div>
-        {!imgFailed ? (
+        {!imgFailed && (
           <img
             src={project.thumbnail}
             alt={project.company}
             className="relative z-[1] h-full w-full object-cover opacity-80 transition-opacity duration-200 group-hover:opacity-100"
             onError={() => setImgFailed(true)}
           />
-        ) : null}
+        )}
       </div>
 
-      <div style={{ padding: "20px 24px 24px" }}>
-        <div
-          style={{
-            display: "flex",
-            gap: "6px",
-            flexWrap: "wrap",
-            marginBottom: "12px",
-          }}
-        >
+      <div className="card-body">
+        <p className="card-title mb-1.5">{project.company}</p>
+        <p className="card-meta mb-3">{project.role} · {project.year}</p>
+        <p className="card-summary mb-4">{project.summary}</p>
+
+        <div className="mb-4 flex flex-wrap gap-1.5">
           {project.tags.map((tag) => (
-            <span
-              key={tag}
-              style={{
-                fontFamily: "monospace",
-                fontSize: "9px",
-                color: "#444440",
-                border: "0.5px solid #1e1e1e",
-                padding: "2px 8px",
-                letterSpacing: "0.08em",
-              }}
-            >
-              {tag.toUpperCase()}
-            </span>
+            <span key={tag} className="card-tag">{tag.toUpperCase()}</span>
           ))}
         </div>
 
         <div
-          style={{
-            fontFamily: "Georgia, serif",
-            fontSize: "17px",
-            fontWeight: 400,
-            color: "#e8e4dc",
-            letterSpacing: "-0.02em",
-            lineHeight: 1.35,
-            marginBottom: "6px",
-          }}
+          className="flex items-baseline gap-2 pt-4"
+          style={{ borderTop: "0.5px solid var(--c-border)" }}
         >
-          {project.company}
-        </div>
-
-        <div
-          style={{
-            fontFamily: "monospace",
-            fontSize: "10px",
-            color: "#444440",
-            letterSpacing: "0.06em",
-            marginBottom: "8px",
-          }}
-        >
-          {project.role} · {project.year}
-        </div>
-
-        <p
-          style={{
-            fontFamily: "monospace",
-            fontSize: "12px",
-            color: "#888880",
-            lineHeight: 1.6,
-            margin: "0 0 16px",
-          }}
-        >
-          {project.summary}
-        </p>
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            gap: "8px",
-            paddingTop: "16px",
-            borderTop: "0.5px solid #1a1a1a",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "Georgia, serif",
-              fontSize: "22px",
-              color: "#e8e4dc",
-              fontWeight: 400,
-            }}
-          >
-            {project.metric}
-          </span>
-          <span
-            style={{
-              fontFamily: "monospace",
-              fontSize: "10px",
-              color: "#444440",
-              letterSpacing: "0.06em",
-            }}
-          >
-            {project.metricLabel}
-          </span>
+          <span className="card-metric-value">{project.metric}</span>
+          <span className="card-metric-label">{project.metricLabel}</span>
         </div>
       </div>
     </MotionLink>

@@ -4,13 +4,41 @@
   --background: #ffffff;
   --foreground: #171717;
 
-  /* Grid — horizontal margin and hero top inset per breakpoint */
+  /* ── Grid ───────────────────────────────────────────────────────── */
   --grid-margin: 1.25rem;    /* 20px  mobile      */
   --hero-top-inset: 3.75rem; /* 60px  all sizes   */
+  --section-pad-y: 5rem;     /* 80px  mobile      */
+
+  /* ── Color palette ──────────────────────────────────────────────── */
+  --c-bg:             #0a0a0a;
+  --c-bg-raised:      #0d0d0d;
+  --c-bg-surface:     #111111;
+  --c-bg-chat:        #151515;
+
+  --c-text:           #e8e4dc;
+  --c-text-2:         #888880;   /* 5.5:1 on --c-bg  */
+  --c-text-3:         #848480;   /* 5.3:1 on --c-bg  */
+
+  --c-green:          #4ade80;
+  --c-green-live:     #22c55e;
+  --c-green-border:   #1a3d1a;
+  --c-purple:         #ddb1e6;
+  --c-purple-hover:   #c7a0df;
+  --c-purple-border:  #3a3140;
+
+  --c-border:         #1a1a1a;
+  --c-border-mid:     #1e1e1e;
+  --c-border-bright:  #2a2a2a;
+
+  /* ── Typography ─────────────────────────────────────────────────── */
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-mono:  var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Hero aliases — keep existing .hero-* classes working */
+  --font-hero-serif: var(--font-serif);
+  --font-hero-mono:  var(--font-mono);
 
   /* Hero type scale — keep in sync with `lib/tokens.ts` → `hero` */
-  --font-hero-serif: Georgia, "Times New Roman", serif;
-  --font-hero-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --hero-fs-eyebrow: 12px;
   --hero-fs-display: 38px;
   --hero-fs-display-md: 44px;
@@ -60,7 +88,7 @@ body {
 
 .hero-display {
   font-family: var(--font-hero-serif);
-  font-size: var(--hero-fs-display);
+  font-size: calc(var(--hero-fs-display) + 2pt);
   font-weight: 400;
   line-height: 1.02;
   letter-spacing: -0.01em;
@@ -69,7 +97,7 @@ body {
 
 @media (min-width: 768px) {
   .hero-display {
-    font-size: var(--hero-fs-display-md);
+    font-size: calc(var(--hero-fs-display-md) + 2pt);
   }
 }
 
@@ -124,6 +152,26 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: #848480;
+}
+
+/* Stat row frame: hairline so it reads on the ambient gradient */
+.hero-stats-grid {
+  box-sizing: border-box;
+  border: 0.5px solid rgba(232, 228, 220, 0.16);
+}
+
+.hero-stats-grid-cell {
+  border-right: 0.5px solid rgba(232, 228, 220, 0.12);
+}
+
+.hero-stats-grid-cell:last-child {
+  border-right: none;
+}
+
+/* GitHub panel: horizontal dividers — inset shadow reads on #050505 where 0.5px/0.12 borders vanish */
+.hero-github-divider-b {
+  border-bottom: none;
+  box-shadow: inset 0 -1px 0 0 rgba(232, 228, 220, 0.16);
 }
 
 .hero-github {
@@ -194,11 +242,14 @@ body {
 }
 
 @media (min-width: 640px) {
-  :root { --grid-margin: 2rem; }       /* 32px  sm+  */
+  :root { --grid-margin: 2rem; }
 }
 
 @media (min-width: 1024px) {
-  :root { --grid-margin: 3rem; }       /* 48px  lg+  */
+  :root {
+    --grid-margin: 3rem;
+    --section-pad-y: 7.5rem;           /* 120px lg+  */
+  }
 }
 
 @media (min-width: 1440px) {
@@ -221,4 +272,376 @@ body {
 .hero-at-wide-github {
   padding-left: var(--grid-margin);
   padding-right: var(--grid-margin);
+}
+
+/* ── Shared section layout ───────────────────────────────────────── */
+.section-container {
+  padding-top: var(--section-pad-y);
+  padding-bottom: var(--section-pad-y);
+  padding-left: var(--grid-margin);
+  padding-right: var(--grid-margin);
+}
+
+.section-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  color: var(--c-text-3);
+}
+
+.section-heading {
+  font-family: var(--font-serif);
+  font-size: 34px;
+  font-weight: 400;
+  color: var(--c-text);
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 768px) {
+  .section-heading { font-size: 36px; }
+}
+
+.section-meta {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--c-text-3);
+  letter-spacing: 0.08em;
+}
+
+.section-subtext {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--c-text-2);
+}
+
+/* ── Nav ─────────────────────────────────────────────────────────── */
+.nav-root {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 0.5px solid var(--c-border);
+  background: var(--c-bg);
+  transition: background 0.3s, backdrop-filter 0.3s;
+}
+
+.nav-root[data-scrolled="true"] {
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(12px);
+}
+
+.nav-inner {
+  width: 100%;
+  padding: 16px var(--grid-margin);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-link {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--c-text-2);
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 0.5px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.nav-link:hover {
+  color: var(--c-purple-hover);
+  border-bottom-color: var(--c-purple-hover);
+}
+
+.nav-separator {
+  color: #222;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  user-select: none;
+}
+
+.nav-cta {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--c-green);
+  border: 0.5px solid var(--c-green-border);
+  padding: 6px 14px;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+
+.nav-cta:hover {
+  border-color: var(--c-green);
+}
+
+.nav-mobile-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.nav-mobile-link {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: var(--c-text-2);
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  padding: 14px var(--grid-margin);
+  border-bottom: 0.5px solid var(--c-border);
+  transition: color 0.2s;
+}
+
+.nav-mobile-link:hover {
+  color: var(--c-purple-hover);
+}
+
+.nav-mobile-cta-wrap {
+  padding: 16px var(--grid-margin);
+}
+
+/* ── WorkGridCard ────────────────────────────────────────────────── */
+.card-body {
+  padding: 20px 24px 24px;
+}
+
+.card-tag {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--c-text-3);
+  border: 0.5px solid #2e2e2e;
+  border-radius: 4px;
+  padding: 2px 8px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.card-title {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 400;
+  color: var(--c-text);
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+.card-meta {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--c-purple-hover);
+  letter-spacing: 0.06em;
+}
+
+.card-summary {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--c-text-2);
+  line-height: 1.6;
+}
+
+.card-metric-value {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  color: var(--c-text);
+  font-weight: 400;
+}
+
+.card-metric-label {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--c-text-3);
+  letter-spacing: 0.06em;
+}
+
+.card-placeholder-label {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--c-border-bright);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── Chatbot ─────────────────────────────────────────────────────── */
+.chatbot-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: rgba(5, 5, 5, 0.55);
+  cursor: pointer;
+}
+
+.chatbot-panel {
+  position: fixed;
+  bottom: 96px;
+  right: 24px;
+  width: 460px;
+  max-height: 600px;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-bg-chat);
+  border: 0.5px solid var(--c-purple-border);
+  box-shadow: 0 0 0 1px rgba(199, 160, 223, 0.08);
+  border-radius: 8px;
+  z-index: 1000;
+}
+
+.chatbot-header {
+  padding: 16px 20px;
+  border-bottom: 0.5px solid var(--c-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chatbot-header-title {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: var(--c-purple);
+}
+
+.chatbot-header-sub {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--c-text-2);
+}
+
+.chatbot-prompts {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.chatbot-prompt-btn {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--c-text-3);
+  border: 0.5px solid var(--c-border-mid);
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.chatbot-prompt-btn:hover {
+  border-color: #6b4f7c;
+  color: var(--c-purple-hover);
+}
+
+.chatbot-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-border-mid) var(--c-bg-raised);
+}
+
+.chatbot-messages::-webkit-scrollbar { width: 3px; }
+.chatbot-messages::-webkit-scrollbar-track { background: var(--c-bg-raised); }
+.chatbot-messages::-webkit-scrollbar-thumb { background: var(--c-border-mid); border-radius: 2px; }
+.chatbot-messages::-webkit-scrollbar-thumb:hover { background: var(--c-border-bright); }
+
+.chatbot-msg-user {
+  align-self: flex-end;
+  background: var(--c-border);
+  color: var(--c-text-2);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  max-width: 80%;
+}
+
+.chatbot-msg-assistant {
+  align-self: flex-start;
+  color: var(--c-text);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.6;
+  padding: 10px 12px;
+  max-width: 90%;
+  white-space: pre-wrap;
+}
+
+.chatbot-input-row {
+  border-top: 0.5px solid var(--c-border);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chatbot-text-input {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  background: var(--c-border);
+  color: var(--c-text);
+  border: 0.5px solid var(--c-border-bright);
+  border-radius: 4px;
+  padding: 8px 10px;
+  outline: none;
+}
+
+.chatbot-text-input::placeholder {
+  font-size: 15px;
+  color: var(--c-text-3);
+}
+
+.chatbot-send-btn {
+  color: var(--c-green);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.chatbot-toggle {
+  position: fixed;
+  bottom: 40px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--c-green);
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.chatbot-toggle:hover {
+  background: var(--c-green-live);
+}
+
+.chatbot-toggle-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c-bg);
+  flex-shrink: 0;
+}
+
+.chatbot-toggle-label {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--c-bg);
+  letter-spacing: 0.06em;
 }

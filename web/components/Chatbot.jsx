@@ -377,6 +377,15 @@ export default function Chatbot() {
     messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
   }, [conversationHistory, isLoading, isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isOpen]);
+
   const sendMessage = async (rawText) => {
     const text = rawText.trim();
     if (!text || isLoading) return;
@@ -434,95 +443,32 @@ export default function Chatbot() {
           0%, 100% { opacity: 0.4; }
           50% { opacity: 1; }
         }
-        .chatbot-input::placeholder {
-          font-size: 13px;
-        }
-        .chat-messages::-webkit-scrollbar {
-          width: 3px;
-        }
-        .chat-messages::-webkit-scrollbar-track {
-          background: #0d0d0d;
-        }
-        .chat-messages::-webkit-scrollbar-thumb {
-          background: #1e1e1e;
-          border-radius: 2px;
-        }
-        .chat-messages::-webkit-scrollbar-thumb:hover {
-          background: #2a2a2a;
-        }
       `}</style>
 
       {isOpen && (
         <div
-          style={{
-            position: "fixed",
-            bottom: "96px",
-            right: "24px",
-            width: "460px",
-            maxHeight: "600px",
-            display: "flex",
-            flexDirection: "column",
-            background: "#151515",
-            border: "0.5px solid #3a3140",
-            boxShadow: "0 0 0 1px rgba(199,160,223,0.08)",
-            borderRadius: "8px",
-            zIndex: 1000,
-            opacity: 1,
-            transform: "scale(1)",
-            transition: "opacity 200ms ease, transform 200ms ease",
-          }}
-        >
-          <div
-            style={{
-              padding: "16px 20px",
-              borderBottom: "0.5px solid #1a1a1a",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <span style={{ fontFamily: "monospace", fontSize: "13px", color: "#ddb1e6" }}>ASK SAM</span>
-            <span style={{ fontFamily: "monospace", fontSize: "10px", color: "#888880" }}>PORTFOLIO ASSISTANT</span>
+          role="presentation"
+          className="chatbot-backdrop"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {isOpen && (
+        <div className="chatbot-panel">
+          <div className="chatbot-header">
+            <span className="chatbot-header-title">ASK SAM (BETA)</span>
+            <span className="chatbot-header-sub">PORTFOLIO ASSISTANT</span>
           </div>
 
           {isConversationEmpty && (
-            <div
-              style={{
-                padding: "16px 20px",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                gap: "8px",
-              }}
-            >
+            <div className="chatbot-prompts">
               {SUGGESTED_PROMPTS.map((prompt) => (
                 <button
                   key={prompt}
                   type="button"
-                  onClick={() => {
-                    sendMessage(prompt);
-                  }}
-                  style={{
-                    fontFamily: "monospace",
-                    fontSize: "12px",
-                    color: "#444440",
-                    border: "0.5px solid #1e1e1e",
-                    padding: "8px 12px",
-                    borderRadius: "4px",
-                    background: "transparent",
-                    cursor: "pointer",
-                    textAlign: "left",
-                    width: "fit-content",
-                    alignSelf: "flex-start",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "#6b4f7c";
-                    e.currentTarget.style.color = "#c7a0df";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "#1e1e1e";
-                    e.currentTarget.style.color = "#444440";
-                  }}
+                  className="chatbot-prompt-btn"
+                  onClick={() => sendMessage(prompt)}
                 >
                   {prompt}
                 </button>
@@ -530,115 +476,40 @@ export default function Chatbot() {
             </div>
           )}
 
-          <div
-            ref={messagesContainerRef}
-            className="chat-messages"
-            style={{
-              flex: 1,
-              overflowY: "auto",
-              padding: "16px 20px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "10px",
-              scrollbarWidth: "thin",
-              scrollbarColor: "#1e1e1e #0d0d0d",
-            }}
-          >
-            {conversationHistory.map((message, index) => {
-              const isUser = message.role === "user";
-              return (
-                <div
-                  key={`${message.role}-${index}`}
-                  style={
-                    isUser
-                      ? {
-                          alignSelf: "flex-end",
-                          background: "#1a1a1a",
-                          color: "#888880",
-                          fontFamily: "monospace",
-                          fontSize: "13px",
-                          padding: "10px 12px",
-                          borderRadius: "6px",
-                          maxWidth: "80%",
-                        }
-                      : {
-                          alignSelf: "flex-start",
-                          color: "#e8e4dc",
-                          fontFamily: "monospace",
-                          fontSize: "13px",
-                          lineHeight: 1.6,
-                          padding: "10px 12px",
-                          maxWidth: "90%",
-                          whiteSpace: "pre-wrap",
-                        }
-                  }
-                >
-                  {message.content}
-                </div>
-              );
-            })}
+          <div ref={messagesContainerRef} className="chatbot-messages">
+            {conversationHistory.map((message, index) => (
+              <div
+                key={`${message.role}-${index}`}
+                className={message.role === "user" ? "chatbot-msg-user" : "chatbot-msg-assistant"}
+              >
+                {message.content}
+              </div>
+            ))}
 
             {isLoading && (
-              <div style={{ alignSelf: "flex-start", display: "flex", gap: "4px" }}>
+              <div className="flex gap-1 self-start">
                 {[0, 1, 2].map((dot) => (
                   <span
                     key={dot}
-                    style={{
-                      width: "6px",
-                      height: "6px",
-                      borderRadius: "999px",
-                      background: "#333",
-                      animation: `chatDotPulse 400ms ${dot * 120}ms infinite`,
-                    }}
+                    className="inline-block h-1.5 w-1.5 rounded-full bg-[#333]"
+                    style={{ animation: `chatDotPulse 400ms ${dot * 120}ms infinite` }}
                   />
                 ))}
               </div>
             )}
           </div>
 
-          <div
-            style={{
-              borderTop: "0.5px solid #1a1a1a",
-              padding: "12px 20px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
-          >
+          <div className="chatbot-input-row">
             <input
-              className="chatbot-input"
+              className="chatbot-text-input"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  sendMessage(inputValue);
-                }
+                if (e.key === "Enter") { e.preventDefault(); sendMessage(inputValue); }
               }}
               placeholder="Ask me anything..."
-              style={{
-                flex: 1,
-                fontFamily: "monospace",
-                fontSize: "13px",
-                background: "#1a1a1a",
-                color: "#e8e4dc",
-                border: "0.5px solid #2a2a2a",
-                borderRadius: "4px",
-                padding: "8px 10px",
-                outline: "none",
-              }}
             />
-            <button
-              type="button"
-              onClick={() => sendMessage(inputValue)}
-              style={{
-                color: "#4ade80",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "14px",
-              }}
-            >
+            <button type="button" className="chatbot-send-btn" onClick={() => sendMessage(inputValue)}>
               →
             </button>
           </div>
@@ -647,56 +518,21 @@ export default function Chatbot() {
 
       <button
         type="button"
+        className="chatbot-toggle"
         onClick={() => setIsOpen((prev) => !prev)}
         style={{
-          position: "fixed",
-          bottom: "40px",
-          right: "24px",
-          zIndex: 1000,
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          background: "#4ade80",
-          border: "none",
           borderRadius: isOpen ? "999px" : "100px",
           padding: isOpen ? "0" : "12px 20px",
           width: isOpen ? "48px" : "auto",
           height: isOpen ? "48px" : "auto",
-          cursor: "pointer",
-          transition: "background 0.2s",
-          justifyContent: "center",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = "#22c55e";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = "#4ade80";
         }}
       >
         {isOpen ? (
-          <span style={{ fontFamily: "monospace", color: "#0a0a0a", fontSize: "16px" }}>✕</span>
+          <span style={{ fontFamily: "var(--font-mono)", color: "var(--c-bg)", fontSize: "16px" }}>✕</span>
         ) : (
           <>
-            <span
-              style={{
-                width: "7px",
-                height: "7px",
-                borderRadius: "50%",
-                background: "#0a0a0a",
-                flexShrink: 0,
-              }}
-            />
-            <span
-              style={{
-                fontFamily: "monospace",
-                fontSize: "12px",
-                fontWeight: "500",
-                color: "#0a0a0a",
-                letterSpacing: "0.06em",
-              }}
-            >
-              Ask Sam
-            </span>
+            <span className="chatbot-toggle-dot" />
+            <span className="chatbot-toggle-label">ASK SAM (BETA)</span>
           </>
         )}
       </button>

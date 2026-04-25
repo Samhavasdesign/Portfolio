@@ -4,8 +4,9 @@
  */
 export const hero = {
   eyebrow: "12px",
-  display: "38px",
-  displayMd: "44px",
+  /** Matches `.hero-display`: base + 2pt (see globals.css). */
+  display: "calc(38px + 2pt)",
+  displayMd: "calc(44px + 2pt)",
   intro: "15px",
   chip: "12px",
   cta: "13px",

@@ -4,267 +4,90 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { MenuToggleIcon } from "@/components/ui/menu-toggle-icon";
 
+const NAV_LINKS = ["Work", "Lab", "Resume", "About"];
+
 export default function Nav() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
-    const onScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
+    const onScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll);
     onScroll();
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-    };
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => setMobileOpen(false);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const close = () => setMobileOpen(false);
+    window.addEventListener("scroll", close);
+    window.addEventListener("hashchange", close);
+    return () => {
+      window.removeEventListener("scroll", close);
+      window.removeEventListener("hashchange", close);
+    };
   }, []);
 
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
-  useEffect(() => {
-    const onHash = () => setMobileOpen(false);
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, []);
-
   return (
-    <nav
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        display: "flex",
-        flexDirection: "column",
-        borderBottom: "0.5px solid #1a1a1a",
-        background: isScrolled ? "rgba(10, 10, 10, 0.85)" : "#0a0a0a",
-        backdropFilter: isScrolled ? "blur(12px)" : "none",
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          padding: "16px 40px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <a
-          href="/"
-          className="inline-flex shrink-0 items-center"
-          style={{ flexShrink: 0 }}
-          aria-label="Samantha Havas home"
-        >
+    <nav className="nav-root" data-scrolled={isScrolled ? "true" : "false"}>
+      <div className="nav-inner">
+        <a href="/" className="inline-flex shrink-0 items-center" aria-label="Samantha Havas home">
           <img
             src="/samantha-havas-logo.png"
             alt="Samantha Havas logo"
-            className="block h-7 w-auto max-w-[140px] object-contain object-left md:h-8 md:max-w-[180px]"
+            className="block h-9 w-auto max-w-[180px] object-contain object-left md:h-10 md:max-w-[220px]"
             decoding="async"
           />
         </a>
 
-        <div className="hidden md:flex gap-6" style={{ alignItems: "center" }}>
-          <a
-            href="#work"
-            style={{
-              fontFamily: "monospace",
-              fontSize: "11px",
-              color: "#888880",
-              letterSpacing: "0.08em",
-              textDecoration: "none",
-              paddingBottom: "2px",
-              borderBottom: "0.5px solid transparent",
-              transition: "color 0.2s, border-color 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#c7a0df";
-              e.currentTarget.style.borderBottomColor = "#c7a0df";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#888880";
-              e.currentTarget.style.borderBottomColor = "transparent";
-            }}
-          >
-            Work
-          </a>
-          <span style={{ color: "#222", fontFamily: "monospace", fontSize: "11px" }}>·</span>
-          <a
-            href="#lab"
-            style={{
-              fontFamily: "monospace",
-              fontSize: "11px",
-              color: "#888880",
-              letterSpacing: "0.08em",
-              textDecoration: "none",
-              paddingBottom: "2px",
-              borderBottom: "0.5px solid transparent",
-              transition: "color 0.2s, border-color 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#c7a0df";
-              e.currentTarget.style.borderBottomColor = "#c7a0df";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#888880";
-              e.currentTarget.style.borderBottomColor = "transparent";
-            }}
-          >
-            Lab
-          </a>
-          <span style={{ color: "#222", fontFamily: "monospace", fontSize: "11px" }}>·</span>
-          <a
-            href="#resume"
-            style={{
-              fontFamily: "monospace",
-              fontSize: "11px",
-              color: "#888880",
-              letterSpacing: "0.08em",
-              textDecoration: "none",
-              paddingBottom: "2px",
-              borderBottom: "0.5px solid transparent",
-              transition: "color 0.2s, border-color 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#c7a0df";
-              e.currentTarget.style.borderBottomColor = "#c7a0df";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#888880";
-              e.currentTarget.style.borderBottomColor = "transparent";
-            }}
-          >
-            Resume
-          </a>
-          <span style={{ color: "#222", fontFamily: "monospace", fontSize: "11px" }}>·</span>
-          <a
-            href="#about"
-            style={{
-              fontFamily: "monospace",
-              fontSize: "11px",
-              color: "#888880",
-              letterSpacing: "0.08em",
-              textDecoration: "none",
-              paddingBottom: "2px",
-              borderBottom: "0.5px solid transparent",
-              transition: "color 0.2s, border-color 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#c7a0df";
-              e.currentTarget.style.borderBottomColor = "#c7a0df";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#888880";
-              e.currentTarget.style.borderBottomColor = "transparent";
-            }}
-          >
-            About
-          </a>
+        <div className="hidden md:flex items-center gap-6">
+          {NAV_LINKS.map((label, i) => (
+            <span key={label} className="contents">
+              {i > 0 && <span className="nav-separator" aria-hidden>·</span>}
+              <a href={`#${label.toLowerCase()}`} className="nav-link">{label}</a>
+            </span>
+          ))}
         </div>
 
-        <a
-          href="#contact"
-          className="hidden md:inline-flex"
-          style={{
-            fontFamily: "monospace",
-            fontSize: "11px",
-            color: "#4ade80",
-            border: "0.5px solid #1a3d1a",
-            padding: "6px 14px",
-            textDecoration: "none",
-            transition: "border-color 0.2s",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "#4ade80";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "#1a3d1a";
-          }}
-        >
+        <a href="#contact" className="nav-cta hidden md:inline-flex">
           {"Let's talk →"}
         </a>
 
         <button
           type="button"
-          className="flex md:hidden"
+          className="flex md:hidden items-center justify-center p-1"
           aria-label="Toggle navigation menu"
           aria-expanded={mobileOpen}
-          onClick={() => setMobileOpen((open) => !open)}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            color: "#e8e4dc",
-            padding: "4px",
-          }}
+          onClick={() => setMobileOpen((o) => !o)}
+          style={{ background: "none", border: "none", cursor: "pointer", color: "var(--c-text)" }}
         >
           <MenuToggleIcon open={mobileOpen} className="size-6" duration={400} />
         </button>
       </div>
 
       <div
-        className="flex md:hidden"
+        className="nav-mobile-panel flex md:hidden"
         style={{
-          flexDirection: "column",
-          overflow: "hidden",
           maxHeight: mobileOpen ? "300px" : "0px",
-          transition: "max-height 0.4s ease",
-          borderTop: mobileOpen ? "0.5px solid #1a1a1a" : "none",
+          borderTop: mobileOpen ? "0.5px solid var(--c-border)" : "none",
         }}
       >
-        {["Work", "Lab", "Resume", "About"].map((link) => (
+        {NAV_LINKS.map((label) => (
           <a
-            key={link}
-            href={`#${link.toLowerCase()}`}
+            key={label}
+            href={`#${label.toLowerCase()}`}
+            className="nav-mobile-link"
             onClick={() => setMobileOpen(false)}
-            style={{
-              fontFamily: "monospace",
-              fontSize: "13px",
-              color: "#888880",
-              letterSpacing: "0.08em",
-              textDecoration: "none",
-              padding: "14px 40px",
-              borderBottom: "0.5px solid #1a1a1a",
-              transition: "color 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#c7a0df";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#888880";
-            }}
           >
-            {link}
+            {label}
           </a>
         ))}
-        <div style={{ padding: "16px 40px" }}>
-          <a
-            href="#contact"
-            onClick={() => setMobileOpen(false)}
-            style={{
-              fontFamily: "monospace",
-              fontSize: "11px",
-              color: "#4ade80",
-              border: "0.5px solid #1a3d1a",
-              padding: "8px 16px",
-              textDecoration: "none",
-              display: "inline-block",
-            }}
-          >
+        <div className="nav-mobile-cta-wrap">
+          <a href="#contact" className="nav-cta" onClick={() => setMobileOpen(false)}>
             {"Let's talk →"}
           </a>
         </div>

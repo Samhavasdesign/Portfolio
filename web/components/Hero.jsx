@@ -142,24 +142,85 @@ function getTypeLabel(type) {
   }
 }
 
-/** GitHub PushEvent truncates `payload.commits`; true count is `payload.size`. */
+/**
+ * Commits in a push. Prefer `payload.size` (webhooks / some payloads), then `commits.length`.
+ * The public GET /users/{user}/events API usually omits both — only `head` / `before` / `push_id`
+ * — so we count that push as 1 commit (multi-commit pushes are under-counted vs full history).
+ */
 function pushEventCommitCount(payload) {
   if (!payload || typeof payload !== "object") return 0;
   if (typeof payload.size === "number") return payload.size;
-  return Array.isArray(payload.commits) ? payload.commits.length : 0;
+  if (Array.isArray(payload.commits) && payload.commits.length > 0) {
+    return payload.commits.length;
+  }
+  if (payload.head && payload.before && payload.head !== payload.before) return 1;
+  if (payload.push_id != null || payload.head) return 1;
+  return 0;
+}
+
+/**
+ * When `target` is null (still loading), returns null.
+ * When `target <= 0`, shows that value with no animation.
+ * When `target > 0`, eases from the last settled value up to `target` (or jumps if reduced motion).
+ */
+function useCountUpStat(target, reducedMotion) {
+  const [display, setDisplay] = useState(0);
+  const lastEnd = useRef(0);
+
+  useEffect(() => {
+    if (target == null) return;
+    if (target <= 0) {
+      setDisplay(target);
+      lastEnd.current = target;
+      return;
+    }
+    if (reducedMotion) {
+      setDisplay(target);
+      lastEnd.current = target;
+      return;
+    }
+    const from = lastEnd.current;
+    if (from >= target) {
+      setDisplay(target);
+      lastEnd.current = target;
+      return;
+    }
+    const durationMs = Math.min(1600, 420 + target * 36);
+    let raf = 0;
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / durationMs);
+      const eased = 1 - (1 - t) ** 3;
+      const next = Math.round(from + (target - from) * eased);
+      setDisplay(next);
+      if (t < 1) raf = requestAnimationFrame(tick);
+      else {
+        setDisplay(target);
+        lastEnd.current = target;
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, reducedMotion]);
+
+  if (target == null) return null;
+  if (target <= 0) return target;
+  return display;
 }
 
 export default function Hero() {
-  const [feedEvents, setFeedEvents] = useState(FALLBACK_EVENTS);
-  const [statsTimelineEvents, setStatsTimelineEvents] = useState(FALLBACK_EVENTS);
+  const [feedEvents, setFeedEvents] = useState([]);
+  const [statsTimelineEvents, setStatsTimelineEvents] = useState([]);
+  const [githubMode, setGithubMode] = useState("loading");
   const [clock, setClock] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [didUseFallback, setDidUseFallback] = useState(true);
+  const [didUseFallback, setDidUseFallback] = useState(false);
   const [isPanePulsing, setIsPanePulsing] = useState(false);
-  const previousTopEventId = useRef(FALLBACK_EVENTS[0]?.id || null);
+  const previousTopEventId = useRef(null);
+  /** After the first fetch, show the refresh control as busy during polls and manual refresh. */
+  const githubFetchCount = useRef(0);
   const heroSectionRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
-  /** Full drift when PRM is off or unknown; opacity-only pulse when PRM is on (still “alive”, no travel). */
   const ambientDrift = prefersReducedMotion !== true;
   const ambientPulseOnly = prefersReducedMotion === true;
 
@@ -176,8 +237,9 @@ export default function Hero() {
   }, []);
 
   const fetchEvents = useCallback(async () => {
+    const showBusyRefresh = githubFetchCount.current > 0;
+    if (showBusyRefresh) setIsRefreshing(true);
     try {
-      setIsRefreshing(true);
       const headers = { Accept: "application/vnd.github+json" };
       if (process.env.NEXT_PUBLIC_GITHUB_TOKEN) {
         headers.Authorization = `Bearer ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`;
@@ -197,17 +259,24 @@ export default function Hero() {
       setFeedEvents(feedSlice);
       setStatsTimelineEvents(filtered);
       setDidUseFallback(false);
+      setGithubMode("live");
     } catch {
       setFeedEvents(FALLBACK_EVENTS);
       setStatsTimelineEvents(FALLBACK_EVENTS);
+      previousTopEventId.current = FALLBACK_EVENTS[0]?.id ?? null;
       setDidUseFallback(true);
+      setGithubMode("fallback");
     } finally {
       setIsRefreshing(false);
+      githubFetchCount.current += 1;
     }
   }, []);
 
   const stats = useMemo(() => {
     try {
+      if (githubMode === "loading") {
+        return { yearsExp: null, commits30d: null, reposActive: null };
+      }
       const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
       let commits30d = 0;
       const repoSet = new Set();
@@ -223,7 +292,11 @@ export default function Hero() {
     } catch {
       return { yearsExp: 10, commits30d: 0, reposActive: 0 };
     }
-  }, [statsTimelineEvents]);
+  }, [statsTimelineEvents, githubMode]);
+
+  const statYears = useCountUpStat(stats.yearsExp, prefersReducedMotion === true);
+  const statCommits = useCountUpStat(stats.commits30d, prefersReducedMotion === true);
+  const statRepos = useCountUpStat(stats.reposActive, prefersReducedMotion === true);
 
   useEffect(() => {
     updateClock();
@@ -251,11 +324,11 @@ export default function Hero() {
           duration: 0.72,
           stagger: 0.08,
           ease: "power3.out",
-        scrollTrigger: {
-          trigger: root,
-          start: "top bottom",
-          once: true,
-        },
+          scrollTrigger: {
+            trigger: root,
+            start: "top bottom",
+            once: true,
+          },
         });
       }
       const right = root.querySelector("[data-hero-right]");
@@ -266,11 +339,11 @@ export default function Hero() {
           x: 0,
           duration: 0.88,
           ease: "power3.out",
-        scrollTrigger: {
-          trigger: right,
-          start: "top bottom",
-          once: true,
-        },
+          scrollTrigger: {
+            trigger: right,
+            start: "top bottom",
+            once: true,
+          },
         });
       }
     }, heroSectionRef);
@@ -280,17 +353,15 @@ export default function Hero() {
   return (
     <section
       ref={heroSectionRef}
-      className="bg-[#0a0a0a] text-[#e8e4dc] flex flex-col md:h-[calc(100vh-57px)] md:min-h-[600px] md:overflow-hidden"
+      className="bg-[#0a0a0a] text-[#e8e4dc] flex flex-col md:h-[calc(100vh-72px)] md:min-h-[600px] md:overflow-hidden"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 md:flex-1 md:min-h-0">
         <div className="hero-at-wide-left relative flex flex-col gap-y-[50px] max-md:justify-between md:h-full md:justify-start md:gap-y-16 lg:gap-y-20 overflow-hidden border-b border-[#1e1e1e] pb-8 md:border-b-0 md:border-r md:pb-10 lg:pb-12">
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
             <motion.div
-              className="will-change-transform absolute -left-24 -top-28 h-[360px] w-[360px] rounded-full bg-[#c58ad6] opacity-[0.09] blur-[90px]"
+              className="will-change-transform absolute -left-28 -top-32 h-[400px] w-[400px] rounded-full bg-[#c58ad6] opacity-[0.16] blur-[86px]"
               initial={
-                ambientPulseOnly
-                  ? { opacity: 0.09 }
-                  : { opacity: 0.09, x: 0, y: 0, scale: 1 }
+                ambientPulseOnly ? { opacity: 0.16 } : { opacity: 0.16, x: 0, y: 0, scale: 1 }
               }
               animate={
                 ambientDrift
@@ -298,11 +369,11 @@ export default function Hero() {
                       x: [0, 26, -18, 20, 0],
                       y: [0, -20, 16, -12, 0],
                       scale: [1, 1.06, 1.03, 1.05, 1],
-                      opacity: [0.09, 0.12, 0.1, 0.115, 0.09],
+                      opacity: [0.16, 0.19, 0.17, 0.2, 0.16],
                     }
                   : ambientPulseOnly
-                    ? { opacity: [0.09, 0.125, 0.095, 0.11, 0.09] }
-                    : { opacity: 0.1 }
+                    ? { opacity: [0.16, 0.2, 0.15, 0.18, 0.16] }
+                    : { opacity: 0.17 }
               }
               transition={
                 ambientDrift
@@ -313,23 +384,19 @@ export default function Hero() {
               }
             />
             <motion.div
-              className="will-change-transform absolute right-[-90px] top-[18%] h-[320px] w-[320px] rounded-full bg-[#6f8dff] opacity-[0.078] blur-[95px]"
-              initial={
-                ambientPulseOnly
-                  ? { opacity: 0.075 }
-                  : { opacity: 0.078, x: 0, y: 0, scale: 1 }
-              }
+              className="will-change-transform absolute right-[-100px] top-[16%] h-[360px] w-[360px] rounded-full bg-[#6f8dff] opacity-[0.14] blur-[88px]"
+              initial={ambientPulseOnly ? { opacity: 0.14 } : { opacity: 0.14, x: 0, y: 0, scale: 1 }}
               animate={
                 ambientDrift
                   ? {
                       x: [0, -28, 22, -16, 0],
                       y: [0, 18, -14, 12, 0],
                       scale: [1, 1.05, 1.08, 1.04, 1],
-                      opacity: [0.078, 0.1, 0.085, 0.095, 0.078],
+                      opacity: [0.14, 0.17, 0.15, 0.18, 0.14],
                     }
                   : ambientPulseOnly
-                    ? { opacity: [0.075, 0.11, 0.085, 0.1, 0.075] }
-                    : { opacity: 0.09 }
+                    ? { opacity: [0.14, 0.18, 0.14, 0.17, 0.14] }
+                    : { opacity: 0.15 }
               }
               transition={
                 ambientDrift
@@ -340,23 +407,19 @@ export default function Hero() {
               }
             />
             <motion.div
-              className="will-change-transform absolute left-[20%] bottom-[-120px] h-[340px] w-[340px] rounded-full bg-[#ef8bc8] opacity-[0.07] blur-[100px]"
-              initial={
-                ambientPulseOnly
-                  ? { opacity: 0.065 }
-                  : { opacity: 0.07, x: 0, y: 0, scale: 1 }
-              }
+              className="will-change-transform absolute left-[18%] bottom-[-130px] h-[380px] w-[380px] rounded-full bg-[#ef8bc8] opacity-[0.13] blur-[92px]"
+              initial={ambientPulseOnly ? { opacity: 0.13 } : { opacity: 0.13, x: 0, y: 0, scale: 1 }}
               animate={
                 ambientDrift
                   ? {
                       x: [0, -22, 26, -18, 0],
                       y: [0, 14, -18, 10, 0],
                       scale: [1, 1.07, 1.04, 1.06, 1],
-                      opacity: [0.07, 0.095, 0.08, 0.09, 0.07],
+                      opacity: [0.13, 0.17, 0.14, 0.16, 0.13],
                     }
                   : ambientPulseOnly
-                    ? { opacity: [0.065, 0.1, 0.075, 0.09, 0.065] }
-                    : { opacity: 0.08 }
+                    ? { opacity: [0.13, 0.17, 0.13, 0.16, 0.13] }
+                    : { opacity: 0.14 }
               }
               transition={
                 ambientDrift
@@ -367,23 +430,19 @@ export default function Hero() {
               }
             />
             <motion.div
-              className="will-change-transform absolute right-[12%] bottom-[10%] h-[260px] w-[260px] rounded-full bg-[#4bc0bc] opacity-[0.068] blur-[90px]"
-              initial={
-                ambientPulseOnly
-                  ? { opacity: 0.06 }
-                  : { opacity: 0.068, x: 0, y: 0, scale: 1 }
-              }
+              className="will-change-transform absolute right-[10%] bottom-[8%] h-[300px] w-[300px] rounded-full bg-[#4bc0bc] opacity-[0.12] blur-[82px]"
+              initial={ambientPulseOnly ? { opacity: 0.12 } : { opacity: 0.12, x: 0, y: 0, scale: 1 }}
               animate={
                 ambientDrift
                   ? {
                       x: [0, 20, -24, 14, 0],
                       y: [0, -14, 18, -10, 0],
                       scale: [1, 1.08, 1.05, 1.06, 1],
-                      opacity: [0.068, 0.092, 0.075, 0.088, 0.068],
+                      opacity: [0.12, 0.16, 0.13, 0.15, 0.12],
                     }
                   : ambientPulseOnly
-                    ? { opacity: [0.06, 0.095, 0.07, 0.085, 0.06] }
-                    : { opacity: 0.075 }
+                    ? { opacity: [0.12, 0.16, 0.12, 0.15, 0.12] }
+                    : { opacity: 0.13 }
               }
               transition={
                 ambientDrift
@@ -396,25 +455,25 @@ export default function Hero() {
             <motion.div
               className="will-change-[opacity,background-position] absolute inset-0 bg-repeat"
               style={{
-                opacity: 0.055,
+                opacity: 0.095,
                 backgroundImage:
                   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E\")",
                 backgroundSize: "140px 140px",
               }}
               initial={
                 ambientPulseOnly
-                  ? { opacity: 0.05, backgroundPosition: "0% 0%" }
-                  : { opacity: 0.055, backgroundPosition: "0% 0%" }
+                  ? { opacity: 0.095, backgroundPosition: "0% 0%" }
+                  : { opacity: 0.095, backgroundPosition: "0% 0%" }
               }
               animate={
                 ambientDrift
                   ? {
-                      opacity: [0.055, 0.085, 0.065, 0.078, 0.055],
+                      opacity: [0.095, 0.12, 0.09, 0.11, 0.095],
                       backgroundPosition: ["0% 0%", "120% 90%", "20% 120%", "80% 40%", "0% 0%"],
                     }
                   : ambientPulseOnly
-                    ? { opacity: [0.05, 0.08, 0.055, 0.07, 0.05] }
-                    : { opacity: 0.065 }
+                    ? { opacity: [0.09, 0.11, 0.095, 0.1, 0.09] }
+                    : { opacity: 0.1 }
               }
               transition={
                 ambientDrift
@@ -427,7 +486,7 @@ export default function Hero() {
           </div>
           <div className="relative z-10 space-y-6 md:space-y-8">
             <p data-hero-reveal className="hero-eyebrow">
-              <span className="hero-eyebrow-accent">SR PRODUCT DESIGNER · DESIGN × CODE × AI</span>
+              <span className="hero-eyebrow-accent">SR PRODUCT DESIGNER · AVAILABLE FOR HIRE</span>
             </p>
             <h1 data-hero-reveal className="hero-display">
               <span className="block">Designed it.</span>
@@ -435,9 +494,7 @@ export default function Hero() {
               <span className="hero-display-highlight block">Shipped it.</span>
             </h1>
             <p data-hero-reveal className="hero-intro max-w-[56ch]">
-              Hi, I'm Sam. I use AI across the full design process —
-              research, prototyping, and production — to ship fast.
-              Available for staff roles and freelance.
+              Hi, I&apos;m Sam. I use AI across the full design process — research, prototyping, and production — to ship fast.
             </p>
             <div data-hero-reveal className="flex flex-col gap-y-[calc(1rem+25px)]">
               <div className="flex flex-wrap gap-2">
@@ -463,21 +520,21 @@ export default function Hero() {
               </motion.a>
             </div>
           </div>
-          <div data-hero-reveal className="relative z-10 grid grid-cols-3 border border-[#1e1e1e]">
+          <div data-hero-reveal className="hero-stats-grid relative z-10 grid grid-cols-3">
             <motion.div
               whileHover={{ y: -3 }}
               transition={{ type: "spring", stiffness: 420, damping: 28 }}
-              className="border-r border-[#1e1e1e] px-3 py-3"
+              className="hero-stats-grid-cell px-3 py-3"
             >
-              <p className="hero-stat-value">{stats.yearsExp}</p>
+              <p className="hero-stat-value tabular-nums">{statYears ?? "—"}</p>
               <p className="hero-stat-label">years exp.</p>
             </motion.div>
             <motion.div
               whileHover={{ y: -3 }}
               transition={{ type: "spring", stiffness: 420, damping: 28 }}
-              className="border-r border-[#1e1e1e] px-3 py-3"
+              className="hero-stats-grid-cell px-3 py-3"
             >
-              <p className="hero-stat-value">{stats.commits30d}</p>
+              <p className="hero-stat-value tabular-nums">{statCommits ?? "—"}</p>
               <p className="hero-stat-label">
                 commits (30d)
               </p>
@@ -485,9 +542,9 @@ export default function Hero() {
             <motion.div
               whileHover={{ y: -3 }}
               transition={{ type: "spring", stiffness: 420, damping: 28 }}
-              className="px-3 py-3"
+              className="hero-stats-grid-cell px-3 py-3"
             >
-              <p className="hero-stat-value">{stats.reposActive}</p>
+              <p className="hero-stat-value tabular-nums">{statRepos ?? "—"}</p>
               <p className="hero-stat-label">
                 repos active
               </p>
@@ -496,9 +553,10 @@ export default function Hero() {
         </div>
         <div
           data-hero-right
+          aria-busy={githubMode === "loading"}
           className={`hero-at-wide-right flex flex-col overflow-hidden transition-colors duration-500 ${isPanePulsing ? "bg-[#07100a]" : "bg-[#050505]"}`}
         >
-          <div className="hero-at-wide-github hero-github hero-github-header flex items-center justify-between border-b border-[#0e0e0e] pb-4">
+          <div className="hero-at-wide-github hero-github hero-github-header hero-github-divider-b flex items-center justify-between pb-4">
             <div className="flex items-center gap-2">
               <motion.span
                 className="block h-2 w-2 rounded-full bg-[#22c55e]"
@@ -512,25 +570,44 @@ export default function Hero() {
             <span className="hero-github-clock">{clock}</span>
           </div>
           <div>
-            {feedEvents.map((event, index) => (
-              <div
-                key={event.id}
-                className={`hero-at-wide-github hero-github hero-github-row ${index >= 3 ? "hidden lg:grid" : "grid"} translate-y-0 grid-cols-[70px_78px_1fr] items-start gap-3 border-b border-[#0e0e0e] py-3 lg:py-5 xl:py-6 opacity-100 transition duration-300`}
-              >
-                <span>{toRelativeTime(event.created_at)}</span>
-                <span className="hero-event-pill inline-flex w-fit rounded-full bg-[#090f09] px-2 py-[2px]">
-                  {getTypeLabel(event.type)}
-                </span>
-                <div className="min-w-0">
-                  <p className="hero-github-repo truncate">{event.repo?.name || "unknown/repo"}</p>
-                  <p className="hero-github-msg truncate">{getEventMessage(event)}</p>
-                </div>
-              </div>
-            ))}
+            {githubMode === "loading"
+              ? [0, 1, 2, 3].map((i) => (
+                  <div
+                    key={`github-skeleton-${i}`}
+                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${i >= 3 ? "hidden lg:grid" : "grid"} grid-cols-[70px_78px_1fr] items-center gap-3 py-3 lg:py-5 xl:py-6`}
+                    aria-hidden="true"
+                  >
+                    <span className="h-3 w-10 rounded-sm bg-[#1a1a1a]" />
+                    <span className="h-5 w-14 rounded-full bg-[#141414]" />
+                    <div className="min-w-0 space-y-2">
+                      <span className="block h-3 max-w-[min(100%,220px)] rounded-sm bg-[#1a1a1a]" />
+                      <span className="block h-3 max-w-[min(100%,180px)] rounded-sm bg-[#141414]" />
+                    </div>
+                  </div>
+                ))
+              : feedEvents.map((event, index) => (
+                  <motion.div
+                    key={event.id}
+                    whileHover={{ y: -2 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 28 }}
+                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${index >= 3 ? "hidden lg:grid" : "grid"} grid-cols-[70px_78px_1fr] items-start gap-3 py-3 lg:py-5 xl:py-6`}
+                  >
+                    <span>{toRelativeTime(event.created_at)}</span>
+                    <span className="hero-event-pill inline-flex w-fit rounded-full bg-[#090f09] px-2 py-[2px]">
+                      {getTypeLabel(event.type)}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="hero-github-repo truncate">{event.repo?.name || "unknown/repo"}</p>
+                      <p className="hero-github-msg truncate">{getEventMessage(event)}</p>
+                    </div>
+                  </motion.div>
+                ))}
           </div>
-          <div className="hero-at-wide-github hero-github hero-github-footer flex items-center justify-between border-t border-[#0e0e0e] py-4">
+          <div className="hero-at-wide-github hero-github hero-github-footer flex items-center justify-between py-4">
             <span>
-                {feedEvents.length} events {didUseFallback ? "(fallback)" : ""}
+              {githubMode === "loading"
+                ? "…"
+                : `${feedEvents.length} events${didUseFallback ? " (fallback)" : ""}`}
             </span>
             <motion.button
               type="button"
@@ -539,7 +616,7 @@ export default function Hero() {
               whileHover={isRefreshing ? undefined : { y: -2, scale: 1.03 }}
               whileTap={isRefreshing ? undefined : { scale: 0.97 }}
               transition={{ type: "spring", stiffness: 500, damping: 28 }}
-              className="hero-refresh transition duration-300"
+              className="hero-refresh transition-colors duration-200"
             >
               {isRefreshing ? "refreshing..." : "refresh"}
             </motion.button>
