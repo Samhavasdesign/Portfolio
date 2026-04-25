@@ -1,7 +1,41 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-const GITHUB_EVENTS_ENDPOINT =
-  "https://api.github.com/users/samhavasdesign/events/public?per_page=20";
+const GITHUB_USERNAME = "samhavasdesign";
+const GITHUB_EVENTS_PER_PAGE = 100;
+const GITHUB_EVENTS_MAX_PAGES = 3;
+const FEED_EVENT_LIMIT = 20;
+
+function userPublicEventsUrl(page) {
+  return `https://api.github.com/users/${GITHUB_USERNAME}/events/public?per_page=${GITHUB_EVENTS_PER_PAGE}&page=${page}`;
+}
+
+async function fetchUserPublicEventsTimeline(headers) {
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  const all = [];
+  for (let page = 1; page <= GITHUB_EVENTS_MAX_PAGES; page += 1) {
+    const response = await fetch(userPublicEventsUrl(page), {
+      method: "GET",
+      headers,
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      throw new Error(`GitHub response ${response.status}`);
+    }
+    const batch = await response.json();
+    if (!Array.isArray(batch) || batch.length === 0) {
+      break;
+    }
+    all.push(...batch);
+    if (batch.length < GITHUB_EVENTS_PER_PAGE) {
+      break;
+    }
+    const oldestInPage = new Date(batch[batch.length - 1]?.created_at).getTime();
+    if (!Number.isNaN(oldestInPage) && oldestInPage < thirtyDaysAgo) {
+      break;
+    }
+  }
+  return all;
+}
 
 const ALLOWED_EVENT_TYPES = new Set([
   "PushEvent",
@@ -19,6 +53,7 @@ const FALLBACK_EVENTS = [
     repo: { name: "samhavasdesign/portfolio" },
     created_at: "2026-04-24T14:05:00.000Z",
     payload: {
+      size: 1,
       commits: [{ message: "Refine hero copy cadence and hierarchy" }],
     },
   },
@@ -72,7 +107,7 @@ function getEventMessage(event) {
 
     if (event.type === "PushEvent") {
       const commitMessage = event.payload?.commits?.[0]?.message;
-      const commitCount = event.payload?.commits?.length ?? 0;
+      const commitCount = pushEventCommitCount(event.payload);
       if (commitMessage) return commitMessage;
       return commitCount > 0 ? `${commitCount} commit(s) pushed` : "Code pushed";
     }
@@ -114,8 +149,16 @@ function getTypeLabel(type) {
   }
 }
 
+/** GitHub PushEvent truncates `payload.commits`; true count is `payload.size`. */
+function pushEventCommitCount(payload) {
+  if (!payload || typeof payload !== "object") return 0;
+  if (typeof payload.size === "number") return payload.size;
+  return Array.isArray(payload.commits) ? payload.commits.length : 0;
+}
+
 export default function Hero() {
-  const [events, setEvents] = useState(FALLBACK_EVENTS);
+  const [feedEvents, setFeedEvents] = useState(FALLBACK_EVENTS);
+  const [statsTimelineEvents, setStatsTimelineEvents] = useState(FALLBACK_EVENTS);
   const [clock, setClock] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [didUseFallback, setDidUseFallback] = useState(true);
@@ -142,36 +185,27 @@ export default function Hero() {
         headers.Authorization = `Bearer ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`;
       }
 
-      const response = await fetch(GITHUB_EVENTS_ENDPOINT, {
-        method: "GET",
-        headers,
-        cache: "no-store",
-      });
-
-      if (!response.ok) {
-        throw new Error(`GitHub response ${response.status}`);
-      }
-
-      const raw = await response.json();
-      const filtered = Array.isArray(raw)
-        ? raw.filter((item) => ALLOWED_EVENT_TYPES.has(item?.type))
-        : [];
+      const raw = await fetchUserPublicEventsTimeline(headers);
+      const filtered = raw.filter((item) => ALLOWED_EVENT_TYPES.has(item?.type));
 
       if (filtered.length === 0) {
         throw new Error("No events returned");
       }
 
-      const nextTopId = filtered[0]?.id || null;
+      const feedSlice = filtered.slice(0, FEED_EVENT_LIMIT);
+      const nextTopId = feedSlice[0]?.id || null;
       if (previousTopEventId.current && nextTopId !== previousTopEventId.current) {
         setIsPanePulsing(true);
         window.setTimeout(() => setIsPanePulsing(false), 500);
       }
       previousTopEventId.current = nextTopId;
 
-      setEvents(filtered);
+      setFeedEvents(feedSlice);
+      setStatsTimelineEvents(filtered);
       setDidUseFallback(false);
     } catch (error) {
-      setEvents(FALLBACK_EVENTS);
+      setFeedEvents(FALLBACK_EVENTS);
+      setStatsTimelineEvents(FALLBACK_EVENTS);
       setDidUseFallback(true);
     } finally {
       setIsRefreshing(false);
@@ -184,12 +218,12 @@ export default function Hero() {
       let commits30d = 0;
       const repoSet = new Set();
 
-      for (const event of events) {
-        repoSet.add(event?.repo?.name || "unknown/repo");
+      for (const event of statsTimelineEvents) {
         const eventDate = new Date(event?.created_at).getTime();
         if (Number.isNaN(eventDate) || eventDate < thirtyDaysAgo) continue;
+        repoSet.add(event?.repo?.name || "unknown/repo");
         if (event?.type === "PushEvent") {
-          commits30d += event?.payload?.commits?.length ?? 0;
+          commits30d += pushEventCommitCount(event.payload);
         }
       }
 
@@ -205,7 +239,7 @@ export default function Hero() {
         reposActive: 0,
       };
     }
-  }, [events]);
+  }, [statsTimelineEvents]);
 
   useEffect(() => {
     try {
@@ -228,16 +262,12 @@ export default function Hero() {
   }, [fetchEvents]);
 
   return (
-    <section
-      className="bg-[#0a0a0a] text-[#e8e4dc]"
-      style={{ height: "calc(100vh - 57px)", minHeight: "600px", overflow: "hidden", display: "flex", flexDirection: "column" }}
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2">
-        <div className="flex h-full flex-col justify-between border-b border-[#1e1e1e] px-10 py-8 md:border-b-0 md:border-r">
+    <section className="bg-[#0a0a0a] text-[#e8e4dc] flex flex-col md:h-[calc(100vh-57px)] md:min-h-[600px] md:overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-2 md:flex-1 md:min-h-0">
+        <div className="hero-at-wide-left flex h-full flex-col gap-y-[50px] max-md:justify-between md:justify-start md:gap-y-16 lg:gap-y-20 overflow-hidden border-b border-[#1e1e1e] px-5 py-6 sm:px-8 sm:py-8 md:border-b-0 md:border-r md:px-10 md:py-8 lg:px-12 lg:py-10">
           <div className="space-y-8">
             <p className="font-mono text-[9px] uppercase tracking-[0.35em] text-[#444440]">
-              <span style={{ color: "#C586C0" }}>SR PRODUCT DESIGNER · 10 YEARS · </span>
-              <span style={{ color: "#C586C0" }}>DESIGN × CODE × AI</span>
+              <span style={{ color: "#C586C0" }}>SR PRODUCT DESIGNER · DESIGN × CODE × AI</span>
             </p>
 
             <h1 className="font-[Georgia,serif] text-[34px] font-normal leading-[1.02] tracking-[-0.01em] text-[#e8e4dc] md:text-[40px]">
@@ -252,41 +282,24 @@ export default function Hero() {
               Available for staff roles and freelance.
             </p>
 
-            <div className="flex flex-wrap gap-2">
-              {["FIGMA", "CLAUDE", "CURSOR", "V0", "FIRECRAWL", "VERCEL"].map((tool) => (
-                <span
-                  key={tool}
-                  className="rounded border border-[#2e2e2e] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#666660]"
-                >
-                  {tool}
-                </span>
-              ))}
+            <div className="flex flex-col gap-y-[calc(1rem+25px)]">
+              <div className="flex flex-wrap gap-2">
+                {["FIGMA", "CLAUDE", "CURSOR", "V0", "FIRECRAWL", "VERCEL"].map((tool) => (
+                  <span
+                    key={tool}
+                    className="rounded border border-[#2e2e2e] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#666660]"
+                  >
+                    {tool}
+                  </span>
+                ))}
+              </div>
+              <a
+                className="self-start inline-flex items-center gap-2 font-mono text-[11px] text-[#4ade80] tracking-[0.08em] no-underline border border-[#1a3d1a] px-4 py-2 transition-colors duration-200 hover:border-[#4ade80]"
+                href="#work"
+              >
+                VIEW WORK ↓
+              </a>
             </div>
-            <a
-              href="#work"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-                marginTop: "32px",
-                fontFamily: "monospace",
-                fontSize: "11px",
-                color: "#4ade80",
-                letterSpacing: "0.08em",
-                textDecoration: "none",
-                border: "0.5px solid #1a3d1a",
-                padding: "8px 16px",
-                transition: "border-color 0.2s, color 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#4ade80";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "#1a3d1a";
-              }}
-            >
-              VIEW WORK ↓
-            </a>
           </div>
 
           <div className="grid grid-cols-3 border border-[#1e1e1e]">
@@ -312,12 +325,11 @@ export default function Hero() {
         </div>
 
         <div
-          className={`flex max-h-[300px] flex-col bg-[#050505] md:max-h-none md:overflow-hidden transition-colors duration-500 ${
+          className={`hero-at-wide-right flex max-h-[300px] flex-col md:max-h-none md:overflow-hidden transition-colors duration-500 ${
             isPanePulsing ? "bg-[#07100a]" : "bg-[#050505]"
           }`}
-          style={{ maxHeight: "300px" }}
         >
-          <div className="flex items-center justify-between border-b border-[#0e0e0e] px-5 py-4 font-mono text-[11px] text-[#9a9a9a]">
+          <div className="hero-at-wide-github flex items-center justify-between border-b border-[#0e0e0e] px-5 py-4 sm:px-8 md:px-10 lg:px-12 font-mono text-[11px] text-[#9a9a9a]">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[#22c55e] animate-pulse" />
               <span className="uppercase tracking-[0.12em] text-[#22c55e]">LIVE</span>
@@ -327,10 +339,10 @@ export default function Hero() {
           </div>
 
           <div className="flex-1 overflow-y-auto min-h-0">
-            {events.map((event) => (
+            {feedEvents.map((event) => (
               <div
                 key={event.id}
-                className="grid grid-cols-[70px_78px_1fr] items-start gap-3 border-b border-[#0e0e0e] px-5 py-3 font-mono text-[11px] text-[#7a7a7a] opacity-100 translate-y-0 transition duration-300"
+                className="hero-at-wide-github grid grid-cols-[70px_78px_1fr] items-start gap-3 border-b border-[#0e0e0e] px-5 py-3 sm:px-8 md:px-10 lg:px-12 font-mono text-[11px] text-[#7a7a7a] opacity-100 translate-y-0 transition duration-300"
               >
                 <span>{toRelativeTime(event.created_at)}</span>
                 <span className="inline-flex w-fit rounded-full bg-[#090f09] px-2 py-[2px] text-[10px] uppercase tracking-[0.1em] text-[#1a3d1a]">
@@ -344,9 +356,9 @@ export default function Hero() {
             ))}
           </div>
 
-          <div className="flex items-center justify-between border-t border-[#0e0e0e] px-5 py-4 font-mono text-[11px] text-[#666666]">
+          <div className="hero-at-wide-github flex items-center justify-between border-t border-[#0e0e0e] px-5 py-4 sm:px-8 md:px-10 lg:px-12 font-mono text-[11px] text-[#666666]">
             <span>
-              {events.length} events {didUseFallback ? "(fallback)" : ""}
+              {feedEvents.length} events {didUseFallback ? "(fallback)" : ""}
             </span>
             <button
               type="button"

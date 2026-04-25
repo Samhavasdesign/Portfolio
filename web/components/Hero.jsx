@@ -1,9 +1,49 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion, useReducedMotion } from "framer-motion";
 
-const GITHUB_EVENTS_ENDPOINT =
-  "https://api.github.com/users/samhavasdesign/events/public?per_page=20";
+/* Hero typography lives in app/globals.css (.hero-*, --hero-fs-*) and lib/tokens.ts (hero). */
+
+const GITHUB_USERNAME = "samhavasdesign";
+/** GitHub caps a user’s public timeline at 300 events; use max pages × per_page to match. */
+const GITHUB_EVENTS_PER_PAGE = 100;
+const GITHUB_EVENTS_MAX_PAGES = 3;
+const FEED_EVENT_LIMIT = 20;
+
+function userPublicEventsUrl(page) {
+  return `https://api.github.com/users/${GITHUB_USERNAME}/events/public?per_page=${GITHUB_EVENTS_PER_PAGE}&page=${page}`;
+}
+
+async function fetchUserPublicEventsTimeline(headers) {
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  const all = [];
+  for (let page = 1; page <= GITHUB_EVENTS_MAX_PAGES; page += 1) {
+    const response = await fetch(userPublicEventsUrl(page), {
+      method: "GET",
+      headers,
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      throw new Error(`GitHub response ${response.status}`);
+    }
+    const batch = await response.json();
+    if (!Array.isArray(batch) || batch.length === 0) {
+      break;
+    }
+    all.push(...batch);
+    if (batch.length < GITHUB_EVENTS_PER_PAGE) {
+      break;
+    }
+    const oldestInPage = new Date(batch[batch.length - 1]?.created_at).getTime();
+    if (!Number.isNaN(oldestInPage) && oldestInPage < thirtyDaysAgo) {
+      break;
+    }
+  }
+  return all;
+}
 
 const ALLOWED_EVENT_TYPES = new Set([
   "PushEvent",
@@ -20,7 +60,7 @@ const FALLBACK_EVENTS = [
     type: "PushEvent",
     repo: { name: "samhavasdesign/portfolio" },
     created_at: "2026-04-24T14:05:00.000Z",
-    payload: { commits: [{ message: "Refine hero copy cadence and hierarchy" }] },
+    payload: { size: 1, commits: [{ message: "Refine hero copy cadence and hierarchy" }] },
   },
   {
     id: "fallback-2",
@@ -70,7 +110,7 @@ function getEventMessage(event) {
     if (!event) return "Activity updated";
     if (event.type === "PushEvent") {
       const commitMessage = event.payload?.commits?.[0]?.message;
-      const commitCount = event.payload?.commits?.length ?? 0;
+      const commitCount = pushEventCommitCount(event.payload);
       if (commitMessage) return commitMessage;
       return commitCount > 0 ? `${commitCount} commit(s) pushed` : "Code pushed";
     }
@@ -102,13 +142,26 @@ function getTypeLabel(type) {
   }
 }
 
+/** GitHub PushEvent truncates `payload.commits`; true count is `payload.size`. */
+function pushEventCommitCount(payload) {
+  if (!payload || typeof payload !== "object") return 0;
+  if (typeof payload.size === "number") return payload.size;
+  return Array.isArray(payload.commits) ? payload.commits.length : 0;
+}
+
 export default function Hero() {
-  const [events, setEvents] = useState(FALLBACK_EVENTS);
+  const [feedEvents, setFeedEvents] = useState(FALLBACK_EVENTS);
+  const [statsTimelineEvents, setStatsTimelineEvents] = useState(FALLBACK_EVENTS);
   const [clock, setClock] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [didUseFallback, setDidUseFallback] = useState(true);
   const [isPanePulsing, setIsPanePulsing] = useState(false);
   const previousTopEventId = useRef(FALLBACK_EVENTS[0]?.id || null);
+  const heroSectionRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
+  /** Full drift when PRM is off or unknown; opacity-only pulse when PRM is on (still “alive”, no travel). */
+  const ambientDrift = prefersReducedMotion !== true;
+  const ambientPulseOnly = prefersReducedMotion === true;
 
   const updateClock = useCallback(() => {
     try {
@@ -129,30 +182,24 @@ export default function Hero() {
       if (process.env.NEXT_PUBLIC_GITHUB_TOKEN) {
         headers.Authorization = `Bearer ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`;
       }
-      const response = await fetch(GITHUB_EVENTS_ENDPOINT, {
-        method: "GET",
-        headers,
-        cache: "no-store",
-      });
-      if (!response.ok) throw new Error(`GitHub response ${response.status}`);
-
-      const raw = await response.json();
-      const filtered = Array.isArray(raw)
-        ? raw.filter((item) => ALLOWED_EVENT_TYPES.has(item?.type))
-        : [];
+      const raw = await fetchUserPublicEventsTimeline(headers);
+      const filtered = raw.filter((item) => ALLOWED_EVENT_TYPES.has(item?.type));
       if (filtered.length === 0) throw new Error("No events returned");
 
-      const nextTopId = filtered[0]?.id || null;
+      const feedSlice = filtered.slice(0, FEED_EVENT_LIMIT);
+      const nextTopId = feedSlice[0]?.id || null;
       if (previousTopEventId.current && nextTopId !== previousTopEventId.current) {
         setIsPanePulsing(true);
         window.setTimeout(() => setIsPanePulsing(false), 500);
       }
       previousTopEventId.current = nextTopId;
 
-      setEvents(filtered);
+      setFeedEvents(feedSlice);
+      setStatsTimelineEvents(filtered);
       setDidUseFallback(false);
     } catch {
-      setEvents(FALLBACK_EVENTS);
+      setFeedEvents(FALLBACK_EVENTS);
+      setStatsTimelineEvents(FALLBACK_EVENTS);
       setDidUseFallback(true);
     } finally {
       setIsRefreshing(false);
@@ -164,18 +211,19 @@ export default function Hero() {
       const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
       let commits30d = 0;
       const repoSet = new Set();
-      for (const event of events) {
-        repoSet.add(event?.repo?.name || "unknown/repo");
+      for (const event of statsTimelineEvents) {
         const eventDate = new Date(event?.created_at).getTime();
-        if (!Number.isNaN(eventDate) && eventDate >= thirtyDaysAgo && event?.type === "PushEvent") {
-          commits30d += event?.payload?.commits?.length ?? 0;
+        if (Number.isNaN(eventDate) || eventDate < thirtyDaysAgo) continue;
+        repoSet.add(event?.repo?.name || "unknown/repo");
+        if (event?.type === "PushEvent") {
+          commits30d += pushEventCommitCount(event.payload);
         }
       }
       return { yearsExp: 10, commits30d, reposActive: repoSet.size };
     } catch {
       return { yearsExp: 10, commits30d: 0, reposActive: 0 };
     }
-  }, [events]);
+  }, [statsTimelineEvents]);
 
   useEffect(() => {
     updateClock();
@@ -189,143 +237,312 @@ export default function Hero() {
     return () => window.clearInterval(poller);
   }, [fetchEvents]);
 
+  useLayoutEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {
+      const root = heroSectionRef.current;
+      if (!root) return;
+      const reveals = root.querySelectorAll("[data-hero-reveal]");
+      if (reveals.length) {
+        gsap.set(reveals, { autoAlpha: 0, y: 28 });
+        gsap.to(reveals, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.72,
+          stagger: 0.08,
+          ease: "power3.out",
+        scrollTrigger: {
+          trigger: root,
+          start: "top bottom",
+          once: true,
+        },
+        });
+      }
+      const right = root.querySelector("[data-hero-right]");
+      if (right) {
+        gsap.set(right, { autoAlpha: 0, x: 48 });
+        gsap.to(right, {
+          autoAlpha: 1,
+          x: 0,
+          duration: 0.88,
+          ease: "power3.out",
+        scrollTrigger: {
+          trigger: right,
+          start: "top bottom",
+          once: true,
+        },
+        });
+      }
+    }, heroSectionRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
-      className="bg-[#0a0a0a] text-[#e8e4dc]"
-      style={{ height: "calc(100vh - 57px)", minHeight: "600px", overflow: "hidden" }}
+      ref={heroSectionRef}
+      className="bg-[#0a0a0a] text-[#e8e4dc] flex flex-col md:h-[calc(100vh-57px)] md:min-h-[600px] md:overflow-hidden"
     >
-      <div className="grid h-full grid-cols-1 md:grid-cols-2">
-        <div className="relative flex h-full flex-col justify-between overflow-hidden border-b border-[#1e1e1e] px-10 py-6 md:py-8 md:border-b-0 md:border-r">
-          <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-            <div className="absolute -left-24 -top-28 h-[360px] w-[360px] rounded-full bg-[#c58ad6] opacity-[0.08] blur-[90px]" />
-            <div className="absolute right-[-90px] top-[18%] h-[320px] w-[320px] rounded-full bg-[#6f8dff] opacity-[0.06] blur-[95px]" />
-            <div className="absolute left-[20%] bottom-[-120px] h-[340px] w-[340px] rounded-full bg-[#ef8bc8] opacity-[0.05] blur-[100px]" />
-            <div className="absolute right-[12%] bottom-[10%] h-[260px] w-[260px] rounded-full bg-[#4bc0bc] opacity-[0.05] blur-[90px]" />
-            <div
-              className="absolute inset-0 opacity-[0.04]"
+      <div className="grid grid-cols-1 md:grid-cols-2 md:flex-1 md:min-h-0">
+        <div className="hero-at-wide-left relative flex flex-col gap-y-[50px] max-md:justify-between md:h-full md:justify-start md:gap-y-16 lg:gap-y-20 overflow-hidden border-b border-[#1e1e1e] pb-8 md:border-b-0 md:border-r md:pb-10 lg:pb-12">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+            <motion.div
+              className="will-change-transform absolute -left-24 -top-28 h-[360px] w-[360px] rounded-full bg-[#c58ad6] opacity-[0.09] blur-[90px]"
+              initial={
+                ambientPulseOnly
+                  ? { opacity: 0.09 }
+                  : { opacity: 0.09, x: 0, y: 0, scale: 1 }
+              }
+              animate={
+                ambientDrift
+                  ? {
+                      x: [0, 26, -18, 20, 0],
+                      y: [0, -20, 16, -12, 0],
+                      scale: [1, 1.06, 1.03, 1.05, 1],
+                      opacity: [0.09, 0.12, 0.1, 0.115, 0.09],
+                    }
+                  : ambientPulseOnly
+                    ? { opacity: [0.09, 0.125, 0.095, 0.11, 0.09] }
+                    : { opacity: 0.1 }
+              }
+              transition={
+                ambientDrift
+                  ? { duration: 20, repeat: Infinity, ease: "easeInOut" }
+                  : ambientPulseOnly
+                    ? { duration: 6, repeat: Infinity, ease: "easeInOut" }
+                    : { duration: 0 }
+              }
+            />
+            <motion.div
+              className="will-change-transform absolute right-[-90px] top-[18%] h-[320px] w-[320px] rounded-full bg-[#6f8dff] opacity-[0.078] blur-[95px]"
+              initial={
+                ambientPulseOnly
+                  ? { opacity: 0.075 }
+                  : { opacity: 0.078, x: 0, y: 0, scale: 1 }
+              }
+              animate={
+                ambientDrift
+                  ? {
+                      x: [0, -28, 22, -16, 0],
+                      y: [0, 18, -14, 12, 0],
+                      scale: [1, 1.05, 1.08, 1.04, 1],
+                      opacity: [0.078, 0.1, 0.085, 0.095, 0.078],
+                    }
+                  : ambientPulseOnly
+                    ? { opacity: [0.075, 0.11, 0.085, 0.1, 0.075] }
+                    : { opacity: 0.09 }
+              }
+              transition={
+                ambientDrift
+                  ? { duration: 17, repeat: Infinity, ease: "easeInOut", delay: 0.8 }
+                  : ambientPulseOnly
+                    ? { duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
+                    : { duration: 0 }
+              }
+            />
+            <motion.div
+              className="will-change-transform absolute left-[20%] bottom-[-120px] h-[340px] w-[340px] rounded-full bg-[#ef8bc8] opacity-[0.07] blur-[100px]"
+              initial={
+                ambientPulseOnly
+                  ? { opacity: 0.065 }
+                  : { opacity: 0.07, x: 0, y: 0, scale: 1 }
+              }
+              animate={
+                ambientDrift
+                  ? {
+                      x: [0, -22, 26, -18, 0],
+                      y: [0, 14, -18, 10, 0],
+                      scale: [1, 1.07, 1.04, 1.06, 1],
+                      opacity: [0.07, 0.095, 0.08, 0.09, 0.07],
+                    }
+                  : ambientPulseOnly
+                    ? { opacity: [0.065, 0.1, 0.075, 0.09, 0.065] }
+                    : { opacity: 0.08 }
+              }
+              transition={
+                ambientDrift
+                  ? { duration: 22, repeat: Infinity, ease: "easeInOut", delay: 1.6 }
+                  : ambientPulseOnly
+                    ? { duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1.2 }
+                    : { duration: 0 }
+              }
+            />
+            <motion.div
+              className="will-change-transform absolute right-[12%] bottom-[10%] h-[260px] w-[260px] rounded-full bg-[#4bc0bc] opacity-[0.068] blur-[90px]"
+              initial={
+                ambientPulseOnly
+                  ? { opacity: 0.06 }
+                  : { opacity: 0.068, x: 0, y: 0, scale: 1 }
+              }
+              animate={
+                ambientDrift
+                  ? {
+                      x: [0, 20, -24, 14, 0],
+                      y: [0, -14, 18, -10, 0],
+                      scale: [1, 1.08, 1.05, 1.06, 1],
+                      opacity: [0.068, 0.092, 0.075, 0.088, 0.068],
+                    }
+                  : ambientPulseOnly
+                    ? { opacity: [0.06, 0.095, 0.07, 0.085, 0.06] }
+                    : { opacity: 0.075 }
+              }
+              transition={
+                ambientDrift
+                  ? { duration: 18, repeat: Infinity, ease: "easeInOut", delay: 0.4 }
+                  : ambientPulseOnly
+                    ? { duration: 6.2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }
+                    : { duration: 0 }
+              }
+            />
+            <motion.div
+              className="will-change-[opacity,background-position] absolute inset-0 bg-repeat"
               style={{
+                opacity: 0.055,
                 backgroundImage:
                   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E\")",
                 backgroundSize: "140px 140px",
               }}
+              initial={
+                ambientPulseOnly
+                  ? { opacity: 0.05, backgroundPosition: "0% 0%" }
+                  : { opacity: 0.055, backgroundPosition: "0% 0%" }
+              }
+              animate={
+                ambientDrift
+                  ? {
+                      opacity: [0.055, 0.085, 0.065, 0.078, 0.055],
+                      backgroundPosition: ["0% 0%", "120% 90%", "20% 120%", "80% 40%", "0% 0%"],
+                    }
+                  : ambientPulseOnly
+                    ? { opacity: [0.05, 0.08, 0.055, 0.07, 0.05] }
+                    : { opacity: 0.065 }
+              }
+              transition={
+                ambientDrift
+                  ? { duration: 26, repeat: Infinity, ease: "easeInOut" }
+                  : ambientPulseOnly
+                    ? { duration: 8, repeat: Infinity, ease: "easeInOut" }
+                    : { duration: 0 }
+              }
             />
           </div>
           <div className="relative z-10 space-y-6 md:space-y-8">
-            <p className="font-mono text-[9px] uppercase tracking-[0.35em] text-[#444440]">
-              <span style={{ color: "#ddb1e6" }}>SR PRODUCT DESIGNER · 10 YEARS · </span>
-              <span style={{ color: "#ddb1e6" }}>DESIGN × CODE × AI</span>
+            <p data-hero-reveal className="hero-eyebrow">
+              <span className="hero-eyebrow-accent">SR PRODUCT DESIGNER · DESIGN × CODE × AI</span>
             </p>
-            <h1 className="font-[Georgia,serif] text-[34px] font-normal leading-[1.02] tracking-[-0.01em] text-[#e8e4dc] md:text-[40px]">
+            <h1 data-hero-reveal className="hero-display">
               <span className="block">Designed it.</span>
               <span className="block">Built it.</span>
-              <span className="block text-[#f0ece4]">Shipped it.</span>
+              <span className="hero-display-highlight block">Shipped it.</span>
             </h1>
-            <p className="max-w-[56ch] font-mono text-[13px] leading-relaxed text-[#888880]">
+            <p data-hero-reveal className="hero-intro max-w-[56ch]">
               Hi, I'm Sam. I use AI across the full design process —
               research, prototyping, and production — to ship fast.
               Available for staff roles and freelance.
             </p>
-            <div className="flex flex-wrap gap-2">
-              {["FIGMA", "CLAUDE", "CURSOR", "V0", "FIRECRAWL", "VERCEL"].map((tool) => (
-                <span
-                  key={tool}
-                  className="rounded border border-[#2e2e2e] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#666660]"
-                >
-                  {tool}
-                </span>
-              ))}
+            <div data-hero-reveal className="flex flex-col gap-y-[calc(1rem+25px)]">
+              <div className="flex flex-wrap gap-2">
+                {["FIGMA", "CLAUDE", "CURSOR", "V0", "FIRECRAWL", "VERCEL"].map((tool) => (
+                  <motion.span
+                    key={tool}
+                    whileHover={{ y: -2, scale: 1.04 }}
+                    transition={{ type: "spring", stiffness: 460, damping: 22 }}
+                    className="hero-chip rounded border border-[#2e2e2e] px-2 py-1"
+                  >
+                    {tool}
+                  </motion.span>
+                ))}
+              </div>
+              <motion.a
+                className="hero-cta self-start"
+                href="#work"
+                whileHover={{ y: -3, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 480, damping: 26 }}
+              >
+                VIEW WORK ↓
+              </motion.a>
             </div>
-            <a
-              className="mt-4 md:mt-8"
-              href="#work"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-                fontFamily: "monospace",
-                fontSize: "11px",
-                color: "#4ade80",
-                letterSpacing: "0.08em",
-                textDecoration: "none",
-                border: "0.5px solid #1a3d1a",
-                padding: "8px 16px",
-                transition: "border-color 0.2s, color 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#4ade80";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "#1a3d1a";
-              }}
-            >
-              VIEW WORK ↓
-            </a>
           </div>
-          <div className="relative z-10 grid grid-cols-3 border border-[#1e1e1e]">
-            <div className="border-r border-[#1e1e1e] px-3 py-3">
-              <p className="font-mono text-[18px] text-[#e8e4dc]">{stats.yearsExp}</p>
-              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#555550]">years exp.</p>
-            </div>
-            <div className="border-r border-[#1e1e1e] px-3 py-3">
-              <p className="font-mono text-[18px] text-[#e8e4dc]">{stats.commits30d}</p>
-              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#555550]">
+          <div data-hero-reveal className="relative z-10 grid grid-cols-3 border border-[#1e1e1e]">
+            <motion.div
+              whileHover={{ y: -3 }}
+              transition={{ type: "spring", stiffness: 420, damping: 28 }}
+              className="border-r border-[#1e1e1e] px-3 py-3"
+            >
+              <p className="hero-stat-value">{stats.yearsExp}</p>
+              <p className="hero-stat-label">years exp.</p>
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -3 }}
+              transition={{ type: "spring", stiffness: 420, damping: 28 }}
+              className="border-r border-[#1e1e1e] px-3 py-3"
+            >
+              <p className="hero-stat-value">{stats.commits30d}</p>
+              <p className="hero-stat-label">
                 commits (30d)
               </p>
-            </div>
-            <div className="px-3 py-3">
-              <p className="font-mono text-[18px] text-[#e8e4dc]">{stats.reposActive}</p>
-              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#555550]">
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -3 }}
+              transition={{ type: "spring", stiffness: 420, damping: 28 }}
+              className="px-3 py-3"
+            >
+              <p className="hero-stat-value">{stats.reposActive}</p>
+              <p className="hero-stat-label">
                 repos active
               </p>
-            </div>
+            </motion.div>
           </div>
         </div>
         <div
-          className={`flex flex-col overflow-hidden transition-colors duration-500 ${isPanePulsing ? "bg-[#07100a]" : "bg-[#050505]"}`}
-          style={{
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-          }}
+          data-hero-right
+          className={`hero-at-wide-right flex flex-col overflow-hidden transition-colors duration-500 ${isPanePulsing ? "bg-[#07100a]" : "bg-[#050505]"}`}
         >
-          <div className="flex items-center justify-between border-b border-[#0e0e0e] px-10 py-4 font-mono text-[11px] text-[#9a9a9a]">
+          <div className="hero-at-wide-github hero-github hero-github-header flex items-center justify-between border-b border-[#0e0e0e] pb-4">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-[#22c55e]" />
-              <span className="uppercase tracking-[0.12em] text-[#22c55e]">LIVE</span>
-              <span className="text-[#6b6b6b]">- github.com/samhavasdesign</span>
+              <motion.span
+                className="block h-2 w-2 rounded-full bg-[#22c55e]"
+                animate={{ scale: [1, 1.25, 1], opacity: [0.45, 1, 0.45] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                aria-hidden="true"
+              />
+              <span className="hero-github-live uppercase tracking-[0.12em]">LIVE</span>
+              <span className="hero-github-dim">- github.com/samhavasdesign</span>
             </div>
-            <span className="text-[#7c7c7c]">{clock}</span>
+            <span className="hero-github-clock">{clock}</span>
           </div>
           <div>
-            {events.map((event) => (
+            {feedEvents.map((event, index) => (
               <div
                 key={event.id}
-                className="grid translate-y-0 grid-cols-[70px_78px_1fr] items-start gap-3 border-b border-[#0e0e0e] px-10 py-3 font-mono text-[11px] text-[#7a7a7a] opacity-100 transition duration-300"
+                className={`hero-at-wide-github hero-github hero-github-row ${index >= 3 ? "hidden lg:grid" : "grid"} translate-y-0 grid-cols-[70px_78px_1fr] items-start gap-3 border-b border-[#0e0e0e] py-3 lg:py-5 xl:py-6 opacity-100 transition duration-300`}
               >
                 <span>{toRelativeTime(event.created_at)}</span>
-                <span className="inline-flex w-fit rounded-full bg-[#090f09] px-2 py-[2px] text-[10px] uppercase tracking-[0.1em] text-[#1a3d1a]">
+                <span className="hero-event-pill inline-flex w-fit rounded-full bg-[#090f09] px-2 py-[2px]">
                   {getTypeLabel(event.type)}
                 </span>
                 <div className="min-w-0">
-                  <p className="truncate text-[#bdbdbd]">{event.repo?.name || "unknown/repo"}</p>
-                  <p className="truncate text-[#606060]">{getEventMessage(event)}</p>
+                  <p className="hero-github-repo truncate">{event.repo?.name || "unknown/repo"}</p>
+                  <p className="hero-github-msg truncate">{getEventMessage(event)}</p>
                 </div>
               </div>
             ))}
           </div>
-          <div className="flex items-center justify-between border-t border-[#0e0e0e] px-10 py-4 font-mono text-[11px] text-[#666666]">
+          <div className="hero-at-wide-github hero-github hero-github-footer flex items-center justify-between border-t border-[#0e0e0e] py-4">
             <span>
-              {events.length} events {didUseFallback ? "(fallback)" : ""}
+                {feedEvents.length} events {didUseFallback ? "(fallback)" : ""}
             </span>
-            <button
+            <motion.button
               type="button"
               onClick={fetchEvents}
               disabled={isRefreshing}
-              className="rounded border border-[#1e1e1e] px-2 py-1 uppercase tracking-[0.1em] text-[#8a8a8a] transition duration-300 hover:translate-y-[1px] hover:text-[#c2c2c2] disabled:cursor-not-allowed disabled:opacity-60"
+              whileHover={isRefreshing ? undefined : { y: -2, scale: 1.03 }}
+              whileTap={isRefreshing ? undefined : { scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 500, damping: 28 }}
+              className="hero-refresh transition duration-300"
             >
               {isRefreshing ? "refreshing..." : "refresh"}
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>

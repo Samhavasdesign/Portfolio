@@ -3,6 +3,24 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Grid — horizontal margin and hero top inset per breakpoint */
+  --grid-margin: 1.25rem;    /* 20px  mobile      */
+  --hero-top-inset: 3.75rem; /* 60px  all sizes   */
+
+  /* Hero type scale — keep in sync with `lib/tokens.ts` → `hero` */
+  --font-hero-serif: Georgia, "Times New Roman", serif;
+  --font-hero-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --hero-fs-eyebrow: 12px;
+  --hero-fs-display: 38px;
+  --hero-fs-display-md: 44px;
+  --hero-fs-intro: 15px;
+  --hero-fs-chip: 12px;
+  --hero-fs-cta: 13px;
+  --hero-fs-stat-value: 22px;
+  --hero-fs-stat-label: 12px;
+  --hero-fs-github: 13px;
+  --hero-fs-event-pill: 12px;
 }
 
 @theme inline {
@@ -25,4 +43,182 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
+}
+
+/* ── Hero (home) typography — used by components/Hero.jsx ───────────── */
+.hero-eyebrow {
+  font-family: var(--font-hero-mono);
+  font-size: var(--hero-fs-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  color: #444440;
+}
+
+.hero-eyebrow-accent {
+  color: #ddb1e6;
+}
+
+.hero-display {
+  font-family: var(--font-hero-serif);
+  font-size: var(--hero-fs-display);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  color: #e8e4dc;
+}
+
+@media (min-width: 768px) {
+  .hero-display {
+    font-size: var(--hero-fs-display-md);
+  }
+}
+
+.hero-display-highlight {
+  color: #f0ece4;
+}
+
+.hero-intro {
+  font-family: var(--font-hero-mono);
+  font-size: var(--hero-fs-intro);
+  line-height: 1.625;
+  color: #888880;
+}
+
+.hero-chip {
+  font-family: var(--font-hero-mono);
+  font-size: var(--hero-fs-chip);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #848480;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-hero-mono);
+  font-size: var(--hero-fs-cta);
+  letter-spacing: 0.08em;
+  color: #4ade80;
+  text-decoration: none;
+  border: 0.5px solid #1a3d1a;
+  padding: 8px 16px;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+
+.hero-cta:hover {
+  border-color: #4ade80;
+}
+
+.hero-stat-value {
+  font-family: var(--font-hero-mono);
+  font-size: var(--hero-fs-stat-value);
+  color: #e8e4dc;
+}
+
+.hero-stat-label {
+  font-family: var(--font-hero-mono);
+  font-size: var(--hero-fs-stat-label);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #848480;
+}
+
+.hero-github {
+  font-family: var(--font-hero-mono);
+  font-size: var(--hero-fs-github);
+}
+
+.hero-github-header {
+  color: #9a9a9a;
+}
+
+.hero-github-row {
+  color: #7a7a7a;
+}
+
+.hero-github-footer {
+  color: #828282;
+}
+
+.hero-github-live {
+  color: #22c55e;
+}
+
+.hero-github-dim {
+  color: #828282;
+}
+
+.hero-github-clock {
+  color: #7c7c7c;
+}
+
+.hero-event-pill {
+  font-family: var(--font-hero-mono);
+  font-size: var(--hero-fs-event-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #4a8c4a;
+}
+
+.hero-github-repo {
+  color: #bdbdbd;
+}
+
+.hero-github-msg {
+  color: #7a7a7a;
+}
+
+.hero-refresh {
+  font-family: var(--font-hero-mono);
+  font-size: var(--hero-fs-github);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #8a8a8a;
+  border: 0.5px solid #1e1e1e;
+  background: transparent;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.hero-refresh:hover:not(:disabled) {
+  color: #c2c2c2;
+}
+
+.hero-refresh:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (min-width: 640px) {
+  :root { --grid-margin: 2rem; }       /* 32px  sm+  */
+}
+
+@media (min-width: 1024px) {
+  :root { --grid-margin: 3rem; }       /* 48px  lg+  */
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --grid-margin: 7.1875rem;          /* 115px wide */
+    --hero-top-inset: 6.25rem;         /* 100px wide */
+  }
+}
+
+.hero-at-wide-left {
+  padding-left: var(--grid-margin);
+  padding-right: var(--grid-margin);
+  padding-top: var(--hero-top-inset);
+}
+
+.hero-at-wide-right {
+  padding-top: var(--hero-top-inset);
+}
+
+.hero-at-wide-github {
+  padding-left: var(--grid-margin);
+  padding-right: var(--grid-margin);
 }

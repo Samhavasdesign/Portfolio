@@ -62,19 +62,19 @@ export default function Nav() {
           justifyContent: "space-between",
         }}
       >
-        <span
-          className="whitespace-nowrap"
-          style={{
-            fontFamily: "monospace",
-            fontSize: "12px",
-            fontWeight: "500",
-            color: "#e8e4dc",
-            letterSpacing: "0.14em",
-            flexShrink: 0,
-          }}
+        <a
+          href="/"
+          className="inline-flex shrink-0 items-center"
+          style={{ flexShrink: 0 }}
+          aria-label="Samantha Havas home"
         >
-          SAMANTHA HAVAS
-        </span>
+          <img
+            src="/samantha-havas-logo.png"
+            alt="Samantha Havas logo"
+            className="block h-7 w-auto max-w-[140px] object-contain object-left md:h-8 md:max-w-[180px]"
+            decoding="async"
+          />
+        </a>
 
         <div className="hidden md:flex gap-6" style={{ alignItems: "center" }}>
           <a
