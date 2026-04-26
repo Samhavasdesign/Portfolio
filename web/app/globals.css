@@ -425,6 +425,30 @@ h3 {
   flex-shrink: 0;
 }
 
+.client-logo-marquee-logo--amex {
+  width: clamp(3rem, 5.2vw, 4rem);
+  height: auto;
+  max-width: none;
+}
+
+.client-logo-marquee-logo--bu {
+  width: clamp(3.7rem, 6.2vw, 4.9rem);
+  height: auto;
+  max-width: none;
+}
+
+.client-logo-marquee-logo--sarankco {
+  width: clamp(2.8rem, 4.7vw, 3.65rem);
+  height: auto;
+  max-width: none;
+}
+
+.client-logo-marquee-logo--fmc {
+  width: clamp(3.55rem, 5.9vw, 4.6rem);
+  height: auto;
+  max-width: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .client-logo-marquee-track {
     animation: none;
@@ -631,8 +655,8 @@ h3 {
 }
 
 .nav-root[data-scrolled="true"] {
-  background: rgba(10, 10, 10, 0.85);
-  backdrop-filter: blur(12px);
+  background: var(--c-bg);
+  backdrop-filter: none;
 }
 
 .nav-inner {
@@ -731,6 +755,12 @@ h3 {
   color: var(--c-text);
   letter-spacing: -0.02em;
   line-height: 1.35;
+}
+
+.card-title--sesame {
+  font-size: 22px;
+  color: #fff;
+  padding-top: 4px;
 }
 
 .card-meta {

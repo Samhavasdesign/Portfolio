@@ -11,6 +11,7 @@ const MotionLink = motion.create(Link);
 /** @param {{ project: CaseStudy, linkPrefix?: string }} props */
 export default function WorkGridCard({ project, linkPrefix = "/work" }) {
   const [imgFailed, setImgFailed] = useState(false);
+  const isSesameCard = project.slug === "sesame";
 
   return (
     <MotionLink
@@ -53,7 +54,13 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
       </div>
 
       <div className="card-body">
-        <p className="card-title mb-1.5">{project.company}</p>
+        {isSesameCard ? (
+          <h3 className="card-title card-title--sesame mb-1.5">
+            Social-Emotional Learning App
+          </h3>
+        ) : (
+          <p className="card-title mb-1.5">{project.company}</p>
+        )}
         <p className="card-meta mb-3">{project.role} · {project.year}</p>
         <p className="card-summary mb-4">{project.summary}</p>
 
@@ -64,11 +71,21 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
         </div>
 
         <div
-          className="flex items-baseline gap-2 pt-4"
+          className="flex items-end justify-between gap-2 pt-4"
           style={{ borderTop: "0.5px solid var(--c-border)" }}
         >
-          <span className="card-metric-value">{project.metric}</span>
-          <span className="card-metric-label">{project.metricLabel}</span>
+          <div className="flex items-baseline gap-2">
+            <span className="card-metric-value">{project.metric}</span>
+            <span className="card-metric-label">{project.metricLabel}</span>
+          </div>
+          {isSesameCard && (
+            <img
+              src="/clientlogos/sesame_street_white.svg"
+              alt="Sesame Street"
+              className="h-7 w-auto object-contain opacity-90"
+              decoding="async"
+            />
+          )}
         </div>
       </div>
     </MotionLink>
