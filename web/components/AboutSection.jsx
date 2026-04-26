@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, useReducedMotion } from "framer-motion";
@@ -105,21 +106,27 @@ export default function AboutSection() {
 
             <p>I&apos;m most at home in 0 → 1—where things are messy, undefined, and a little chaotic.</p>
 
-            <p>Based between New York and Cape Town.</p>
+            <p>Between New York and Rhode Island. Usually remote. Often elsewhere.</p>
             <p>Available for select projects.</p>
           </div>
         </div>
 
-        <aside className="about-portrait-col" aria-label="Portrait placeholder" data-about-reveal>
+        <aside className="about-portrait-col" aria-label="Portrait of Samantha Havas" data-about-reveal>
           <motion.div
             className="about-portrait-card"
             data-about-portrait
             whileHover={prefersReducedMotion ? undefined : { y: -4, scale: 1.01 }}
             transition={{ type: "spring", stiffness: 360, damping: 28 }}
           >
-            <div className="about-portrait-glow" aria-hidden="true" />
             <div className="about-portrait-inner">
-              <p className="about-portrait-label">Portrait coming soon</p>
+              <Image
+                src="/images/about-portrait.png"
+                alt="Samantha Havas portrait"
+                width={949}
+                height={949}
+                className="about-portrait-image"
+                sizes="(min-width: 768px) 34vw, (min-width: 480px) 66vw, 92vw"
+              />
             </div>
           </motion.div>
         </aside>

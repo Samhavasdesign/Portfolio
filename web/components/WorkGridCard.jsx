@@ -12,6 +12,7 @@ const MotionLink = motion.create(Link);
 export default function WorkGridCard({ project, linkPrefix = "/work" }) {
   const [imgFailed, setImgFailed] = useState(false);
   const isSesameCard = project.slug === "sesame";
+  const isHomerCard = project.slug === "homer";
 
   return (
     <MotionLink
@@ -55,8 +56,12 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
 
       <div className="card-body">
         {isSesameCard ? (
-          <h3 className="card-title card-title--sesame mb-1.5">
-            Social-Emotional Learning App
+          <h3 className="card-title mb-1.5">
+            0 → 1 Social-Emotional Learning App
+          </h3>
+        ) : isHomerCard ? (
+          <h3 className="card-title mb-1.5">
+            EdTech Mobile App Redesign
           </h3>
         ) : (
           <p className="card-title mb-1.5">{project.company}</p>
@@ -64,25 +69,27 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
         <p className="card-meta mb-3">{project.role} · {project.year}</p>
         <p className="card-summary mb-4">{project.summary}</p>
 
-        <div className="mb-4 flex flex-wrap gap-1.5">
+        <div className="mt-6 mb-4 flex flex-wrap gap-1.5">
           {project.tags.map((tag) => (
             <span key={tag} className="card-tag">{tag.toUpperCase()}</span>
           ))}
         </div>
 
         <div
-          className="flex items-end justify-between gap-2 pt-4"
+          className={`flex items-end gap-2 pt-4 ${isSesameCard ? "justify-end" : "justify-between"}`}
           style={{ borderTop: "0.5px solid var(--c-border)" }}
         >
-          <div className="flex items-baseline gap-2">
-            <span className="card-metric-value">{project.metric}</span>
-            <span className="card-metric-label">{project.metricLabel}</span>
-          </div>
-          {isSesameCard && (
+          {!isSesameCard && (
+            <div className="flex items-baseline gap-2">
+              <span className="card-metric-value">{project.metric}</span>
+              <span className="card-metric-label">{project.metricLabel}</span>
+            </div>
+          )}
+          {(isSesameCard || isHomerCard) && (
             <img
-              src="/clientlogos/sesame_street_white.svg"
-              alt="Sesame Street"
-              className="h-7 w-auto object-contain opacity-90"
+              src={isSesameCard ? "/clientlogos/sesame_street_white.svg" : "/clientlogos/homer_cropped.svg"}
+              alt={isSesameCard ? "Sesame Street" : "Homer"}
+              className={`${isHomerCard ? "h-6" : "h-7"} w-auto object-contain opacity-90`}
               decoding="async"
             />
           )}

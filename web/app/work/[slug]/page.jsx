@@ -120,7 +120,7 @@ export default function CaseStudyPage({ params }) {
             <>
               <Section id="overview">
                 <Eyebrow>Overview</Eyebrow>
-                <Title>Sesame Street needed a social-emotional learning app for children ages 2–6. Homer had the platform. I had 6 months to make it real.</Title>
+                <Title>A social-emotional learning app for children ages 2–6, built in partnership with Sesame Workshop. Homer had the platform. I had 6 months to make it real.</Title>
 
                 <TwoCol>
                   <div>

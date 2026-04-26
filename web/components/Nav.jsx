@@ -6,6 +6,19 @@ import { MenuToggleIcon } from "@/components/ui/menu-toggle-icon";
 import ContactModal from "@/components/ContactModal";
 
 const NAV_LINKS = ["Work", "AI Lab", "Resume", "About"];
+const RESUME_PATH = "/SamanthaHavas_SeniorProductDesigner_Resume.pdf";
+
+function getNavLinkProps(label) {
+  if (label === "Resume") {
+    return {
+      href: RESUME_PATH,
+      target: "_blank",
+      rel: "noopener noreferrer",
+    };
+  }
+
+  return { href: `#${label.toLowerCase()}` };
+}
 
 export default function Nav() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -49,7 +62,7 @@ export default function Nav() {
           {NAV_LINKS.map((label, i) => (
             <span key={label} className="contents">
               {i > 0 && <span className="nav-separator" aria-hidden>·</span>}
-              <a href={`#${label.toLowerCase()}`} className="nav-link">{label}</a>
+              <a {...getNavLinkProps(label)} className="nav-link">{label}</a>
             </span>
           ))}
         </div>
@@ -78,7 +91,7 @@ export default function Nav() {
         {NAV_LINKS.map((label) => (
           <a
             key={label}
-            href={`#${label.toLowerCase()}`}
+            {...getNavLinkProps(label)}
             className="nav-mobile-link"
             onClick={() => setMobileOpen(false)}
           >
