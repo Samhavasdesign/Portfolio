@@ -512,7 +512,7 @@ export default function Hero() {
             </p>
             <div data-hero-reveal className="flex flex-col gap-y-[calc(1rem+18px)] md:gap-y-[calc(1rem+12px)]">
               <div className="flex flex-wrap gap-2">
-                {["FIGMA", "CLAUDE", "CURSOR", "V0", "FIRECRAWL", "VERCEL"].map((tool) => (
+                {["FIGMA", "CLAUDE", "CURSOR", "V0", "GITHUB", "VERCEL"].map((tool) => (
                   <motion.span
                     key={tool}
                     whileHover={{ y: -2, scale: 1.04 }}

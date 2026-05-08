@@ -365,7 +365,7 @@ export default function Hero() {
 
             <div className="flex flex-col gap-y-[calc(1rem+18px)] md:gap-y-[calc(1rem+12px)]">
               <div className="flex flex-wrap gap-2">
-                {["FIGMA", "CLAUDE", "CURSOR", "V0", "FIRECRAWL", "VERCEL"].map((tool) => (
+                {["FIGMA", "CLAUDE", "CURSOR", "V0", "GITHUB", "VERCEL"].map((tool) => (
                   <span
                     key={tool}
                     className="rounded border border-[#2e2e2e] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#666660]"
