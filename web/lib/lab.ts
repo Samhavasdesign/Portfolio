@@ -4,12 +4,13 @@ export const labProjects: CaseStudy[] = [
   {
     slug: "flight-finder",
     company: "Flight Finder",
-    role: "Firecrawl · Claude · Vercel",
+    role: "Scraping · Claude · Vercel",
     year: "2025",
-    tags: ["AI", "Firecrawl", "Travel"],
+    tags: ["AI", "Scraping", "Travel"],
     metric: "< 1 day",
     metricLabel: "build to deploy",
-    summary: "A Firecrawl + Claude pipeline that scrapes airline deals and surfaces them in a clean, scannable UI.",
+    summary:
+      "A Claude-assisted scrape pipeline that pulls airline deals and surfaces them in a clean, scannable UI.",
     thumbnail: "/images/lab/flight-finder-thumb.jpg",
     readTime: "",
     protected: false,
