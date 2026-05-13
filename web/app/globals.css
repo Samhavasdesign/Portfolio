@@ -997,6 +997,16 @@ h3 {
   }
 }
 
+.case-study-list {
+  margin: 0 0 24px;
+  padding-left: 1.25em;
+  max-width: 680px;
+}
+
+.case-study-list > li + li {
+  margin-top: 10px;
+}
+
 .case-study-two-col {
   display: grid;
   grid-template-columns: 1fr;

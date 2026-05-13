@@ -111,13 +111,35 @@ export default function Sesame() {
 
         <P>The submenu system went through two full redesigns. The first version used illustrated background scenes with tappable characters — children froze, confused about whether the background was a video. We scrapped it entirely.</P>
 
+        <Sub>Prototype testing questions</Sub>
+        <P>We tested the prototype with children ages 3–4 to better understand how pre-literate users interpreted the navigation system and interacted with the environment.</P>
+        <P>We specifically wanted to learn:</P>
+        <ul className="section-subtext case-study-list">
+          <li>Do children understand that buildings and characters are tappable?</li>
+          <li>Do they navigate using spatial memory or visual detail?</li>
+          <li>Are illustrated backgrounds perceived as interactive or passive?</li>
+          <li>Can children independently return to previously viewed content?</li>
+          <li>How much visual complexity is too much before interaction clarity breaks down?</li>
+        </ul>
+        <P>The results fundamentally changed the product direction.</P>
+
         <VersionLabel type="fail">Version 1 — failed in prototype testing</VersionLabel>
+
         <ImgBlock id="12" label="First submenu iteration — illustrated backgrounds (killed)" caption="Three location submenu screens from the first version of the submenu navigation. Children confused interactive elements with video." cols={3} srcs={['/images/work/sesame-img-12-01.jpg', '/images/work/sesame-img-12-02.jpg', '/images/work/sesame-img-12-03.jpg']} />
+
+        <P>The first submenu prototypes used richly illustrated interactive environments designed to feel immersive and playful. In testing, the opposite happened.</P>
+        <P>Children often struggled to distinguish interactive elements from decorative scenery. Several users attempted to tap background objects repeatedly, while others ignored important navigation cues entirely.</P>
+        <P>One child froze completely after entering the submenu because she believed the environment was a passive video rather than an interactive screen.</P>
+        <P>The testing revealed that visual richness was competing directly with usability.</P>
 
         <P>The second version used a minimalist monochrome background to separate it visually from the main menu, with horizontally scrolling content buttons featuring icons and titles for parent legibility.</P>
 
         <VersionLabel type="success">Version 2 — shipped</VersionLabel>
+
         <ImgBlock id="13" label="Before/after submenu redesign" caption="Pages 5–6 — before showing the cluttered illustrated submenu, after showing the clean monochrome version. Three location submenu screens showing the redesigned clean monochrome version that made it into production." cols={3} srcs={['/images/work/sesame-img-13-01.jpg', '/images/work/sesame-img-13-02.jpg', '/images/work/sesame-img-13-03.jpg']} />
+
+        <P>To reduce cognitive load, we simplified the visual hierarchy dramatically. The redesigned submenu system separated background environments from tappable content, introduced horizontally scrolling content cards, and reduced the number of simultaneous interaction targets on screen.</P>
+        <P>The result was visually less ambitious, but significantly easier for children to understand and navigate independently.</P>
 
         <ImgBlock id="16" label="Sequential content flow model" caption="Content flow from unit menu through connective tissue and payoff screens." cols={1} aspect="4/3" src="/images/work/sesame-objective-03.jpg" hug={true} />
         <P>Navigation between content pieces used an autoplay system with gentle nudges, payoff moments, and connective menus — guiding children through a themed sequence without requiring decisions at every step.</P>
