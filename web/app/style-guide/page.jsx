@@ -157,8 +157,8 @@ export default function StyleGuide() {
               <FsRow token="--fs-ui"         value="16px"  usage="Chatbot send button · iOS zoom-safe minimum for interactive inputs" />
               <FsRow token="--fs-card-title" value="19px"  usage="WorkGridCard title (company name)" />
               <FsRow token="--fs-metric"     value="24px"  usage="WorkGridCard metric value" />
-              <FsRow token="--fs-heading-2"  value="34px"  usage="h2 global, .section-heading (scales to 38px / 36px at 768px)" />
-              <FsRow token="--fs-heading-3"  value="26px"  usage="h3 global (scales to 30px at 768px)" />
+              <FsRow token="--fs-heading-2"  value="clamp(22px, 4vw, 38px)"  usage="h2 global, .section-heading — fluid from 22px (mobile) to 38px (wide)" />
+              <FsRow token="--fs-heading-3"  value="clamp(18px, 3vw, 30px)"  usage="h3 global — fluid from 18px (mobile) to 30px (wide)" />
             </div>
           </Row>
 
@@ -208,11 +208,11 @@ export default function StyleGuide() {
           <Row label="Global headings">
             <div>
               <h2 style={{ margin: 0 }}>Section heading h2</h2>
-              <Token label="h2 · --fs-heading-2 (34px) / 38px at 768px · Georgia · lh 1.08" />
+              <Token label="h2 · --fs-heading-2 · clamp(22px, 4vw, 38px) · Georgia · lh 1.08" />
             </div>
             <div>
               <h3 style={{ margin: 0 }}>Sub-heading h3</h3>
-              <Token label="h3 · --fs-heading-3 (26px) / 30px at 768px · Georgia · lh 1.14" />
+              <Token label="h3 · --fs-heading-3 · clamp(18px, 3vw, 30px) · Georgia · lh 1.14" />
             </div>
           </Row>
 

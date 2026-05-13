@@ -45,8 +45,8 @@
   --fs-ui:         16px;
   --fs-card-title: 19px;
   --fs-metric:     24px;
-  --fs-heading-2:  34px;
-  --fs-heading-3:  26px;
+  --fs-heading-2:  clamp(22px, 4vw, 38px);
+  --fs-heading-3:  clamp(18px, 3vw, 30px);
 
   /* ── Line height ─────────────────────────────────────────────────── */
   --lh-tight:   1.2;
@@ -177,15 +177,6 @@ h3 {
   line-height: 1.14;
 }
 
-@media (min-width: 768px) {
-  h2 {
-    font-size: 38px;
-  }
-
-  h3 {
-    font-size: 30px;
-  }
-}
 
 .hero-intro {
   font-family: var(--font-hero-mono);
@@ -975,6 +966,94 @@ h3 {
   box-shadow: 0 0 0 1000px var(--c-border) inset;
   border-color: var(--c-border-bright);
   transition: background-color 9999s ease-out 0s;
+}
+
+/* ── Case study page layout ──────────────────────────────────────── */
+.case-study-layout {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.case-study-content {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding: var(--section-pad-y) var(--grid-margin);
+}
+
+@media (min-width: 768px) {
+  .case-study-layout {
+    flex-direction: row;
+    gap: 80px;
+    padding: var(--section-pad-y) var(--grid-margin);
+  }
+
+  .case-study-content {
+    padding: 0;
+    width: auto;
+  }
+}
+
+.case-study-two-col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+@media (min-width: 768px) {
+  .case-study-two-col {
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+}
+
+.case-study-meta-strip {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 24px 32px;
+  padding-top: 32px;
+  border-top: 0.5px solid var(--c-border);
+  width: fit-content;
+}
+
+@media (min-width: 640px) {
+  .case-study-meta-strip {
+    grid-template-columns: repeat(4, auto);
+    gap: 48px;
+  }
+}
+
+.case-study-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  margin: 40px 0;
+}
+
+@media (min-width: 640px) {
+  .case-study-stat-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.case-study-img-grid {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .case-study-img-grid[data-cols="2"] {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .case-study-img-grid[data-cols="3"] {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
 
 /* ── Footer ───────────────────────────────────────────────────────── */

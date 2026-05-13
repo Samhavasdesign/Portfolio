@@ -11,6 +11,12 @@ export type CaseStudy = {
   readTime: string;
   protected: boolean;
   sections: { id: string; label: string }[];
+  // Optional hero overrides — fall back to summary / company+role+year if omitted
+  headline?: string;
+  heroImage?: string;
+  heroAlt?: string;
+  heroEyebrow?: string;
+  metaItems?: { label: string; value: string }[];
 };
 
 export const caseStudies: CaseStudy[] = [
@@ -48,6 +54,8 @@ export const caseStudies: CaseStudy[] = [
     thumbnail: '/images/work/homer-thumb.png',
     readTime: '10 min read',
     protected: false,
+    headline: 'Redesigning how children ages 2–6 learn, play, and grow.',
+    heroEyebrow: 'Case study · iOS & Android App',
     sections: [
       { id: 'overview', label: 'Overview' },
       { id: 'research', label: 'Research' },
@@ -70,6 +78,16 @@ export const caseStudies: CaseStudy[] = [
     thumbnail: '/images/work/sesame-thumb.jpg',
     readTime: '8 min read',
     protected: false,
+    headline: 'Redesigning how children ages 2–6 learn to feel, connect, and grow.',
+    heroImage: '/images/work/sesame-hero.jpg',
+    heroAlt: 'Parent and child using tablet for learning',
+    heroEyebrow: 'Case study · iOS & Android App',
+    metaItems: [
+      { label: 'Company', value: 'Homer × Sesame Workshop' },
+      { label: 'Role', value: 'Lead Product Designer' },
+      { label: 'Timeline', value: '6 months · 2021' },
+      { label: 'Platform', value: 'iOS · Android · Web' },
+    ],
     sections: [
       { id: 'overview', label: 'Overview' },
       { id: 'research', label: 'Research' },

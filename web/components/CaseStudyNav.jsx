@@ -77,7 +77,7 @@ export default function CaseStudyNav({ sections, readTime }) {
               minWidth: 'unset',
             }}
           >
-            {label.toUpperCase()}
+            {label}
           </button>
         ))}
 
@@ -117,18 +117,17 @@ export default function CaseStudyNav({ sections, readTime }) {
       >
         <span style={{
           fontFamily: 'var(--font-mono)',
-          fontSize: 'var(--fs-sm)',
+          fontSize: 'var(--fs-body)',
           color: 'var(--c-purple)',
           letterSpacing: 'var(--ls-wide)',
-          textTransform: 'uppercase',
         }}>
-          {sections.find(s => s.id === activeSection)?.label?.toUpperCase()}
+          {sections.find(s => s.id === activeSection)?.label}
         </span>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: 'var(--fs-sm)',
+            fontSize: 'var(--fs-body)',
             color: 'var(--c-text-3)',
             background: 'none',
             border: 'none',
@@ -138,7 +137,7 @@ export default function CaseStudyNav({ sections, readTime }) {
             minWidth: 'unset',
           }}
         >
-          {mobileOpen ? 'CLOSE ×' : 'SECTIONS ↓'}
+          {mobileOpen ? 'Close ×' : 'Sections ↓'}
         </button>
 
         {mobileOpen && (
@@ -173,7 +172,7 @@ export default function CaseStudyNav({ sections, readTime }) {
                   minWidth: 'unset',
                 }}
               >
-                {label.toUpperCase()}
+                {label}
               </button>
             ))}
           </div>
