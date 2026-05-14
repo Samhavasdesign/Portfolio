@@ -6,9 +6,15 @@ import { caseStudies } from '@/lib/work';
 import { Section, Eyebrow, Title, P, ImgBlock } from '@/components/case-studies/CaseStudyShared';
 import Sesame from '@/components/case-studies/Sesame';
 import Homer from '@/components/case-studies/Homer';
+import AngiSlab from '@/components/case-studies/AngiSlab';
+import AngiUgc from '@/components/case-studies/AngiUgc';
+import HomerWebsite from '@/components/case-studies/HomerWebsite';
 
 // Register case study components here. Slugs not listed fall back to the placeholder.
 const REGISTRY = {
+  angislab: AngiSlab,
+  angiugc: AngiUgc,
+  homerwebsite: HomerWebsite,
   sesame: Sesame,
   homer: Homer,
 };

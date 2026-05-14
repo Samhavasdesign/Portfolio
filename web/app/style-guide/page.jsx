@@ -155,7 +155,7 @@ export default function StyleGuide() {
               <FsRow token="--fs-base"       value="14px"  usage="Nav, section eyebrow/meta, card meta/summary/tag/label, chatbot sub/prompts/toggle" />
               <FsRow token="--fs-body"       value="15px"  usage="Section subtext, nav mobile links, chatbot messages/input, hero intro" />
               <FsRow token="--fs-ui"         value="16px"  usage="Chatbot send button · iOS zoom-safe minimum for interactive inputs" />
-              <FsRow token="--fs-card-title" value="19px"  usage="WorkGridCard title (company name)" />
+              <FsRow token="--fs-card-title" value="22px"  usage="WorkGridCard title (company name)" />
               <FsRow token="--fs-metric"     value="24px"  usage="WorkGridCard metric value" />
               <FsRow token="--fs-heading-2"  value="clamp(22px, 4vw, 38px)"  usage="h2 global, .section-heading — fluid from 22px (mobile) to 38px (wide)" />
               <FsRow token="--fs-heading-3"  value="clamp(18px, 3vw, 30px)"  usage="h3 global — fluid from 18px (mobile) to 30px (wide)" />

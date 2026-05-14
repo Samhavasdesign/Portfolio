@@ -1,2 +1,4 @@
 # Hoisted tooling deps when repo root is the workspace (see root package.json)
 /node_modules
+
+.DS_Store

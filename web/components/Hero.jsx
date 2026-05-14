@@ -471,7 +471,7 @@ export default function Hero() {
           </div>
           <div className="relative z-10 space-y-5 md:space-y-6">
             <p data-hero-reveal className="hero-eyebrow">
-              <span className="hero-eyebrow-accent">PRODUCT DESIGNER · AI-NATIVE</span>
+              <span className="hero-eyebrow-accent">IC PRODUCT DESIGNER · AI-NATIVE</span>
             </p>
             <h1 data-hero-reveal className="hero-display">
               <span className="block">0 → 1 products.</span>

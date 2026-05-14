@@ -7,6 +7,7 @@ import ClientLogoMarquee from "@/components/ClientLogoMarquee";
 import Footer from "@/components/Footer";
 import WorkGrid from "@/components/WorkGrid";
 import { labProjects } from "@/lib/lab";
+import { caseStudies } from "@/lib/work";
 
 export default function Home() {
   return (
@@ -15,7 +16,7 @@ export default function Home() {
       <Nav />
       <Hero />
       <ClientLogoMarquee />
-      <WorkGrid />
+      <WorkGrid projects={caseStudies} />
       <WorkGrid
         title="AI Lab Experiments"
         meta={`${labProjects.length} PROJECTS · 2025`}

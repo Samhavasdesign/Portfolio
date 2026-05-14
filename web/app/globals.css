@@ -43,7 +43,7 @@
   --fs-base:       14px;
   --fs-body:       15px;
   --fs-ui:         16px;
-  --fs-card-title: 19px;
+  --fs-card-title: 22px;
   --fs-metric:     24px;
   --fs-heading-2:  clamp(22px, 4vw, 38px);
   --fs-heading-3:  clamp(18px, 3vw, 30px);
@@ -736,7 +736,7 @@ h3 {
 }
 
 .card-title--sesame {
-  font-size: 22px;
+  font-size: 25px;
   color: #fff;
   padding-top: 4px;
 }
@@ -760,6 +760,10 @@ h3 {
   font-size: var(--fs-metric);
   color: var(--c-text);
   font-weight: 400;
+}
+
+.card-metric-value--sesame {
+  color: #fff;
 }
 
 .card-metric-label {

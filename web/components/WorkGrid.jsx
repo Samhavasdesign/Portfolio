@@ -8,11 +8,12 @@ import WorkGridCard from "@/components/WorkGridCard";
 
 export default function WorkGrid({
   title = "Selected work",
-  meta = "6 PROJECTS · 2016–2025",
+  meta,
   projects = caseStudies,
   id = "work",
   linkPrefix = "/work",
 }) {
+  const sectionMeta = meta ?? `${projects.length} PROJECTS · 2016–2025`;
   const rootRef = useRef(null);
   const headerRef = useRef(null);
   const gridRef = useRef(null);
@@ -69,7 +70,7 @@ export default function WorkGrid({
           className="mb-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-4 lg:mb-14"
         >
           <h2 className="section-heading">{title}</h2>
-          <span className="section-meta">{meta}</span>
+          <span className="section-meta">{sectionMeta}</span>
         </div>
 
         <div

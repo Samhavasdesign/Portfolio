@@ -13,6 +13,9 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
   const [imgFailed, setImgFailed] = useState(false);
   const isSesameCard = project.slug === "sesame";
   const isHomerCard = project.slug === "homer";
+  const isHomerWebsiteCard = project.slug === "homerwebsite";
+  const isAngislabCard = project.slug === "angislab";
+  const isAngiugcCard = project.slug === "angiugc";
 
   return (
     <MotionLink
@@ -63,6 +66,18 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
           <h3 className="card-title mb-1.5">
             EdTech App Redesign &amp; Rebrand
           </h3>
+        ) : isHomerWebsiteCard ? (
+          <h3 className="card-title mb-1.5">
+            Homer Marketing Site Redesign
+          </h3>
+        ) : isAngislabCard ? (
+          <h3 className="card-title mb-1.5">
+            Growth Platform &amp; Design Systems
+          </h3>
+        ) : isAngiugcCard ? (
+          <h3 className="card-title mb-1.5">
+            Ask a Pro Q&amp;A + UGC Web Components
+          </h3>
         ) : (
           <p className="card-title mb-1.5">{project.company}</p>
         )}
@@ -76,20 +91,46 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
         </div>
 
         <div
-          className={`flex items-end gap-2 pt-4 ${isSesameCard ? "justify-end" : "justify-between"}`}
+          className="flex items-end gap-2 justify-between pt-4"
           style={{ borderTop: "0.5px solid var(--c-border)" }}
         >
-          {!isSesameCard && (
-            <div className="flex items-baseline gap-2">
-              <span className="card-metric-value">{project.metric}</span>
-              <span className="card-metric-label">{project.metricLabel}</span>
-            </div>
-          )}
-          {(isSesameCard || isHomerCard) && (
+          <div
+            className={
+              isSesameCard
+                ? "flex min-w-0 flex-1 items-start gap-2 pr-2"
+                : "flex items-baseline gap-2"
+            }
+          >
+            <span
+              className={
+                isSesameCard
+                  ? "card-metric-value card-metric-value--sesame shrink-0"
+                  : "card-metric-value"
+              }
+            >
+              {project.metric}
+            </span>
+            <span
+              className={
+                isSesameCard
+                  ? "card-metric-label min-w-0 flex-1 leading-snug"
+                  : "card-metric-label"
+              }
+            >
+              {project.metricLabel}
+            </span>
+          </div>
+          {(isSesameCard || isHomerCard || isHomerWebsiteCard || isAngislabCard || isAngiugcCard) && (
             <img
-              src={isSesameCard ? "/clientlogos/sesame_street_white.svg" : "/clientlogos/homer_cropped.svg"}
-              alt={isSesameCard ? "Sesame Street" : "Homer"}
-              className={`${isHomerCard ? "h-6" : "h-7"} w-auto object-contain opacity-90`}
+              src={
+                isSesameCard
+                  ? "/clientlogos/sesame_street_white.svg"
+                  : isHomerCard || isHomerWebsiteCard
+                    ? "/clientlogos/homer_cropped.svg"
+                    : "/clientlogos/angi.svg"
+              }
+              alt={isSesameCard ? "Sesame Street" : isHomerCard || isHomerWebsiteCard ? "Homer" : "Angi"}
+              className={`shrink-0 ${isHomerCard || isHomerWebsiteCard ? "h-6" : "h-7"} w-auto object-contain opacity-90`}
               decoding="async"
             />
           )}
