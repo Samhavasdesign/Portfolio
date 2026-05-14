@@ -8,7 +8,18 @@ import ContactModal from "@/components/ContactModal";
 const NAV_LINKS = ["Work", "AI Lab", "Resume", "About"];
 const RESUME_PATH = "/SamanthaHavas_SeniorProductDesigner_Resume.pdf";
 
-function getNavLinkProps(label) {
+/** Home page section ids (see `app/page.js` — WorkGrid ids and AboutSection). Fragments must match those `id`s exactly. */
+const SECTION_FRAGMENT = {
+  Work: "work",
+  "AI Lab": "Lab",
+  About: "about",
+};
+
+function isHomePath(pathname) {
+  return pathname === "/" || pathname === "";
+}
+
+function getNavLinkProps(label, pathname) {
   if (label === "Resume") {
     return {
       href: RESUME_PATH,
@@ -17,7 +28,11 @@ function getNavLinkProps(label) {
     };
   }
 
-  return { href: `#${label.toLowerCase()}` };
+  const fragment = SECTION_FRAGMENT[label];
+  if (!fragment) return { href: "#" };
+
+  const hash = `#${fragment}`;
+  return { href: isHomePath(pathname) ? hash : `/${hash}` };
 }
 
 export default function Nav() {
@@ -62,7 +77,7 @@ export default function Nav() {
           {NAV_LINKS.map((label, i) => (
             <span key={label} className="contents">
               {i > 0 && <span className="nav-separator" aria-hidden>·</span>}
-              <a {...getNavLinkProps(label)} className="nav-link">{label}</a>
+              <a {...getNavLinkProps(label, pathname)} className="nav-link">{label}</a>
             </span>
           ))}
         </div>
@@ -91,7 +106,7 @@ export default function Nav() {
         {NAV_LINKS.map((label) => (
           <a
             key={label}
-            {...getNavLinkProps(label)}
+            {...getNavLinkProps(label, pathname)}
             className="nav-mobile-link"
             onClick={() => setMobileOpen(false)}
           >

@@ -61,7 +61,7 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
           </h3>
         ) : isHomerCard ? (
           <h3 className="card-title mb-1.5">
-            EdTech Mobile App Redesign
+            EdTech App Redesign &amp; Rebrand
           </h3>
         ) : (
           <p className="card-title mb-1.5">{project.company}</p>

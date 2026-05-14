@@ -1021,6 +1021,55 @@ h3 {
   }
 }
 
+.case-study-store-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 0.85rem;
+}
+
+.case-study-store-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-base);
+  letter-spacing: var(--ls-base);
+  color: var(--c-text-2);
+  text-decoration: none;
+  border: 0.5px solid var(--c-border-mid);
+  padding: 0.4rem 0.7rem;
+  transition:
+    color var(--duration-base),
+    border-color var(--duration-base),
+    background var(--duration-base);
+}
+
+.case-study-store-link:hover {
+  color: var(--c-text);
+  border-color: var(--c-border-bright);
+  background: var(--c-bg-surface);
+}
+
+.case-study-store-link:focus-visible {
+  outline: 1px solid var(--c-purple);
+  outline-offset: 2px;
+}
+
+.case-study-store-link-arrow {
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
+.case-study-store-note {
+  margin-top: 1.25rem;
+  margin-bottom: 0;
+  max-width: 52ch;
+  font-size: var(--fs-sm);
+  color: var(--c-text-3);
+  line-height: 1.65;
+}
+
 .case-study-meta-strip {
   display: grid;
   grid-template-columns: repeat(2, auto);

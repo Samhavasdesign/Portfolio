@@ -52,13 +52,13 @@ export default function Sesame() {
 
         <P>Before the project kicked off, I researched around 20 apps in the SEL, wellness, and education space to map the competitive landscape. Most were either too adult-directed, too gamified, or too content-heavy for very young children.</P>
 
-        <ImgBlock id="03" label="Competitive analysis grid — 20 apps across SEL, wellness, education" caption="Image of a FigJam board from a group brainstorm session that I hosted" src="/images/work/sesame-img-03.jpg" />
+        <ImgBlock id="03" label="Competitive analysis grid — 20 apps across SEL, wellness, education" caption="Image of a FigJam board from a group brainstorm session that I hosted" src="/images/work/SesameStCompetitiveAnalysis.jpg" hug />
 
         <P>To align both organizations, the HOMER team ran a week-long design sprint with around 20 participants from Homer and Sesame — covering business strategy, curriculum goals, and product design. I helped plan and facilitate alongside the Director of Product and Design Manager.</P>
 
         <P>After the sprint, I built out user personas for both children and their parents and caregivers — since the app had to work for both simultaneously.</P>
 
-        <ImgBlock id="06" label="User personas — Kelly (Mom), Sasha (Teacher), Jackson (Child), Sophie (Child)" caption="Examples of user personas and insights" cols={2} aspect="4/3" srcs={['/images/work/sesame-img-06-02.jpg', '/images/work/sesame-img-06-01.jpg']} />
+        <ImgBlock id="06" label="Design sprint — cross-functional brainstorm with Homer and Sesame Workshop teams" caption="Working session during the week-long sprint before screen design." src="/images/work/BrainstormingSession.png" hug />
 
         <P>We then tested early navigation prototypes with 10 children ages 3–4, focusing on key questions: Where do they tap? Do they understand the buildings and characters are tappable? Are the background images distracting? Can they find their way back to favorite content? The answers shaped every structural decision that followed.</P>
 
@@ -105,25 +105,58 @@ export default function Sesame() {
         <Eyebrow>Solution</Eyebrow>
         <Title>A location-based main menu, icon-only navigation, and a content flow system that guided children without them knowing they were being guided.</Title>
 
+        <h3 style={{
+          fontFamily: 'var(--font-serif)',
+          fontSize: 'var(--fs-heading-3)',
+          fontWeight: 400,
+          color: 'var(--c-text)',
+          marginBottom: '20px',
+          letterSpacing: '-0.01em',
+        }}>
+          Main menu
+        </h3>
+
         <P>The main menu became a richly illustrated neighborhood map — each building representing a content theme. Children navigated by tapping locations, not reading labels. Characters were placed throughout to draw attention and signal interactivity.</P>
+
+        <Eyebrow>Concept and wireframes</Eyebrow>
+
+        <ImgBlock id="09" label="Main menu — early concepting and exploration" aspect="16/10" src="/images/work/sesamest-menuconcepting.jpg" fit="cover" />
+
+        <Eyebrow>Finalized version</Eyebrow>
 
         <ImgBlock id="10" label="Final main menu design — Our Neighborhood illustrated map" aspect="16/10" src="/images/work/sesame-img-10.jpg" fit="cover" />
 
+        <h3 style={{
+          fontFamily: 'var(--font-serif)',
+          fontSize: 'var(--fs-heading-3)',
+          fontWeight: 400,
+          color: 'var(--c-text)',
+          marginBottom: '20px',
+          letterSpacing: '-0.01em',
+        }}>
+          Submenu - content navigation
+        </h3>
+
         <P>The submenu system went through two full redesigns. The first version used illustrated background scenes with tappable characters — children froze, confused about whether the background was a video. We scrapped it entirely.</P>
 
-        <Sub>Prototype testing questions</Sub>
-        <P>We tested the prototype with children ages 3–4 to better understand how pre-literate users interpreted the navigation system and interacted with the environment.</P>
-        <P>We specifically wanted to learn:</P>
-        <ul className="section-subtext case-study-list">
-          <li>Do children understand that buildings and characters are tappable?</li>
-          <li>Do they navigate using spatial memory or visual detail?</li>
-          <li>Are illustrated backgrounds perceived as interactive or passive?</li>
-          <li>Can children independently return to previously viewed content?</li>
-          <li>How much visual complexity is too much before interaction clarity breaks down?</li>
-        </ul>
-        <P>The results fundamentally changed the product direction.</P>
+        <KeyInsight eyebrow="Prototype testing questions">
+          <P>We tested the prototype with children ages 3–4 to better understand how pre-literate users interpreted the navigation system and interacted with the environment.</P>
+          <P>We specifically wanted to learn:</P>
+          <ul className="section-subtext case-study-list">
+            <li>Do children understand that buildings and characters are tappable?</li>
+            <li>Do they navigate using spatial memory or visual detail?</li>
+            <li>Are illustrated backgrounds perceived as interactive or passive?</li>
+            <li>Can children independently return to previously viewed content?</li>
+            <li>How much visual complexity is too much before interaction clarity breaks down?</li>
+          </ul>
+          <p className="section-subtext" style={{ marginBottom: 0 }}>
+            The results fundamentally changed the product direction.
+          </p>
+        </KeyInsight>
 
         <VersionLabel type="fail">Version 1 — failed in prototype testing</VersionLabel>
+
+        <ImgBlock id="11" label="Version 1 submenu — illustrated interactive environment before three-up screens" src="/images/work/SesameStreetSubmenuBefore.jpg" hug />
 
         <ImgBlock id="12" label="First submenu iteration — illustrated backgrounds (killed)" caption="Three location submenu screens from the first version of the submenu navigation. Children confused interactive elements with video." cols={3} srcs={['/images/work/sesame-img-12-01.jpg', '/images/work/sesame-img-12-02.jpg', '/images/work/sesame-img-12-03.jpg']} />
 
@@ -134,12 +167,25 @@ export default function Sesame() {
 
         <P>The second version used a minimalist monochrome background to separate it visually from the main menu, with horizontally scrolling content buttons featuring icons and titles for parent legibility.</P>
 
-        <VersionLabel type="success">Version 2 — shipped</VersionLabel>
+        <Eyebrow>Finalized version</Eyebrow>
+
+        <ImgBlock id="14" label="Shipped submenu — horizontal scrolling content cards on simplified illustrated background" src="/images/work/sesame-submenu-finalized.png" hug />
 
         <ImgBlock id="13" label="Before/after submenu redesign" caption="Pages 5–6 — before showing the cluttered illustrated submenu, after showing the clean monochrome version. Three location submenu screens showing the redesigned clean monochrome version that made it into production." cols={3} srcs={['/images/work/sesame-img-13-01.jpg', '/images/work/sesame-img-13-02.jpg', '/images/work/sesame-img-13-03.jpg']} />
 
         <P>To reduce cognitive load, we simplified the visual hierarchy dramatically. The redesigned submenu system separated background environments from tappable content, introduced horizontally scrolling content cards, and reduced the number of simultaneous interaction targets on screen.</P>
         <P>The result was visually less ambitious, but significantly easier for children to understand and navigate independently.</P>
+
+        <h3 style={{
+          fontFamily: 'var(--font-serif)',
+          fontSize: 'var(--fs-heading-3)',
+          fontWeight: 400,
+          color: 'var(--c-text)',
+          marginBottom: '20px',
+          letterSpacing: '-0.01em',
+        }}>
+          Content flow: putting it all together
+        </h3>
 
         <ImgBlock id="16" label="Sequential content flow model" caption="Content flow from unit menu through connective tissue and payoff screens." cols={1} aspect="4/3" src="/images/work/sesame-objective-03.jpg" hug={true} />
         <P>Navigation between content pieces used an autoplay system with gentle nudges, payoff moments, and connective menus — guiding children through a themed sequence without requiring decisions at every step.</P>
@@ -195,6 +241,32 @@ export default function Sesame() {
             <P>The bigger lesson: designing for children is humbling. Every assumption you bring in from adult product design gets tested hard. The kids don't lie.</P>
           </div>
         </TwoCol>
+      </Section>
+
+      <Section id="see-it-in-action">
+        <Eyebrow>See it in action</Eyebrow>
+        <P>Watch the app demo above, or download it yourself:</P>
+        <div className="case-study-store-links">
+          <a
+            href="https://apps.apple.com/us/app/learn-with-sesame-street/id1556706683"
+            className="case-study-store-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            App Store <span className="case-study-store-link-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a
+            href="https://play.google.com/store/apps/details?id=com.homer.sesame&hl=en_US"
+            className="case-study-store-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Google Play <span className="case-study-store-link-arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <p className="section-subtext case-study-store-note">
+          Note: the product has continued to evolve since the original 2021 launch — this case study reflects the work completed during my tenure.
+        </p>
       </Section>
     </>
   );

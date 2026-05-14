@@ -71,7 +71,8 @@ export function StatGrid({ items }) {
   );
 }
 
-export function KeyInsight({ quote, sub }) {
+export function KeyInsight({ quote, sub, eyebrow = 'Key insight', children }) {
+  const rich = children != null && children !== false;
   return (
     <div style={{
       background: 'var(--c-bg-raised)',
@@ -80,23 +81,33 @@ export function KeyInsight({ quote, sub }) {
       marginTop: '40px',
       marginBottom: '40px',
     }}>
-      <div className="section-eyebrow" style={{ color: 'var(--c-green)', marginBottom: '16px' }}>
-        Key insight
-      </div>
-      <p style={{
-        fontFamily: 'var(--font-serif)',
-        fontSize: 'var(--fs-heading-3)',
-        color: 'var(--c-text)',
-        lineHeight: 1.4,
-        fontWeight: 400,
-        margin: 0,
-      }}>
-        {quote}
-      </p>
-      {sub && (
-        <p className="section-subtext" style={{ marginTop: '12px', marginBottom: 0 }}>
-          {sub}
-        </p>
+      {eyebrow ? (
+        <div className="section-eyebrow" style={{ color: 'var(--c-green)', marginBottom: '16px' }}>
+          {eyebrow}
+        </div>
+      ) : null}
+      {rich ? (
+        <div className="key-insight-rich">
+          {children}
+        </div>
+      ) : (
+        <>
+          <p style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: 'var(--fs-heading-3)',
+            color: 'var(--c-text)',
+            lineHeight: 1.4,
+            fontWeight: 400,
+            margin: 0,
+          }}>
+            {quote}
+          </p>
+          {sub && (
+            <p className="section-subtext" style={{ marginTop: '12px', marginBottom: 0 }}>
+              {sub}
+            </p>
+          )}
+        </>
       )}
     </div>
   );

@@ -77,7 +77,13 @@ export default function CaseStudyPage({ params }) {
           <img
             src={study.heroImage}
             alt={study.heroAlt ?? ''}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              display: 'block',
+              ...(study.slug === 'homer' ? { objectPosition: 'center top' } : {}),
+            }}
           />
         </div>
       ) : (

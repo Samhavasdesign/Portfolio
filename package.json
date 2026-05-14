@@ -1,0 +1,15 @@
+{
+  "name": "design-portfolio",
+  "private": true,
+  "description": "Root-level deps so Next/Turbopack can resolve tailwindcss when the opened folder is this directory (not web/). Run npm install here once, then use web/ as usual or npm run dev from here.",
+  "scripts": {
+    "bootstrap": "npm install && npm install --prefix web",
+    "dev": "npm run dev --prefix web",
+    "build": "npm run build --prefix web",
+    "start": "npm run start --prefix web"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.4",
+    "tailwindcss": "^4.2.4"
+  }
+}

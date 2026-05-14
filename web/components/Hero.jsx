@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, useReducedMotion } from "framer-motion";
@@ -211,7 +211,6 @@ function useCountUpStat(target, reducedMotion) {
 
 export default function Hero() {
   const [feedEvents, setFeedEvents] = useState([]);
-  const [statsTimelineEvents, setStatsTimelineEvents] = useState([]);
   const [githubMode, setGithubMode] = useState("loading");
   const [clock, setClock] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -257,12 +256,10 @@ export default function Hero() {
       previousTopEventId.current = nextTopId;
 
       setFeedEvents(filtered.slice(0, HERO_GITHUB_PANEL_EVENT_LIMIT));
-      setStatsTimelineEvents(filtered);
       setDidUseFallback(false);
       setGithubMode("live");
     } catch {
       setFeedEvents(FALLBACK_EVENTS.slice(0, HERO_GITHUB_PANEL_EVENT_LIMIT));
-      setStatsTimelineEvents(FALLBACK_EVENTS);
       previousTopEventId.current = FALLBACK_EVENTS[0]?.id ?? null;
       setDidUseFallback(true);
       setGithubMode("fallback");
@@ -272,31 +269,7 @@ export default function Hero() {
     }
   }, []);
 
-  const stats = useMemo(() => {
-    try {
-      if (githubMode === "loading") {
-        return { yearsExp: null, commits30d: null, reposActive: null };
-      }
-      const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-      let commits30d = 0;
-      const repoSet = new Set();
-      for (const event of statsTimelineEvents) {
-        const eventDate = new Date(event?.created_at).getTime();
-        if (Number.isNaN(eventDate) || eventDate < thirtyDaysAgo) continue;
-        repoSet.add(event?.repo?.name || "unknown/repo");
-        if (event?.type === "PushEvent") {
-          commits30d += pushEventCommitCount(event.payload);
-        }
-      }
-      return { yearsExp: 10, commits30d, reposActive: repoSet.size };
-    } catch {
-      return { yearsExp: 10, commits30d: 0, reposActive: 0 };
-    }
-  }, [statsTimelineEvents, githubMode]);
-
-  const statYears = useCountUpStat(stats.yearsExp, prefersReducedMotion === true);
-  const statCommits = useCountUpStat(stats.commits30d, prefersReducedMotion === true);
-  const statRepos = useCountUpStat(stats.reposActive, prefersReducedMotion === true);
+  const statYears = useCountUpStat(10, prefersReducedMotion === true);
 
   useEffect(() => {
     updateClock();
@@ -540,28 +513,24 @@ export default function Hero() {
               transition={{ type: "spring", stiffness: 420, damping: 28 }}
               className="hero-stats-grid-cell px-3 py-3"
             >
-              <p className="hero-stat-value tabular-nums">{statYears ?? "—"}</p>
-              <p className="hero-stat-label">years exp.</p>
+              <p className="hero-stat-value tabular-nums">{statYears}</p>
+              <p className="hero-stat-label">YEARS EXP.</p>
             </motion.div>
             <motion.div
               whileHover={{ y: -3 }}
               transition={{ type: "spring", stiffness: 420, damping: 28 }}
               className="hero-stats-grid-cell px-3 py-3"
             >
-              <p className="hero-stat-value tabular-nums">{statCommits ?? "—"}</p>
-              <p className="hero-stat-label">
-                commits (30d)
-              </p>
+              <p className="hero-stat-value tabular-nums">6+</p>
+              <p className="hero-stat-label">YEARS IN PRODUCT</p>
             </motion.div>
             <motion.div
               whileHover={{ y: -3 }}
               transition={{ type: "spring", stiffness: 420, damping: 28 }}
               className="hero-stats-grid-cell px-3 py-3"
             >
-              <p className="hero-stat-value tabular-nums">{statRepos ?? "—"}</p>
-              <p className="hero-stat-label">
-                repos active
-              </p>
+              <p className="hero-stat-value tabular-nums">16M+</p>
+              <p className="hero-stat-label">PROJECTS IMPACTED</p>
             </motion.div>
           </div>
         </div>
