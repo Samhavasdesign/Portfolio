@@ -997,6 +997,18 @@ h3 {
   }
 }
 
+/* HOMER case study: trim excess scroll space below Next CTA */
+@media (min-width: 768px) {
+  .case-study-layout.case-study-layout--homer-tight {
+    padding-bottom: 2rem;
+  }
+}
+@media (max-width: 767px) {
+  .case-study-content.case-study-content--homer-tight {
+    padding-bottom: 2rem;
+  }
+}
+
 .case-study-list {
   margin: 0 0 24px;
   padding-left: 1.25em;

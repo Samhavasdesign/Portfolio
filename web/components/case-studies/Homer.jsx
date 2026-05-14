@@ -1,30 +1,96 @@
 import Image from 'next/image';
 import SesameIpadDemoEmbed from '@/components/SesameIpadDemoEmbed';
-import { Section, Eyebrow, Title, Sub, P, TwoCol, KeyInsight, VersionLabel, ImgBlock } from './CaseStudyShared';
+import { Section, Eyebrow, Title, Sub, P, TwoCol, KeyInsight, ImgBlock } from './CaseStudyShared';
 
 const HOMER_LEGACY_SCREENSHOTS = [
   {
     label: 'Homescreen',
     src: '/images/homer/legacyhomer.webp',
     alt: 'Legacy HOMER app homepage',
-    caption:
-      'Too many distractions and buttons for kids to easily navigate. We saw a lot of frustration and confusion on this screen.',
   },
   {
     label: 'Reading pathway',
     src: '/images/homer/legacyreadingpathway.webp',
     alt: 'Legacy HOMER reading pathway screen',
-    caption:
-      "The only interactivity on this screen is the lessons. We saw a lot of taps on the bottom icons, distraction with the background art, and confusion around 'locked' lessons.",
   },
   {
     label: 'Lesson menu',
     src: '/images/homer/legacylessonsmenu.webp',
     alt: 'Legacy HOMER lesson menu screen',
-    caption:
-      'Two-way scroll was confusing for kids, and hierarchy is confusing.',
   },
 ];
+
+const HOMER_AFTER_REDESIGN_SCREENSHOTS = [
+  {
+    label: 'Home',
+    src: '/images/work/homer-after-home.png',
+    alt: "HOMER Learn & Grow redesigned home screen with centered play control and grown-ups entry",
+  },
+  {
+    label: 'Main menu',
+    src: '/images/work/homer-after-mainmenu.png',
+    alt: 'HOMER main menu with subject tiles in a shallow category grid',
+  },
+  {
+    label: 'Content menu',
+    src: '/images/work/homer-after-contentmenu.png',
+    alt: 'Content menu with featured unit and grid of lesson artwork thumbnails',
+  },
+  {
+    label: 'Reading pathway',
+    src: '/images/work/homer-after-readingpath.png',
+    alt: "Holly's learning path with a single lesson card on a simplified progress line",
+  },
+];
+
+function HomerLegacyBeforeRedesign({
+  leadingSpacing = false,
+  heading = 'Before the redesign',
+  shots = HOMER_LEGACY_SCREENSHOTS,
+  gridClassName = 'homer-legacy-shots',
+}) {
+  return (
+    <>
+      <h3
+        style={{
+          fontFamily: 'var(--font-serif)',
+          fontSize: 'var(--fs-heading-3)',
+          fontWeight: 400,
+          color: 'var(--c-text)',
+          letterSpacing: '-0.01em',
+          lineHeight: 1.25,
+          marginTop: leadingSpacing ? '48px' : 0,
+          marginBottom: '24px',
+          maxWidth: '680px',
+        }}
+      >
+        {heading}
+      </h3>
+
+      <div className={gridClassName}>
+        {shots.map((item) => (
+          <div key={item.src} className="homer-legacy-cell">
+            <div
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: 'var(--fs-xs)',
+                letterSpacing: 'var(--ls-wide)',
+                color: 'var(--c-green)',
+                textTransform: 'uppercase',
+                marginBottom: '10px',
+              }}
+            >
+              {item.label}
+            </div>
+            <div className="homer-legacy-frame">
+              <img src={item.src} alt={item.alt} loading="lazy" decoding="async" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
 
 /**
  * Layout mirrors Sesame.jsx section-for-section so you can swap copy and
@@ -32,7 +98,7 @@ const HOMER_LEGACY_SCREENSHOTS = [
  */
 export default function Homer() {
   return (
-    <>
+    <div className="homer-case-study">
       <style>
         {`
           .homer-legacy-shots {
@@ -53,6 +119,13 @@ export default function Homer() {
               grid-column: span 1;
             }
           }
+          .homer-after-shots {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
+            margin-top: 8px;
+          }
           .homer-legacy-cell {
             display: flex;
             flex-direction: column;
@@ -70,6 +143,57 @@ export default function Homer() {
             height: 100%;
             object-fit: cover;
             display: block;
+          }
+          .homer-lottie-showcase-eyebrow {
+            font-family: var(--font-mono);
+            font-size: var(--fs-xs);
+            letter-spacing: var(--ls-wide);
+            color: var(--c-green);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+          }
+          .homer-lottie-showcase {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 40px 0;
+          }
+          .homer-lottie-showcase__stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-width: 0;
+          }
+          .homer-lottie-frame {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 0.5px solid var(--c-border-mid);
+            background: var(--c-bg-surface);
+          }
+          .homer-lottie-frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+          }
+          @media (min-width: 768px) {
+            .homer-lottie-showcase {
+              flex-direction: row;
+              align-items: flex-start;
+              gap: 1.25rem;
+            }
+            .homer-lottie-showcase__primary,
+            .homer-lottie-showcase__stack {
+              flex: 1;
+              min-width: 0;
+            }
+          }
+          .homer-solution-divider {
+            border-top: 0.5px solid var(--c-border);
+            margin-top: 48px;
+            margin-bottom: 32px;
+          }
+          .homer-case-study > section:last-of-type {
+            margin-bottom: 32px;
           }
         `}
       </style>
@@ -118,62 +242,12 @@ export default function Homer() {
         <Eyebrow>Research</Eyebrow>
         <Title>The hardest design constraint wasn&apos;t the content library. It was the user.</Title>
 
-        <h3
-          style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: 'var(--fs-heading-3)',
-            fontWeight: 400,
-            color: 'var(--c-text)',
-            letterSpacing: '-0.01em',
-            lineHeight: 1.25,
-            marginTop: 0,
-            marginBottom: '24px',
-            maxWidth: '680px',
-          }}
-        >
-          Before the redesign
-        </h3>
-
-        <div className="homer-legacy-shots">
-          {HOMER_LEGACY_SCREENSHOTS.map((item) => (
-            <div key={item.src} className="homer-legacy-cell">
-              <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 'var(--fs-xs)',
-                  letterSpacing: 'var(--ls-wide)',
-                  color: 'var(--c-green)',
-                  textTransform: 'uppercase',
-                  marginBottom: '10px',
-                }}
-              >
-                {item.label}
-              </div>
-              <div className="homer-legacy-frame">
-                <img src={item.src} alt={item.alt} loading="lazy" decoding="async" />
-              </div>
-              <p
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 'var(--fs-sm)',
-                  color: 'var(--c-text-3)',
-                  lineHeight: 'var(--lh-base)',
-                  marginTop: '10px',
-                  marginBottom: 0,
-                  opacity: 0.6,
-                }}
-              >
-                {item.caption}
-              </p>
-            </div>
-          ))}
-        </div>
+        <HomerLegacyBeforeRedesign />
 
         <P>Before touching screens, I spent significant time with HOMER&apos;s learning and curriculum experts and immersed myself in research on child psychology and developing motor skills. Children ages 2–8 have an extremely low tolerance for frustration, limited literacy, and no patience for hierarchy. Every assumption I brought in from adult product design had to be pressure-tested against that reality.</P>
 
         <KeyInsight
-          eyebrow="The 3-tap rule"
-          quote={"A two-year-old will throw a tablet across the room if they can't find what they want in three taps. That's not an exaggeration — it's a design requirement."}
+          quote="A 2-year-old navigating alone means every extra tap is a potential exit point. Content should never be more than 3 taps away."
         />
 
         <div className="mx-auto my-10 w-full max-w-4xl">
@@ -201,13 +275,6 @@ export default function Homer() {
         </div>
 
         <P>We also inherited a specific challenge from the previous app: HOMER Reading had used a centralized learning pathway model that worked well for a single subject but couldn&apos;t scale to a multi-subject platform. We needed a new architecture from the ground up.</P>
-
-        <ImgBlock id="06" label="Research — curriculum alignment and child development inputs" caption="Working sessions and inputs from learning experts alongside child-centered design criteria." cols={2} aspect="4/3" srcs={['/images/work/homer-img-06-02.jpg', '/images/work/homer-img-06-01.jpg']} />
-
-        <KeyInsight
-          quote="A 2-year-old navigating alone means every extra tap is a potential exit point."
-          sub="The architecture had to be shallow enough that content was always within reach — and forgiving enough that getting lost wasn&apos;t possible."
-        />
       </Section>
 
       <Section id="objectives">
@@ -249,46 +316,95 @@ export default function Homer() {
 
         <P>The core navigation decision was a deliberately shallow information hierarchy — a flexible grid of content categories on the main menu, organized by age and emotional scheduling needs, so that kids were never more than a few taps from anything. Button placement on the main menu adapts based on the child&apos;s age, making the experience feel personalized without requiring any input from the child.</P>
 
-        <P>We built the design system from scratch — streamlining button styles, states, and positioning to create consistent UI patterns that supported intuitive navigation. Every button and illustration was tested with real children to ensure they were communicating clearly before going into production.</P>
+        <ImgBlock id="10" imageEyebrow="UX audit: Improved content discovery" label="Solution — main menu and shallow IA" caption="Learn & Grow information architecture and core app flow" src="/images/work/homer-img-10.png" hug={true} intrinsicWidth={8192} intrinsicHeight={5460} />
 
-        <ImgBlock id="10" label="Solution — main menu and shallow IA" caption="Flexible category grid and age-aware placement on the main menu." aspect="16/10" src="/images/work/homer-img-10.jpg" fit="cover" />
+        <h3
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: 'var(--fs-heading-3)',
+            fontWeight: 400,
+            color: 'var(--c-text)',
+            letterSpacing: '-0.01em',
+            lineHeight: 1.25,
+            marginTop: 0,
+            marginBottom: '24px',
+            maxWidth: '680px',
+          }}
+        >
+          From concept to foundation
+        </h3>
+
+        <P>We built the design system from scratch — streamlining button styles, states, and positioning to create consistent UI patterns that supported intuitive navigation. Every button and illustration was tested with real children to ensure they were communicating clearly before going into production.</P>
 
         <P>For the parent experience, we used age gates and visually subordinate UI to keep parent-facing screens accessible but unobtrusive — always pairing them with voice-over instruction and easy exit paths for kids who wandered in accidentally.</P>
 
+        <ImgBlock id="11" imageEyebrow="Examples of our build for the design system and interaction framework" label="Learn & Grow — design system documentation: components, offline flow, navigation elements, and motion timeline" src="/images/work/homer-learn-grow-ui.jpg" hug={true} intrinsicWidth={1024} intrinsicHeight={682} />
+
+        <h3
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: 'var(--fs-heading-3)',
+            fontWeight: 400,
+            color: 'var(--c-text)',
+            letterSpacing: '-0.01em',
+            lineHeight: 1.25,
+            marginTop: 0,
+            marginBottom: '24px',
+            maxWidth: '680px',
+          }}
+        >
+          Using motion to create delight and engagement
+        </h3>
+
         <P>The delight layer — Lottie animations, in-app transitions, sound effects — was designed in close collaboration with the illustration and animation team, and advocated for at every roadmap review. These moments aren&apos;t decoration; they&apos;re what make a children&apos;s app feel alive and keep young learners coming back.</P>
 
-        <Sub>Prototype testing questions</Sub>
-        <P>We tested navigation and comprehension with children in the 2–8 range to validate shallow IA, visual recognition, and recovery — focusing on independence, not parent prompts.</P>
-        <P>We specifically wanted to learn:</P>
-        <ul className="section-subtext case-study-list">
-          <li>Could children find a subject and start an activity within a strict tap budget?</li>
-          <li>Did iconography and layout read clearly without text labels?</li>
-          <li>When a child entered a parent surface by mistake, could they exit without help?</li>
-          <li>Did motion and sound clarify state changes — or add noise that slowed decisions?</li>
-          <li>Did personalized placement feel obvious to kids, or did it confuse spatial memory?</li>
-        </ul>
-        <P>The results reinforced moving away from a single centralized pathway toward a shallow, grid-first model.</P>
+        <div className="homer-lottie-showcase-eyebrow">Menu transitions and payoff animations</div>
 
-        <VersionLabel type="fail">Version 1 — failed in prototype testing</VersionLabel>
+        <div className="homer-lottie-showcase" role="group" aria-label="Animated GIF examples from Learn & Grow">
+          <div className="homer-lottie-showcase__primary">
+            <div className="homer-lottie-frame">
+              <img
+                src="/images/work/lotties1.gif"
+                alt="Learn & Grow subject thumbnails in a grid with playful motion and color"
+                width={1500}
+                height={1496}
+                decoding="async"
+                loading="lazy"
+              />
+            </div>
+          </div>
+          <div className="homer-lottie-showcase__stack">
+            <div className="homer-lottie-frame">
+              <img
+                src="/images/work/lotties2.gif"
+                alt="Celebration animation with a bird in a plane towing a You did it banner"
+                width={1450}
+                height={696}
+                decoding="async"
+                loading="lazy"
+              />
+            </div>
+            <div className="homer-lottie-frame">
+              <img
+                src="/images/work/lotties3.gif"
+                alt="Moose character in a circular frame with confetti and geometric shapes"
+                width={1450}
+                height={696}
+                decoding="async"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </div>
 
-        <ImgBlock id="12" label="Version 1 — pathway-heavy navigation exploration" caption="Early exploration extending a centralized pathway model across multiple subjects." cols={3} srcs={['/images/work/homer-img-12-01.jpg', '/images/work/homer-img-12-02.jpg', '/images/work/homer-img-12-03.jpg']} />
+        <HomerLegacyBeforeRedesign
+          leadingSpacing
+          heading="After the redesign"
+          shots={HOMER_AFTER_REDESIGN_SCREENSHOTS}
+          gridClassName="homer-after-shots"
+        />
 
-        <P>The first iteration tried to extend HOMER Reading&apos;s centralized pathway logic across five subject areas — preserving a familiar mental model for existing families.</P>
-        <P>In testing, younger children stalled when the path didn&apos;t match what they wanted to do next. Depth stacked quickly, and &ldquo;back&rdquo; wasn&apos;t always obvious — which violated the tap budget we knew we had to hit.</P>
-        <P>Several sessions ended with kids bouncing between screens hunting for a favorite activity type, not a prescribed sequence.</P>
-        <P>The takeaway: a single-threaded pathway couldn&apos;t scale to multi-subject exploration without punishing the youngest users.</P>
-
-        <P>We rebuilt around a shallow category grid with age-aware prominence on the home surface — prioritizing reachability over linear progression.</P>
-
-        <VersionLabel type="success">Version 2 — shipped</VersionLabel>
-
-        <ImgBlock id="13" label="Version 2 — shipped shallow grid and hierarchy" caption="Shipped navigation — shallow hierarchy, clearer targets, and reduced dead-ends." cols={3} srcs={['/images/work/homer-img-13-01.jpg', '/images/work/homer-img-13-02.jpg', '/images/work/homer-img-13-03.jpg']} />
-
-        <P>The shipped system reduced depth, increased visual clarity on tappable targets, and made &ldquo;home&rdquo; consistently recoverable — so getting lost stopped being a realistic failure mode.</P>
-        <P>Kids could move between subjects without reading, and parents still had clear adjacent surfaces for settings and visibility.</P>
-
-        <ImgBlock id="16" label="Flow — shallow architecture and cross-surface model" caption="System-level view of shallow IA, parent gates, and content reachability." cols={1} aspect="4/3" src="/images/work/homer-objective-03.jpg" hug={true} />
-        <P>iOS shipped first, with Android as a fast follow across a defined device matrix: iPhone 8, iPhone X, iPad Mini, Android 360, Android Pixel 2, and Galaxy Tablet 10.</P>
+        <div className="homer-solution-divider" aria-hidden="true" />
       </Section>
 
       <Section id="process">
@@ -367,6 +483,6 @@ export default function Homer() {
           Note that the product has continued to evolve since the original 2020 launch — this case study reflects the work completed during my tenure.
         </p>
       </Section>
-    </>
+    </div>
   );
 }

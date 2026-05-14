@@ -91,10 +91,10 @@ export default function CaseStudyPage({ params }) {
       )}
 
       {/* ── Content area ────────────────────────────────────────── */}
-      <div className="case-study-layout">
+      <div className={`case-study-layout${study.slug === 'homer' ? ' case-study-layout--homer-tight' : ''}`}>
         <CaseStudyNav sections={study.sections} readTime={study.readTime} />
 
-        <div className="case-study-content">
+        <div className={`case-study-content${study.slug === 'homer' ? ' case-study-content--homer-tight' : ''}`}>
           {Content ? (
             <Content study={study} />
           ) : (

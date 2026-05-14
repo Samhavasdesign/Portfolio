@@ -125,10 +125,24 @@ export function VersionLabel({ children, type }) {
   );
 }
 
-export function ImgBlock({ id, label, caption, aspect = '16/9', cols = 1, src, srcs, fit = 'contain', fits, hug = false }) {
+export function ImgBlock({ id, label, caption, aspect = '16/9', cols = 1, src, srcs, fit = 'contain', fits, hug = false, intrinsicWidth, intrinsicHeight, imageEyebrow }) {
   const items = Array.from({ length: cols });
   return (
     <div style={{ margin: '40px 0' }}>
+      {imageEyebrow ? (
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 'var(--fs-xs)',
+            letterSpacing: 'var(--ls-wide)',
+            color: 'var(--c-green)',
+            textTransform: 'uppercase',
+            marginBottom: '10px',
+          }}
+        >
+          {imageEyebrow}
+        </div>
+      ) : null}
       <div className="case-study-img-grid" data-cols={cols}>
         {items.map((_, i) => (
           <div key={i} style={{
@@ -137,12 +151,34 @@ export function ImgBlock({ id, label, caption, aspect = '16/9', cols = 1, src, s
             border: '0.5px solid var(--c-border-mid)',
             position: 'relative',
             overflow: 'hidden',
+            ...(hug ? { display: 'flex', justifyContent: 'center' } : {}),
           }}>
             {(srcs?.[i] || src) ? (
               <img
                 src={srcs?.[i] || src}
                 alt={label}
-                style={{ width: '100%', height: hug ? 'auto' : '100%', objectFit: fits?.[i] || fit, display: 'block', background: 'var(--c-bg)' }}
+                width={intrinsicWidth}
+                height={intrinsicHeight}
+                decoding="async"
+                style={
+                  hug
+                    ? {
+                        display: 'block',
+                        maxWidth: '100%',
+                        width: 'auto',
+                        height: 'auto',
+                        marginLeft: 'auto',
+                        marginRight: 'auto',
+                        background: 'var(--c-bg)',
+                      }
+                    : {
+                        width: '100%',
+                        height: '100%',
+                        display: 'block',
+                        background: 'var(--c-bg)',
+                        objectFit: fits?.[i] || fit,
+                      }
+                }
               />
             ) : (
               <div style={{
