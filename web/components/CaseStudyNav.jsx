@@ -7,7 +7,7 @@ export default function CaseStudyNav({ sections, readTime }) {
 
   useEffect(() => {
     const updateActiveSection = () => {
-      const activationOffset = window.innerWidth >= 768 ? 120 : 160;
+      const activationOffset = window.innerWidth >= 768 ? 96 : 132;
       let current = sections[0]?.id;
 
       for (const { id } of sections) {
@@ -42,13 +42,65 @@ export default function CaseStudyNav({ sections, readTime }) {
     if (!el) return;
 
     setActiveSection(id);
+    setMobileOpen(false);
 
-    // Keep section headers visible below sticky nav/chrome on both breakpoints.
+    const content = document.querySelector('.case-study-content');
     const stickyOffset = window.innerWidth >= 768 ? 96 : 132;
-    const top = window.scrollY + el.getBoundingClientRect().top - stickyOffset;
+
+    const measure = () => {
+      const elementTop = el.getBoundingClientRect().top + window.scrollY;
+      const targetTop = elementTop - stickyOffset;
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      return { targetTop, maxScroll, deficit: targetTop - maxScroll };
+    };
+
+    let { targetTop, maxScroll, deficit } = measure();
+    let paddingChanged = false;
+
+    if (content && deficit > 0) {
+      const current = parseFloat(content.style.paddingBottom) || 0;
+      const needed = Math.ceil(deficit) + 80;
+      if (needed > current) {
+        content.style.paddingBottom = `${needed}px`;
+        void content.offsetHeight;
+        paddingChanged = true;
+        ({ targetTop, maxScroll } = measure());
+      }
+    }
+
+    const top = Math.min(Math.max(0, targetTop), maxScroll);
+
+    if (paddingChanged) {
+      window.scrollTo({ top, behavior: 'auto' });
+      requestAnimationFrame(() => {
+        const { targetTop: nextTop, maxScroll: nextMax } = measure();
+        const corrected = Math.min(Math.max(0, nextTop), nextMax);
+        if (Math.abs(corrected - window.scrollY) > 4) {
+          window.scrollTo({ top: corrected, behavior: 'auto' });
+        }
+      });
+      return;
+    }
 
     window.scrollTo({ top, behavior: 'smooth' });
-    setMobileOpen(false);
+
+    // Correct for any layout shift that happened during scroll (e.g. images finishing load)
+    setTimeout(() => {
+      const { targetTop: correctedTop, maxScroll: correctedMax, deficit: correctedDeficit } = measure();
+      if (content && correctedDeficit > 0) {
+        const current = parseFloat(content.style.paddingBottom) || 0;
+        const needed = Math.ceil(correctedDeficit) + 80;
+        if (needed > current) {
+          content.style.paddingBottom = `${needed}px`;
+          void content.offsetHeight;
+        }
+      }
+      const { targetTop: finalTop, maxScroll: finalMax } = measure();
+      const corrected = Math.min(Math.max(0, finalTop), finalMax);
+      if (Math.abs(corrected - window.scrollY) > 16) {
+        window.scrollTo({ top: corrected, behavior: 'smooth' });
+      }
+    }, 650);
   };
 
   return (

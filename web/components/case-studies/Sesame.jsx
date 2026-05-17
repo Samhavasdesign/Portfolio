@@ -1,6 +1,13 @@
 import SesameIpadDemoEmbed from '@/components/SesameIpadDemoEmbed';
 import { Section, Eyebrow, Title, Sub, P, TwoCol, KeyInsight, VersionLabel, ImgBlock } from './CaseStudyShared';
 
+const reflectionWrap = {
+  background: 'var(--c-bg-surface)',
+  borderTop: '2px solid var(--c-purple)',
+  padding: '48px 40px',
+  marginTop: '8px',
+};
+
 export default function Sesame() {
   return (
     <>
@@ -52,13 +59,13 @@ export default function Sesame() {
 
         <P>Before the project kicked off, I researched around 20 apps in the SEL, wellness, and education space to map the competitive landscape. Most were either too adult-directed, too gamified, or too content-heavy for very young children.</P>
 
-        <ImgBlock id="03" label="Competitive analysis grid — 20 apps across SEL, wellness, education" caption="Image of a FigJam board from a group brainstorm session that I hosted" src="/images/work/SesameStCompetitiveAnalysis.jpg" hug />
+        <ImgBlock id="03" label="Competitive analysis grid — 20 apps across SEL, wellness, education" caption="Image of a FigJam board from a group brainstorm session that I hosted" src="/images/work/SesameStCompetitiveAnalysis.jpg" hug intrinsicWidth={1536} intrinsicHeight={1024} />
 
         <P>To align both organizations, the HOMER team ran a week-long design sprint with around 20 participants from Homer and Sesame — covering business strategy, curriculum goals, and product design. I helped plan and facilitate alongside the Director of Product and Design Manager.</P>
 
         <P>After the sprint, I built out user personas for both children and their parents and caregivers — since the app had to work for both simultaneously.</P>
 
-        <ImgBlock id="06" label="Design sprint — cross-functional brainstorm with Homer and Sesame Workshop teams" caption="Working session during the week-long sprint before screen design." src="/images/work/BrainstormingSession.png" hug />
+        <ImgBlock id="06" label="Design sprint — cross-functional brainstorm with Homer and Sesame Workshop teams" caption="Working session during the week-long sprint before screen design." src="/images/work/BrainstormingSession.png" hug intrinsicWidth={1536} intrinsicHeight={1024} />
 
         <P>We then tested early navigation prototypes with 10 children ages 3–4, focusing on key questions: Where do they tap? Do they understand the buildings and characters are tappable? Are the background images distracting? Can they find their way back to favorite content? The answers shaped every structural decision that followed.</P>
 
@@ -156,7 +163,7 @@ export default function Sesame() {
 
         <VersionLabel type="fail">Version 1 — failed in prototype testing</VersionLabel>
 
-        <ImgBlock id="11" label="Version 1 submenu — illustrated interactive environment before three-up screens" src="/images/work/SesameStreetSubmenuBefore.jpg" hug />
+        <ImgBlock id="11" label="Version 1 submenu — illustrated interactive environment before three-up screens" src="/images/work/SesameStreetSubmenuBefore.jpg" hug intrinsicWidth={1536} intrinsicHeight={1024} />
 
         <ImgBlock id="12" label="First submenu iteration — illustrated backgrounds (killed)" caption="Three location submenu screens from the first version of the submenu navigation. Children confused interactive elements with video." cols={3} srcs={['/images/work/sesame-img-12-01.jpg', '/images/work/sesame-img-12-02.jpg', '/images/work/sesame-img-12-03.jpg']} />
 
@@ -169,7 +176,7 @@ export default function Sesame() {
 
         <Eyebrow>Finalized version</Eyebrow>
 
-        <ImgBlock id="14" label="Shipped submenu — horizontal scrolling content cards on simplified illustrated background" src="/images/work/sesame-submenu-finalized.png" hug />
+        <ImgBlock id="14" label="Shipped submenu — horizontal scrolling content cards on simplified illustrated background" src="/images/work/sesame-submenu-finalized.png" hug intrinsicWidth={1024} intrinsicHeight={561} />
 
         <ImgBlock id="13" label="Before/after submenu redesign" caption="Pages 5–6 — before showing the cluttered illustrated submenu, after showing the clean monochrome version. Three location submenu screens showing the redesigned clean monochrome version that made it into production." cols={3} srcs={['/images/work/sesame-img-13-01.jpg', '/images/work/sesame-img-13-02.jpg', '/images/work/sesame-img-13-03.jpg']} />
 
@@ -187,7 +194,7 @@ export default function Sesame() {
           Content flow: putting it all together
         </h3>
 
-        <ImgBlock id="16" label="Sequential content flow model" caption="Content flow from unit menu through connective tissue and payoff screens." cols={1} aspect="4/3" src="/images/work/sesame-objective-03.jpg" hug={true} />
+        <ImgBlock id="16" label="Sequential content flow model" caption="Content flow from unit menu through connective tissue and payoff screens." cols={1} aspect="4/3" src="/images/work/sesame-objective-03.jpg" hug intrinsicWidth={1024} intrinsicHeight={848} />
         <P>Navigation between content pieces used an autoplay system with gentle nudges, payoff moments, and connective menus — guiding children through a themed sequence without requiring decisions at every step.</P>
       </Section>
 
@@ -228,19 +235,20 @@ export default function Sesame() {
 
       <Section id="reflection">
         <Eyebrow>Reflection</Eyebrow>
-        <Title>What I'd do differently, and what I'd protect.</Title>
+        <div style={reflectionWrap}>
+          <Title>What I&apos;d do differently</Title>
 
-        <TwoCol>
-          <div>
-            <Sub>What I'd do differently</Sub>
-            <P>Push for clearer stakeholder alignment at the start — specifically around who has final design authority when brand and UX decisions conflict. Advocate for more testing with children under 3, where our signal was weakest. Document the information architecture in writing before any design begins, so a mid-project pivot has a cleaner path to resolution.</P>
-          </div>
-          <div>
-            <Sub>What I'd protect</Sub>
-            <P>The design sprint. Getting both organizations in the same room for a week before touching any screens was the single best investment we made. Every major decision that followed had a shared foundation.</P>
-            <P>The bigger lesson: designing for children is humbling. Every assumption you bring in from adult product design gets tested hard. The kids don't lie.</P>
-          </div>
-        </TwoCol>
+          <P>
+            Push for clearer stakeholder alignment at the start — specifically around who has final design authority when brand and UX decisions conflict. Advocate for more testing with children under 3, where our signal was weakest. Document the information architecture in writing before any design begins, so a mid-project pivot has a cleaner path to resolution.
+          </P>
+          <Sub>What I&apos;d protect</Sub>
+          <P>
+            The design sprint. Getting both organizations in the same room for a week before touching any screens was the single best investment we made. Every major decision that followed had a shared foundation.
+          </P>
+          <P>
+            The bigger lesson: designing for children is humbling. Every assumption you bring in from adult product design gets tested hard. The kids don&apos;t lie.
+          </P>
+        </div>
       </Section>
 
       <Section id="see-it-in-action">

@@ -49,7 +49,7 @@ export default function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <p className="footer-name">Design × Code × AI</p>
-            <p className="footer-tagline">Based between New York and Cape Town</p>
+            <p className="footer-tagline">Based between New York and Rhode Island</p>
           </div>
 
           <div className="footer-socials">

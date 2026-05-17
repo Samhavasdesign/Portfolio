@@ -20,6 +20,13 @@ const h3Work = {
   letterSpacing: '-0.01em',
 };
 
+const reflectionWrap = {
+  background: 'var(--c-bg-surface)',
+  borderTop: '2px solid var(--c-purple)',
+  padding: '48px 40px',
+  marginTop: '8px',
+};
+
 export default function HomerWebsite() {
   return (
     <>
@@ -157,16 +164,18 @@ export default function HomerWebsite() {
 
       <Section id="reflection">
         <Eyebrow>Reflection</Eyebrow>
-        <Title>What I&apos;d do differently</Title>
+        <div style={reflectionWrap}>
+          <Title>What I&apos;d do differently</Title>
 
-        <P>
-          The design system documentation was strong internally, but I&apos;d invest more in making it self-service for the marketing team earlier. There was a period where content updates required more design involvement than they should have — building that capability from day one would have freed up capacity on both sides.
-        </P>
+          <P>
+            The design system documentation was strong internally, but I&apos;d invest more in making it self-service for the marketing team earlier. There was a period where content updates required more design involvement than they should have — building that capability from day one would have freed up capacity on both sides.
+          </P>
 
-        <Sub>What I&apos;d protect.</Sub>
-        <P>
-          The decision to build the system before the pages. It added time upfront but paid off every time a new page needed to spin up quickly or a campaign required a layout variation. The foundation made everything downstream faster and more consistent.
-        </P>
+          <Sub>What I&apos;d protect.</Sub>
+          <P>
+            The decision to build the system before the pages. It added time upfront but paid off every time a new page needed to spin up quickly or a campaign required a layout variation. The foundation made everything downstream faster and more consistent.
+          </P>
+        </div>
       </Section>
     </>
   );

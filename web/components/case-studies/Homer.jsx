@@ -2,6 +2,13 @@ import Image from 'next/image';
 import SesameIpadDemoEmbed from '@/components/SesameIpadDemoEmbed';
 import { Section, Eyebrow, Title, Sub, P, TwoCol, KeyInsight, ImgBlock } from './CaseStudyShared';
 
+const reflectionWrap = {
+  background: 'var(--c-bg-surface)',
+  borderTop: '2px solid var(--c-purple)',
+  padding: '48px 40px',
+  marginTop: '8px',
+};
+
 const HOMER_LEGACY_SCREENSHOTS = [
   {
     label: 'Homescreen',
@@ -477,20 +484,22 @@ export default function Homer() {
 
       <Section id="reflection">
         <Eyebrow>Reflection</Eyebrow>
-        <Title>What I&apos;d do differently, and what I&apos;d protect.</Title>
-
-        <TwoCol>
-          <div>
-            <Sub>What I&apos;d do differently</Sub>
-            <P>I&apos;d push harder for delight from the start of the roadmap conversation, not at the end. Lottie animations and sound design were consistently the first things cut under timeline pressure — but they&apos;re also what makes a children&apos;s app actually sticky. Making the retention case for those moments earlier, with data, would have protected more of them.</P>
-            <P>I&apos;d also advocate for more structured testing with the youngest users — ages 2–3 — where our signal was weakest and assumptions were most likely to break down.</P>
-          </div>
-          <div>
-            <Sub>What I&apos;d protect</Sub>
-            <P>The decision to design the system from scratch rather than retrofit the old architecture. Starting with a clean design system meant consistent patterns, faster iteration, and a product that felt cohesive from day one.</P>
-            <P>And the relationships with curriculum and learning experts. Designing for children without deep subject matter input is a liability. That cross-functional trust was what kept the product honest.</P>
-          </div>
-        </TwoCol>
+        <div style={reflectionWrap}>
+          <Title>What I&apos;d do differently</Title>
+          <P>
+            I&apos;d push harder for delight from the start of the roadmap conversation, not at the end. Lottie animations and sound design were consistently the first things cut under timeline pressure — but they&apos;re also what makes a children&apos;s app actually sticky. Making the retention case for those moments earlier, with data, would have protected more of them.
+          </P>
+          <P>
+            I&apos;d also advocate for more structured testing with the youngest users — ages 2–3 — where our signal was weakest and assumptions were most likely to break down.
+          </P>
+          <Sub>What I&apos;d protect</Sub>
+          <P>
+            The decision to design the system from scratch rather than retrofit the old architecture. Starting with a clean design system meant consistent patterns, faster iteration, and a product that felt cohesive from day one.
+          </P>
+          <P>
+            And the relationships with curriculum and learning experts. Designing for children without deep subject matter input is a liability. That cross-functional trust was what kept the product honest.
+          </P>
+        </div>
       </Section>
 
       <Section id="see-it-in-action">

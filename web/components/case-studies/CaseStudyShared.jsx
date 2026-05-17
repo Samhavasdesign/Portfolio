@@ -149,7 +149,9 @@ export function ImgBlock({ id, label, caption, aspect = '16/9', cols = 1, src, s
       <div className="case-study-img-grid" data-cols={cols}>
         {items.map((_, i) => (
           <div key={i} style={{
-            aspectRatio: hug ? undefined : aspect,
+            aspectRatio: hug
+              ? (intrinsicWidth && intrinsicHeight ? `${intrinsicWidth} / ${intrinsicHeight}` : undefined)
+              : aspect,
             background: 'var(--c-bg-surface)',
             border: '0.5px solid var(--c-border-mid)',
             position: 'relative',

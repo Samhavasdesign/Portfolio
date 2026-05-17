@@ -19,6 +19,13 @@ const h3Work = {
   letterSpacing: '-0.01em',
 };
 
+const reflectionWrap = {
+  background: 'var(--c-bg-surface)',
+  borderTop: '2px solid var(--c-purple)',
+  padding: '48px 40px',
+  marginTop: '8px',
+};
+
 export default function AngiUgc() {
   return (
     <>
@@ -100,14 +107,16 @@ export default function AngiUgc() {
 
       <Section id="reflection">
         <Eyebrow>Reflection</Eyebrow>
-        <Title>What I&apos;d do differently.</Title>
-        <P>
-          I&apos;d push earlier for a unified content strategy across all three components — Ask a Pro, Project Stories, and Pro Galleries were designed in parallel but weren&apos;t always treated as a cohesive system. Establishing shared patterns and a content hierarchy from the start would have made the suite feel more intentional and reduced redundancy in the design and engineering work.
-        </P>
-        <Sub>What I&apos;d protect.</Sub>
-        <P>
-          The decision to treat UGC as a design problem, not just a content problem. The components only worked because they were designed to make raw user content feel trustworthy, scannable, and useful — not just technically present on the page. That framing kept the work grounded in user experience even when the primary driver was SEO performance.
-        </P>
+        <div style={reflectionWrap}>
+          <Title>What I&apos;d do differently.</Title>
+          <P>
+            I&apos;d push earlier for a unified content strategy across all three components — Ask a Pro, Project Stories, and Pro Galleries were designed in parallel but weren&apos;t always treated as a cohesive system. Establishing shared patterns and a content hierarchy from the start would have made the suite feel more intentional and reduced redundancy in the design and engineering work.
+          </P>
+          <Sub>What I&apos;d protect.</Sub>
+          <P>
+            The decision to treat UGC as a design problem, not just a content problem. The components only worked because they were designed to make raw user content feel trustworthy, scannable, and useful — not just technically present on the page. That framing kept the work grounded in user experience even when the primary driver was SEO performance.
+          </P>
+        </div>
       </Section>
     </>
   );

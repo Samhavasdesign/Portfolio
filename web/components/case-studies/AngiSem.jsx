@@ -20,6 +20,13 @@ const h3Work = {
   letterSpacing: '-0.01em',
 };
 
+const reflectionWrap = {
+  background: 'var(--c-bg-surface)',
+  borderTop: '2px solid var(--c-purple)',
+  padding: '48px 40px',
+  marginTop: '8px',
+};
+
 export default function AngiSem() {
   return (
     <>
@@ -360,14 +367,16 @@ export default function AngiSem() {
 
       <Section id="reflection">
         <Eyebrow>Reflection</Eyebrow>
-        <Title>What I&apos;d do differently.</Title>
-        <P>
-          Start with SEM-specific research before running a single test. We assumed learnings from other page contexts would transfer — they didn&apos;t. The SEM landing page is a unique moment in the funnel with its own psychology, and we lost several test cycles to assumptions we could have invalidated in week one with a targeted study. I&apos;d also push harder to reframe the success metric earlier. Bounce rate and single-session CVR are in tension by design on a page that serves both ready-to-convert and still-researching users. Until we added 42-day CVR as a metric, we were measuring the wrong thing for half our audience.
-        </P>
-        <Sub>What I&apos;d protect.</Sub>
-        <P>
-          The decision to go back to fundamentals when the isolated tests stalled. It would have been easier to keep tweaking variants. Instead we did the harder thing — content mapping, concept development, stakeholder alignment, full wireframes — and came out with a much more honest understanding of the problem. That&apos;s the work that actually moved the team forward.
-        </P>
+        <div style={reflectionWrap}>
+          <Title>What I&apos;d do differently.</Title>
+          <P>
+            Start with SEM-specific research before running a single test. We assumed learnings from other page contexts would transfer — they didn&apos;t. The SEM landing page is a unique moment in the funnel with its own psychology, and we lost several test cycles to assumptions we could have invalidated in week one with a targeted study. I&apos;d also push harder to reframe the success metric earlier. Bounce rate and single-session CVR are in tension by design on a page that serves both ready-to-convert and still-researching users. Until we added 42-day CVR as a metric, we were measuring the wrong thing for half our audience.
+          </P>
+          <Sub>What I&apos;d protect.</Sub>
+          <P>
+            The decision to go back to fundamentals when the isolated tests stalled. It would have been easier to keep tweaking variants. Instead we did the harder thing — content mapping, concept development, stakeholder alignment, full wireframes — and came out with a much more honest understanding of the problem. That&apos;s the work that actually moved the team forward.
+          </P>
+        </div>
       </Section>
     </>
   );
