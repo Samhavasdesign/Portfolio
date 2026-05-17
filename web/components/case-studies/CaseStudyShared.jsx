@@ -1,6 +1,7 @@
 // Shared primitive components for all case studies.
 // Import what you need: import { Section, Title, P, ImgBlock, ... } from './CaseStudyShared';
 import Image from 'next/image';
+import LightboxImage from '../LightboxImage';
 
 export function Section({ id, children }) {
   return (
@@ -149,9 +150,7 @@ export function ImgBlock({ id, label, caption, aspect = '16/9', cols = 1, src, s
       <div className="case-study-img-grid" data-cols={cols}>
         {items.map((_, i) => (
           <div key={i} style={{
-            aspectRatio: hug
-              ? (intrinsicWidth && intrinsicHeight ? `${intrinsicWidth} / ${intrinsicHeight}` : undefined)
-              : aspect,
+            aspectRatio: hug ? undefined : aspect,
             background: 'var(--c-bg-surface)',
             border: '0.5px solid var(--c-border-mid)',
             position: 'relative',
@@ -160,14 +159,14 @@ export function ImgBlock({ id, label, caption, aspect = '16/9', cols = 1, src, s
           }}>
             {(srcs?.[i] || src) ? (
               hug ? (
-                <Image
+                <LightboxImage
                   src={srcs?.[i] || src}
                   alt={label}
                   width={intrinsicWidth}
                   height={intrinsicHeight}
                   unoptimized
                   decoding="async"
-                  style={{
+                  imgStyle={{
                     display: 'block',
                     maxWidth: '100%',
                     width: hasFixedDisplaySize ? displayWidth : 'auto',
