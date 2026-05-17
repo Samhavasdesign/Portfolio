@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const CLIENT_LOGOS = [
   { src: "/clientlogos/fmc_white.svg", name: "First Manhattan Co." },
   { src: "/clientlogos/sarankco_white.svg", name: "Sarankco" },
@@ -18,10 +20,12 @@ function ClientLogoStrip() {
   return (
     <div className="client-logo-marquee-set">
       {CLIENT_LOGOS.map((logo) => (
-        <img
+        <Image
           key={logo.src}
           src={logo.src}
           alt=""
+          width={120}
+          height={32}
           className={`client-logo-marquee-logo${
             logo.src.includes("amex_white_transparent")
               ? " client-logo-marquee-logo--amex"

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 const MotionLink = motion.create(Link);
@@ -16,6 +17,8 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
   const isHomerWebsiteCard = project.slug === "homerwebsite";
   const isAngislabCard = project.slug === "angislab";
   const isAngiugcCard = project.slug === "angiugc";
+  const isAngisemCard = project.slug === "angisem";
+  const isHeroObjectTop = isAngisemCard || isAngislabCard;
 
   return (
     <MotionLink
@@ -48,10 +51,13 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
           <span className="card-placeholder-label">{project.company.toUpperCase()}</span>
         </div>
         {!imgFailed && (
-          <img
+          <Image
             src={project.thumbnail}
             alt={project.company}
-            className="relative z-[1] h-full w-full object-cover opacity-80 transition-opacity duration-200 group-hover:opacity-100"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            quality={95}
+            className={`relative z-[1] h-full w-full object-cover opacity-80 transition-opacity duration-200 group-hover:opacity-100${isHeroObjectTop ? " object-top" : ""}`}
             onError={() => setImgFailed(true)}
           />
         )}
@@ -60,7 +66,7 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
       <div className="card-body">
         {isSesameCard ? (
           <h3 className="card-title mb-1.5">
-            0 → 1 Social-Emotional Learning App
+            Learn with Sesame Street
           </h3>
         ) : isHomerCard ? (
           <h3 className="card-title mb-1.5">
@@ -68,7 +74,7 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
           </h3>
         ) : isHomerWebsiteCard ? (
           <h3 className="card-title mb-1.5">
-            Homer Marketing Site Redesign
+            HOMER Rebrand &amp; Marketing Site Redesign
           </h3>
         ) : isAngislabCard ? (
           <h3 className="card-title mb-1.5">
@@ -77,6 +83,10 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
         ) : isAngiugcCard ? (
           <h3 className="card-title mb-1.5">
             Ask a Pro Q&amp;A + UGC Web Components
+          </h3>
+        ) : isAngisemCard ? (
+          <h3 className="card-title mb-1.5">
+            SEM Landing Page Optimization
           </h3>
         ) : (
           <p className="card-title mb-1.5">{project.company}</p>
@@ -90,49 +100,41 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
           ))}
         </div>
 
-        <div
-          className="flex items-end gap-2 justify-between pt-4"
-          style={{ borderTop: "0.5px solid var(--c-border)" }}
-        >
-          <div
-            className={
-              isSesameCard
-                ? "flex min-w-0 flex-1 items-start gap-2 pr-2"
-                : "flex items-baseline gap-2"
-            }
-          >
-            <span
-              className={
-                isSesameCard
-                  ? "card-metric-value card-metric-value--sesame shrink-0"
-                  : "card-metric-value"
-              }
-            >
-              {project.metric}
-            </span>
-            <span
-              className={
-                isSesameCard
-                  ? "card-metric-label min-w-0 flex-1 leading-snug"
-                  : "card-metric-label"
-              }
-            >
-              {project.metricLabel}
-            </span>
-          </div>
-          {(isSesameCard || isHomerCard || isHomerWebsiteCard || isAngislabCard || isAngiugcCard) && (
-            <img
-              src={
-                isSesameCard
-                  ? "/clientlogos/sesame_street_white.svg"
-                  : isHomerCard || isHomerWebsiteCard
-                    ? "/clientlogos/homer_cropped.svg"
-                    : "/clientlogos/angi.svg"
-              }
-              alt={isSesameCard ? "Sesame Street" : isHomerCard || isHomerWebsiteCard ? "Homer" : "Angi"}
-              className={`shrink-0 ${isHomerCard || isHomerWebsiteCard ? "h-6" : "h-7"} w-auto object-contain opacity-90`}
-              decoding="async"
-            />
+        <div className="card-metric-footer">
+          {isSesameCard ? (
+            <>
+              <span className="card-metric-value card-metric-value--sesame">
+                {project.metric}
+              </span>
+              <p className="card-metric-label card-metric-label--sesame">
+                <span className="card-metric-label-sesame-muted">
+                  {project.metricLabel}
+                </span>
+              </p>
+            </>
+          ) : (
+            <>
+              <span className="card-metric-value">{project.metric}</span>
+              <p className="card-metric-label">{project.metricLabel}</p>
+            </>
+          )}
+          {(isSesameCard || isHomerCard || isHomerWebsiteCard || isAngislabCard || isAngiugcCard || isAngisemCard) && (
+            <div className="card-metric-footer__logo-slot">
+              <Image
+                src={
+                  isSesameCard
+                    ? "/clientlogos/sesame_street_white.svg"
+                    : isHomerCard || isHomerWebsiteCard
+                      ? "/clientlogos/homer_cropped.svg"
+                      : "/clientlogos/angi.svg"
+                }
+                alt={isSesameCard ? "Sesame Street" : isHomerCard || isHomerWebsiteCard ? "Homer" : "Angi"}
+                width={120}
+                height={28}
+                className={`card-metric-footer__logo${isHomerCard || isHomerWebsiteCard ? " card-metric-footer__logo--compact" : ""}`}
+                decoding="async"
+              />
+            </div>
           )}
         </div>
       </div>

@@ -3,16 +3,19 @@ import { use } from 'react';
 import Nav from '@/components/Nav';
 import CaseStudyNav from '@/components/CaseStudyNav';
 import { caseStudies } from '@/lib/work';
+import Image from 'next/image';
 import { Section, Eyebrow, Title, P, ImgBlock } from '@/components/case-studies/CaseStudyShared';
 import Sesame from '@/components/case-studies/Sesame';
 import Homer from '@/components/case-studies/Homer';
 import AngiSlab from '@/components/case-studies/AngiSlab';
 import AngiUgc from '@/components/case-studies/AngiUgc';
+import AngiSem from '@/components/case-studies/AngiSem';
 import HomerWebsite from '@/components/case-studies/HomerWebsite';
 
 // Register case study components here. Slugs not listed fall back to the placeholder.
 const REGISTRY = {
   angislab: AngiSlab,
+  angisem: AngiSem,
   angiugc: AngiUgc,
   homerwebsite: HomerWebsite,
   sesame: Sesame,
@@ -75,25 +78,76 @@ export default function CaseStudyPage({ params }) {
             </div>
           ))}
         </div>
+
+        {study.slug === 'angisem' && (
+          <div style={{ marginTop: '48px' }}>
+            <div className="section-eyebrow" style={{ marginBottom: '24px' }}>At a glance</div>
+            <div className="case-study-meta-strip" style={{ paddingTop: 0, borderTop: 'none' }}>
+              <div>
+                <div className="section-eyebrow" style={{ marginBottom: '6px' }}>Scope</div>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--fs-card-title)', color: 'var(--c-text)' }}>
+                  SEM landing experience redesign + experimentation strategy
+                </div>
+              </div>
+              <div>
+                <div className="section-eyebrow" style={{ marginBottom: '6px' }}>Impact</div>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--fs-card-title)', color: 'var(--c-text)' }}>
+                  26.9% reduction in bounce rate
+                </div>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--fs-card-title)', color: 'var(--c-text)' }}>
+                  62.6% CTR on engagement modules
+                </div>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--fs-card-title)', color: 'var(--c-text)' }}>
+                  5M+ annual users impacted
+                </div>
+              </div>
+              <div>
+                <div className="section-eyebrow" style={{ marginBottom: '6px' }}>Team</div>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--fs-card-title)', color: 'var(--c-text)' }}>
+                  PM, UX Research, Content Strategy, Engineering
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Full-bleed hero image */}
       {study.heroImage ? (
-        <div style={{ width: '100%', aspectRatio: '21/9', borderBottom: '0.5px solid var(--c-border)', overflow: 'hidden' }}>
-          <img
+        <div style={{ position: 'relative', width: '100%', aspectRatio: study.slug === 'homerwebsite' ? '7685 / 5115' : '21 / 9',
+            background: study.slug === 'homerwebsite' ? 'var(--c-bg)' : undefined,
+            borderBottom: '0.5px solid var(--c-border)',
+            overflow: 'hidden',
+          }}
+        >
+          <Image
+            key={study.heroImage}
             src={study.heroImage}
             alt={study.heroAlt ?? ''}
+            fill
+            sizes="100vw"
+            quality={90}
+            priority
             style={{
               width: '100%',
               height: '100%',
-              objectFit: 'cover',
+              objectFit: study.slug === 'homerwebsite' ? 'contain' : 'cover',
               display: 'block',
-              ...(study.slug === 'homer' ? { objectPosition: 'center top' } : {}),
+              ...(study.slug === 'homer' || study.slug === 'angislab'
+                ? { objectPosition: 'center top' }
+                : {}),
             }}
           />
         </div>
       ) : (
-        <div style={{ width: '100%', aspectRatio: '21/9', background: 'var(--c-bg-raised)', borderBottom: '0.5px solid var(--c-border)' }} />
+        <div
+          style={{
+            width: '100%',
+            aspectRatio: study.slug === 'homerwebsite' ? '7685 / 5115' : '21 / 9',
+            background: 'var(--c-bg-raised)',
+            borderBottom: '0.5px solid var(--c-border)',
+          }}
+        />
       )}
 
       {/* ── Content area ────────────────────────────────────────── */}

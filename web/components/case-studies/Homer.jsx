@@ -48,6 +48,7 @@ function HomerLegacyBeforeRedesign({
   heading = 'Before the redesign',
   shots = HOMER_LEGACY_SCREENSHOTS,
   gridClassName = 'homer-legacy-shots',
+  heroImage = null,
 }) {
   return (
     <>
@@ -67,6 +68,20 @@ function HomerLegacyBeforeRedesign({
         {heading}
       </h3>
 
+      {heroImage ? (
+        <div className="homer-redesign-hero">
+          <Image
+            src={heroImage.src}
+            alt={heroImage.alt}
+            width={heroImage.width}
+            height={heroImage.height}
+            quality={95}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      ) : null}
+
       <div className={gridClassName}>
         {shots.map((item) => (
           <div key={item.src} className="homer-legacy-cell">
@@ -83,7 +98,7 @@ function HomerLegacyBeforeRedesign({
               {item.label}
             </div>
             <div className="homer-legacy-frame">
-              <img src={item.src} alt={item.alt} loading="lazy" decoding="async" />
+              <Image src={item.src} alt={item.alt} fill quality={95} loading="lazy" decoding="async" />
             </div>
           </div>
         ))}
@@ -125,6 +140,16 @@ export default function Homer() {
             gap: 1.25rem;
             margin-bottom: 2.5rem;
             margin-top: 8px;
+          }
+          .homer-redesign-hero {
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+            overflow: hidden;
+          }
+          .homer-redesign-hero img {
+            display: block;
+            width: 100%;
+            height: auto;
           }
           .homer-legacy-cell {
             display: flex;
@@ -256,6 +281,7 @@ export default function Homer() {
             alt="Research synthesis — FigJam board on child development constraints and legacy pathway model"
             width={1600}
             height={1000}
+            quality={95}
             className="h-auto w-full rounded-lg object-cover"
             sizes="(max-width: 896px) 100vw, 896px"
           />
@@ -363,35 +389,38 @@ export default function Homer() {
         <div className="homer-lottie-showcase" role="group" aria-label="Animated GIF examples from Learn & Grow">
           <div className="homer-lottie-showcase__primary">
             <div className="homer-lottie-frame">
-              <img
+              <Image
                 src="/images/work/lotties1.gif"
                 alt="Learn & Grow subject thumbnails in a grid with playful motion and color"
                 width={1500}
                 height={1496}
                 decoding="async"
                 loading="lazy"
+                unoptimized
               />
             </div>
           </div>
           <div className="homer-lottie-showcase__stack">
             <div className="homer-lottie-frame">
-              <img
+              <Image
                 src="/images/work/lotties2.gif"
                 alt="Celebration animation with a bird in a plane towing a You did it banner"
                 width={1450}
                 height={696}
                 decoding="async"
                 loading="lazy"
+                unoptimized
               />
             </div>
             <div className="homer-lottie-frame">
-              <img
+              <Image
                 src="/images/work/lotties3.gif"
                 alt="Moose character in a circular frame with confetti and geometric shapes"
                 width={1450}
                 height={696}
                 decoding="async"
                 loading="lazy"
+                unoptimized
               />
             </div>
           </div>
@@ -400,6 +429,12 @@ export default function Homer() {
         <HomerLegacyBeforeRedesign
           leadingSpacing
           heading="After the redesign"
+          heroImage={{
+            src: '/images/work/homer-after-marketing.png',
+            alt: 'HOMER Learn & Grow on a tablet with subject tiles for Math, Reading, and Stories beside the HOMER cat mascot',
+            width: 1024,
+            height: 734,
+          }}
           shots={HOMER_AFTER_REDESIGN_SCREENSHOTS}
           gridClassName="homer-after-shots"
         />

@@ -342,6 +342,12 @@ h3 {
   padding-top: var(--hero-top-inset);
 }
 
+@media (min-width: 768px) {
+  .hero-at-wide-right {
+    padding-top: 0;
+  }
+}
+
 .hero-at-wide-github {
   padding-left: var(--grid-margin);
   padding-right: var(--grid-margin);
@@ -713,6 +719,8 @@ h3 {
 /* ── WorkGridCard ────────────────────────────────────────────────── */
 .card-body {
   padding: 20px 24px 24px;
+  container-type: inline-size;
+  container-name: card;
 }
 
 .card-tag {
@@ -755,22 +763,94 @@ h3 {
   line-height: var(--lh-base);
 }
 
+/* Stat row: number | descriptor | logo */
+.card-metric-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+  padding-top: 1rem;
+  border-top: 0.5px solid var(--c-border);
+  min-width: 0;
+}
+
 .card-metric-value {
+  flex-shrink: 0;
   font-family: var(--font-serif);
   font-size: var(--fs-metric);
   color: var(--c-text);
   font-weight: 400;
+  line-height: 1;
 }
 
 .card-metric-value--sesame {
   color: #fff;
 }
 
-.card-metric-label {
+.card-metric-footer .card-metric-label {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  align-self: flex-start;
+  margin: 0;
+  padding-top: 4px;
+  padding-right: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  text-indent: 0;
+  text-align: left;
+  font-family: var(--font-serif);
+  font-size: var(--fs-base);
+  font-weight: 300;
+  color: var(--c-text-3);
+  letter-spacing: 0;
+  line-height: 1.2;
+  overflow-wrap: break-word;
+}
+
+.card-metric-footer:has(.card-metric-value--sesame) .card-metric-label--sesame {
+  color: #fff;
+}
+
+.card-metric-footer:has(.card-metric-value--sesame) .card-metric-label-sesame-muted {
+  color: #888880;
+}
+
+.case-study-stat-grid .card-metric-label {
   font-family: var(--font-mono);
   font-size: var(--fs-base);
+  font-weight: 400;
   color: var(--c-text-3);
   letter-spacing: var(--ls-tight);
+  line-height: 1.2;
+}
+
+.card-metric-footer__logo-slot {
+  margin-left: auto;
+  align-self: center;
+  flex-shrink: 0;
+  width: max-content;
+  max-width: 96px;
+}
+
+.card-metric-footer__logo {
+  display: block;
+  width: auto;
+  height: 28px;
+  max-width: 96px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.card-metric-footer__logo--compact {
+  height: 24px;
+  max-width: 72px;
+}
+
+@media (min-width: 1024px) {
+  .card-metric-footer .card-metric-label {
+    font-size: var(--fs-ui);
+  }
 }
 
 .card-placeholder-label {
@@ -1112,6 +1192,166 @@ h3 {
 @media (min-width: 640px) {
   .case-study-stat-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Homer website page mockup carousel ─────────────────────────── */
+.homer-page-carousel {
+  position: relative;
+  width: 100%;
+  margin: 48px 0 56px;
+  isolation: isolate;
+}
+
+.homer-page-carousel__frame {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 80vh;
+  width: 100%;
+  background: var(--c-bg-surface);
+  border: 0.5px solid var(--c-border-mid);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.homer-page-carousel__track {
+  grid-column: 1;
+  grid-row: 1;
+  z-index: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.homer-page-carousel__slide {
+  position: absolute;
+  inset: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  transition: transform 0.35s ease;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-border-bright) transparent;
+}
+
+.homer-page-carousel__slide::-webkit-scrollbar {
+  width: 6px;
+}
+
+.homer-page-carousel__slide::-webkit-scrollbar-thumb {
+  background: var(--c-border-bright);
+  border-radius: var(--radius-full);
+}
+
+.homer-page-carousel__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.homer-page-carousel__nav {
+  grid-column: 1;
+  grid-row: 1;
+  z-index: 2;
+  align-self: center;
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-family: var(--font-serif);
+  font-size: 28px;
+  line-height: 1;
+  color: var(--c-text);
+  background: color-mix(in srgb, var(--c-bg) 88%, transparent);
+  border: 0.5px solid var(--c-border-bright);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-base),
+    color var(--duration-base),
+    background var(--duration-base),
+    opacity var(--duration-base);
+}
+
+.homer-page-carousel__nav:hover:not(:disabled) {
+  border-color: var(--c-green);
+  color: var(--c-green);
+}
+
+.homer-page-carousel__nav:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.homer-page-carousel__nav--prev {
+  justify-self: start;
+  margin-left: 12px;
+}
+
+.homer-page-carousel__nav--next {
+  justify-self: end;
+  margin-right: 12px;
+}
+
+.homer-page-carousel__dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.homer-page-carousel__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 1.5px solid var(--c-text-3);
+  border-radius: var(--radius-full);
+  background: var(--c-text-3);
+  cursor: pointer;
+  opacity: 0.45;
+  transition:
+    background var(--duration-base),
+    border-color var(--duration-base),
+    transform var(--duration-base),
+    opacity var(--duration-base);
+}
+
+.homer-page-carousel__dot[data-active='true'] {
+  background: var(--c-green);
+  border-color: var(--c-green);
+  opacity: 1;
+  transform: scale(1.25);
+}
+
+.homer-page-carousel__dot:hover {
+  border-color: var(--c-text);
+  background: var(--c-text);
+  opacity: 0.7;
+}
+
+@media (max-width: 639px) {
+  .homer-page-carousel__frame {
+    grid-template-rows: min(600px, 72vh);
+  }
+
+  .homer-page-carousel__nav {
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+  }
+
+  .homer-page-carousel__nav--prev {
+    left: 8px;
+  }
+
+  .homer-page-carousel__nav--next {
+    right: 8px;
   }
 }
 

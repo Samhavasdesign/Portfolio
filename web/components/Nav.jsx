@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { MenuToggleIcon } from "@/components/ui/menu-toggle-icon";
 import ContactModal from "@/components/ContactModal";
 
@@ -65,9 +66,11 @@ export default function Nav() {
     <nav className="nav-root" data-scrolled={isScrolled ? "true" : "false"}>
       <div className="nav-inner">
         <a href="/" className="inline-flex shrink-0 items-center" aria-label="Samantha Havas home">
-          <img
+          <Image
             src="/samantha-havas-logo.png"
             alt="Samantha Havas logo"
+            width={240}
+            height={44}
             className="block h-10 w-auto max-w-[200px] object-contain object-left md:h-11 md:max-w-[240px]"
             decoding="async"
           />

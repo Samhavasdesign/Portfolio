@@ -19,26 +19,33 @@ const h3Work = {
   letterSpacing: '-0.01em',
 };
 
+const reflectionWrap = {
+  background: 'var(--c-bg-surface)',
+  borderTop: '2px solid var(--c-purple)',
+  padding: '48px 40px',
+  marginTop: '8px',
+};
+
 export default function AngiSlab() {
   return (
     <>
       <Section id="overview">
         <Eyebrow>Overview</Eyebrow>
         <Title>
-          A no-code component platform migration that unified two fragmented brands, eliminated developer dependency for growth experiments, and directly drove a 37% conversion lift on Angi&apos;s highest-traffic pages.
+          37% conversion lift. 36% increase in funnel entry. Behind those numbers was a full rebuild of Angi&apos;s marketing infrastructure — unifying two fragmented brands, replacing ad hoc page creation with a scalable component system, and giving growth teams the ability to launch experiments without engineering support.
         </Title>
 
         <TwoCol>
           <div>
             <Sub>The context</Sub>
             <P>
-              Angi&apos;s growth team was bottlenecked. Launching a new landing page or running an experiment meant waiting on engineering — the micro-frontend architecture was fragmented, patterns were inconsistent across Angi and HomeAdvisor, and there was no standardized component library to work from. Every test was slower and more expensive than it needed to be. SLAB was the answer: a no-code platform for building web experiences and running rapid growth tests. My job was to make it actually work at scale.
+              The existing system had fractured across brands, teams, and tooling. Pages were rebuilt from scratch repeatedly, components lacked consistency, and even small growth experiments required engineering support.
             </P>
           </div>
           <div>
             <Sub>My role</Sub>
             <P>
-              I led the design work for the SLAB migration as the sole design lead on the Growth team. That meant auditing what existed, deciding what to keep and what to rebuild, and establishing the component and token system that both brands would run on going forward. This wasn&apos;t a visual refresh — it was a foundational infrastructure project with design at the center.
+              I led product design for the migration from a legacy page builder to SLAB, defining the component system, responsive behavior, and authoring experience used across Angi and HomeAdvisor.
             </P>
           </div>
         </TwoCol>
@@ -47,7 +54,7 @@ export default function AngiSlab() {
       <ImgBlock id="01" label="Hero — platform, SLAB, or growth experimentation visual" />
 
       <KeyInsight
-        quote="The problem wasn't the components themselves — it was the absence of a shared language between designers, engineers, and the marketers building on top of the platform. Until that existed, every new page was starting from zero."
+        quote="The real problem wasn't UI inconsistency — it was operational inconsistency. Designers, engineers, and marketers were all solving the same problems differently, with no shared language between them. Every new page effectively started from zero."
       />
 
       <Section id="the-work">
@@ -55,19 +62,19 @@ export default function AngiSlab() {
 
         <h3 style={h3Work}>Audit first, build second.</h3>
         <P>
-          I started with a full component library audit across both brands — cataloging what existed in SLAB, what was inconsistent, and what was missing entirely. Rather than designing new components speculatively, the audit drove the roadmap: fix what could be fixed, build what was genuinely absent, deprecate what was redundant.
+          I started with a full component library audit across both brands — cataloging what existed in SLAB, what was inconsistent, and what was missing entirely. Rather than designing new components speculatively, the audit drove the roadmap: fix what could be fixed, build what was genuinely absent, deprecate what was redundant. The rule was simple: standardize what already worked, rebuild only what was broken, and avoid creating net-new components unless they solved a recurring need.
         </P>
 
         <ImgBlock id="02" label="The work — component audit, catalog, or library spread" />
 
-        <h3 style={h3Work}>Components + tokens as a system.</h3>
+        <h3 style={h3Work}>Designing the system beneath the UI</h3>
         <P>
-          The output wasn&apos;t just components — it was a token layer that made the system maintainable. Design tokens meant that brand-specific decisions (Angi red vs. HomeAdvisor styling) lived in one place, not scattered across dozens of individual component specs. I refined the documentation and production builds to make handoff reliable and consistent.
+          Beyond individual components, the goal was a shared foundation both brands could run on. Brand-specific styling lived in one place instead of being rebuilt on every page, and clear documentation made it easier for teams to assemble experiences from validated building blocks without reinventing patterns each time.
         </P>
 
         <ImgBlock id="03" label="The work — tokens, documentation, or system architecture" />
 
-        <h3 style={h3Work}>Enabling the team, not just shipping pages.</h3>
+        <h3 style={h3Work}>Designing for operational scale</h3>
         <P>
           The goal was always for the Growth team to be able to move without design or engineering in the loop for every experiment. The component library I built and the SLAB migration made that possible — non-designers could assemble pages from validated, on-brand building blocks.
         </P>
@@ -82,7 +89,7 @@ export default function AngiSlab() {
         </Title>
 
         <P>
-          The results came through GeoCat — Angi&apos;s highest-traffic SEO landing pages — where the new SLAB infrastructure enabled rapid iteration at a scale that wasn&apos;t possible before.
+          The migration launched across Angi&apos;s highest-traffic SEO landing pages and fundamentally changed how quickly teams could ship, test, and iterate.
         </P>
 
         <StatGrid
@@ -94,15 +101,21 @@ export default function AngiSlab() {
           ]}
         />
 
+        <P>
+          That time was reinvested into faster experimentation cycles and higher shipping velocity across growth teams.
+        </P>
+
         <ImgBlock id="05" label="Outcome — GeoCat results, experimentation, or live landing pages" />
       </Section>
 
       <Section id="reflection">
         <Eyebrow>Reflection</Eyebrow>
-        <Title>What I&apos;d do differently</Title>
-        <P>
-          The thing I&apos;d do differently is advocate earlier for token documentation to be treated as a first-class deliverable — not something that gets refined after launch. The components we shipped were solid, but the token layer took longer to stabilize than it should have because it was treated as secondary to the visible UI work. On a system like this, the invisible infrastructure matters as much as what users actually see.
-        </P>
+        <div style={reflectionWrap}>
+          <Title>What I&apos;d do differently</Title>
+          <P>
+            We built a flexible system quickly because the organization needed speed. In hindsight, I would have pushed for token standardization earlier — some inconsistencies became harder to unwind once multiple teams were building independently inside the system. The tradeoff was worth it, but it reinforced how important governance becomes once a design system reaches operational scale.
+          </P>
+        </div>
       </Section>
     </>
   );

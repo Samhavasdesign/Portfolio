@@ -1,5 +1,6 @@
 // Shared primitive components for all case studies.
 // Import what you need: import { Section, Title, P, ImgBlock, ... } from './CaseStudyShared';
+import Image from 'next/image';
 
 export function Section({ id, children }) {
   return (
@@ -125,7 +126,9 @@ export function VersionLabel({ children, type }) {
   );
 }
 
-export function ImgBlock({ id, label, caption, aspect = '16/9', cols = 1, src, srcs, fit = 'contain', fits, hug = false, intrinsicWidth, intrinsicHeight, imageEyebrow }) {
+export function ImgBlock({ id, label, caption, aspect = '16/9', cols = 1, src, srcs, fit = 'contain', fits, positions, position = 'center', hug = false, align = 'center', intrinsicWidth, intrinsicHeight, displayWidth, displayHeight, imageEyebrow, sizes = '(max-width: 768px) 100vw, 680px' }) {
+  const isLeft = align === 'left';
+  const hasFixedDisplaySize = hug && displayWidth != null && displayHeight != null;
   const items = Array.from({ length: cols });
   return (
     <div style={{ margin: '40px 0' }}>
@@ -151,35 +154,45 @@ export function ImgBlock({ id, label, caption, aspect = '16/9', cols = 1, src, s
             border: '0.5px solid var(--c-border-mid)',
             position: 'relative',
             overflow: 'hidden',
-            ...(hug ? { display: 'flex', justifyContent: 'center' } : {}),
+            ...(hug ? { display: 'flex', justifyContent: isLeft ? 'flex-start' : 'center' } : {}),
           }}>
             {(srcs?.[i] || src) ? (
-              <img
-                src={srcs?.[i] || src}
-                alt={label}
-                width={intrinsicWidth}
-                height={intrinsicHeight}
-                decoding="async"
-                style={
-                  hug
-                    ? {
-                        display: 'block',
-                        maxWidth: '100%',
-                        width: 'auto',
-                        height: 'auto',
-                        marginLeft: 'auto',
-                        marginRight: 'auto',
-                        background: 'var(--c-bg)',
-                      }
-                    : {
-                        width: '100%',
-                        height: '100%',
-                        display: 'block',
-                        background: 'var(--c-bg)',
-                        objectFit: fits?.[i] || fit,
-                      }
-                }
-              />
+              hug ? (
+                <Image
+                  src={srcs?.[i] || src}
+                  alt={label}
+                  width={intrinsicWidth}
+                  height={intrinsicHeight}
+                  unoptimized
+                  decoding="async"
+                  style={{
+                    display: 'block',
+                    maxWidth: '100%',
+                    width: hasFixedDisplaySize ? displayWidth : 'auto',
+                    height: hasFixedDisplaySize ? displayHeight : 'auto',
+                    marginLeft: isLeft ? 0 : 'auto',
+                    marginRight: isLeft ? 'auto' : 'auto',
+                    background: 'var(--c-bg)',
+                  }}
+                />
+              ) : (
+                <Image
+                  src={srcs?.[i] || src}
+                  alt={label}
+                  fill
+                  unoptimized
+                  sizes={sizes}
+                  decoding="async"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'block',
+                    background: 'var(--c-bg)',
+                    objectFit: fits?.[i] || fit,
+                    objectPosition: positions?.[i] || position,
+                  }}
+                />
+              )
             ) : (
               <div style={{
                 display: 'flex',

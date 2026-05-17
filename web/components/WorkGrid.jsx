@@ -13,7 +13,7 @@ export default function WorkGrid({
   id = "work",
   linkPrefix = "/work",
 }) {
-  const sectionMeta = meta ?? `${projects.length} PROJECTS · 2016–2025`;
+  const sectionMeta = meta ?? `${projects.length} PROJECTS · 2020-2026`;
   const rootRef = useRef(null);
   const headerRef = useRef(null);
   const gridRef = useRef(null);

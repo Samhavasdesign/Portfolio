@@ -9,6 +9,7 @@ import {
   ImgBlock,
   StatGrid,
 } from './CaseStudyShared';
+import HomerPageCarousel from './HomerPageCarousel';
 
 const h3Work = {
   fontFamily: 'var(--font-serif)',
@@ -25,8 +26,20 @@ export default function HomerWebsite() {
       <Section id="overview">
         <Eyebrow>Overview</Eyebrow>
         <Title>
-          A full-scale redesign of HOMER&apos;s marketing site and digital brand experience — aligning visual identity, product story, and conversion architecture into a single cohesive platform built to grow with the business.
+          A full-scale redesign of HOMER&apos;s marketing site and digital brand experience — aligning visual identity, product story, and conversion architecture into a single cohesive platform built to grow with the business
         </Title>
+
+        <ImgBlock
+          id="brand-colors"
+          label="HOMER brand color palette — navy, coral, yellow, and teal"
+          src="/images/work/homerwebsite-brand-colors.png"
+          hug
+          align="left"
+          intrinsicWidth={279}
+          intrinsicHeight={54}
+          displayWidth={140}
+          displayHeight={27}
+        />
 
         <TwoCol>
           <div>
@@ -44,7 +57,14 @@ export default function HomerWebsite() {
         </TwoCol>
       </Section>
 
-      <ImgBlock id="01" label="Hero — marketing site rebrand, homepage, or brand system overview" />
+      <ImgBlock
+        id="01"
+        label="HOMER marketing site redesign — homepage hero on desktop and mobile"
+        src="/images/work/homerwebsite.png"
+        hug
+        intrinsicWidth={2184}
+        intrinsicHeight={1480}
+      />
 
       <KeyInsight
         quote="The site had to do two things simultaneously: earn the trust of a skeptical parent in seconds, and guide that same parent seamlessly from curiosity to conversion. Every design decision had to serve both."
@@ -53,51 +73,91 @@ export default function HomerWebsite() {
       <Section id="the-work">
         <Eyebrow>The work</Eyebrow>
 
-        <h3 style={h3Work}>Design system first.</h3>
+        <h3 style={h3Work}>Design system first</h3>
         <P>
           Before touching a single page, we established the foundation — color scheme, grid system, spacing rules, typography, and a responsive breakpoint structure covering mobile, tablet, and desktop. I stress-tested the new brand colors and styles against UI components, then created a new button system with clear guidelines for usage and implementation. The component system was built for flexibility and reusability, with clear states, responsive behavior, and accessibility baked in from the start — so design and engineering could move in parallel without constant back-and-forth.
         </P>
 
-        <ImgBlock id="02" label="Design system — colors, grid, spacing, button components" />
+        <ImgBlock
+          id="02"
+          label="Design system — colors, spacing, and responsive grid"
+          src="/images/work/homer-design-system-mocks.png"
+          hug
+          intrinsicWidth={1115}
+          intrinsicHeight={2104}
+        />
 
-        <h3 style={h3Work}>Homepage.</h3>
+        <ImgBlock
+          id="02b"
+          label="Design system — buttons and links"
+          caption="Foundation documentation for color scales, spacing tokens, and breakpoint grid behavior across mobile, tablet, and desktop."
+          src="/images/work/buttons-links.png"
+          hug
+          intrinsicWidth={1092}
+          intrinsicHeight={740}
+        />
+
+        <h3 style={h3Work}>Homepage</h3>
         <P>
           The homepage was the highest-stakes surface — a highly cross-functional page built in close collaboration with brand partners and multiple stakeholders. We restructured the hero and supporting sections to tell a clear, emotionally resonant story, combining aspirational messaging, product benefits, and social proof in a concise, scrollable narrative. Modular components allowed for dynamic content updates and A/B testing without requiring engineering involvement.
         </P>
 
-        <ImgBlock id="03" label="Homepage — desktop and mobile" />
+        <ImgBlock
+          id="03"
+          label="HOMER homepage and key pages — mobile mockups"
+          src="/images/work/Home_Mobile.png"
+          hug
+          intrinsicWidth={3308}
+          intrinsicHeight={1988}
+        />
 
-        <h3 style={h3Work}>Explore Kits launch page.</h3>
+        <h3 style={h3Work}>Explore Kits launch page</h3>
         <P>
           Working closely with the physical kit designers and the marketing team, I designed the Explore Kits product page from scratch — including new components like the product detail carousel. The page balanced product education, age-appropriate guidance, and clear purchasing pathways, while flexible content modules let the marketing team update offers and seasonal bundles independently.
         </P>
 
-        <ImgBlock id="04" label="Explore Kits product page" />
+        <ImgBlock
+          id="04"
+          label="HOMER Explore Kits product page — mobile mockups"
+          src="/images/work/Explore_mobile.png"
+          hug
+          intrinsicWidth={3308}
+          intrinsicHeight={1988}
+        />
 
-        <h3 style={h3Work}>Full page suite.</h3>
+        <h3 style={h3Work}>Full page suite</h3>
         <P>
           Beyond the homepage, the redesign covered the full site: Why HOMER, About, Subject pages, Learn and Grow landing pages, Careers, and more. Each page was built on the same token-based component system, ensuring brand consistency at scale without manual QA on every update.
         </P>
 
-        <ImgBlock id="05" label="Full page suite — site map, templates, or key page thumbnails" />
+        <div className="case-study-store-links">
+          <a
+            href="https://learnwithhomer.com/"
+            className="case-study-store-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            See it live <span className="case-study-store-link-arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
+
+        <HomerPageCarousel />
       </Section>
 
       <Section id="outcome">
         <Eyebrow>Outcome</Eyebrow>
-        <Title>A stronger digital presence that directly supported HOMER&apos;s next growth chapter.</Title>
+        <Title>A stronger digital presence that directly supported HOMER&apos;s next growth chapter</Title>
 
         <P>
           After three months, the redesigned site reflected HOMER&apos;s updated branding and full product offering — creating the foundation for subscription plan launches that drove increased Convert to Pay and Annual plan adoptions. The modular component system empowered both design and marketing teams to iterate quickly, launch campaigns, and maintain brand consistency as the product and content continued to evolve.
         </P>
 
         <StatGrid items={[{ stat: '2M+', label: 'families reached' }]} />
-
-        <ImgBlock id="06" label="Outcome — live site, conversion, or campaign results" />
       </Section>
 
       <Section id="reflection">
         <Eyebrow>Reflection</Eyebrow>
-        <Title>What I&apos;d do differently.</Title>
+        <Title>What I&apos;d do differently</Title>
 
         <P>
           The design system documentation was strong internally, but I&apos;d invest more in making it self-service for the marketing team earlier. There was a period where content updates required more design involvement than they should have — building that capability from day one would have freed up capacity on both sides.

@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 
 /** Begin iPad bezel asset (same as their PDP). */
 const EMPTY_IPAD =
@@ -61,11 +62,14 @@ export default function SesameIpadDemoEmbed({
               height: '100%',
               minHeight: '200px',
               lineHeight: 0,
+              position: 'relative',
             }}
           >
-            <img
+            <Image
               src={previewSrc}
               alt=""
+              fill
+              quality={95}
               style={{
                 width: '100%',
                 height: '100%',
@@ -76,9 +80,12 @@ export default function SesameIpadDemoEmbed({
           </a>
         </div>
 
-        <img
+        <Image
           src={EMPTY_IPAD}
           alt=""
+          width={1000}
+          height={750}
+          quality={95}
           style={{
             position: 'relative',
             zIndex: 1,

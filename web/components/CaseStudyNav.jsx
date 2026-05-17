@@ -6,23 +6,42 @@ export default function CaseStudyNav({ sections, readTime }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const observers = [];
-    sections.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const observer = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
-        { rootMargin: '-20% 0px -70% 0px', threshold: 0 }
-      );
-      observer.observe(el);
-      observers.push(observer);
-    });
-    return () => observers.forEach((o) => o.disconnect());
+    const updateActiveSection = () => {
+      const activationOffset = window.innerWidth >= 768 ? 120 : 160;
+      let current = sections[0]?.id;
+
+      for (const { id } of sections) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        if (el.getBoundingClientRect().top <= activationOffset) {
+          current = id;
+        }
+      }
+
+      const atBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 48;
+      if (atBottom) {
+        current = sections[sections.length - 1]?.id ?? current;
+      }
+
+      setActiveSection(current);
+    };
+
+    updateActiveSection();
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    window.addEventListener('resize', updateActiveSection, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', updateActiveSection);
+      window.removeEventListener('resize', updateActiveSection);
+    };
   }, [sections]);
 
   const scrollTo = (id) => {
     const el = document.getElementById(id);
     if (!el) return;
+
+    setActiveSection(id);
 
     // Keep section headers visible below sticky nav/chrome on both breakpoints.
     const stickyOffset = window.innerWidth >= 768 ? 96 : 132;

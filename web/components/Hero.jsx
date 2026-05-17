@@ -537,7 +537,7 @@ export default function Hero() {
         <div
           data-hero-right
           aria-busy={githubMode === "loading"}
-          className={`hero-at-wide-right flex flex-col overflow-hidden transition-colors duration-500 ${isPanePulsing ? "bg-[var(--hero-pane-live)]" : "bg-[var(--hero-pane-bg)]"}`}
+          className={`hero-at-wide-right flex flex-col overflow-hidden transition-colors duration-500 md:h-full md:justify-center ${isPanePulsing ? "bg-[var(--hero-pane-live)]" : "bg-[var(--hero-pane-bg)]"}`}
         >
           <div className="hero-at-wide-github hero-github hero-github-header hero-github-divider-b flex items-center justify-between pb-4">
             <div className="flex items-center gap-2">
