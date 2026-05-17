@@ -87,38 +87,6 @@ export const caseStudies: CaseStudy[] = [
     ],
   },
   {
-    slug: 'angiugc',
-    company: 'Angi',
-    role: 'Senior Product Designer',
-    year: '2025-2026',
-    tags: ['Web', 'SEO', 'Content', 'Growth', 'CRO'],
-    metric: '63%',
-    metricLabel: 'engagement increase',
-    summary:
-      "Turning Angi's untapped content into an SEO engine — and a reason for homeowners to stay.",
-    thumbnail: '/images/work/angi-ask-a-pro-card.jpg',
-    readTime: '9 min read',
-    protected: false,
-    headline:
-      "Turning Angi's untapped content into an SEO engine — and a reason for homeowners to stay.",
-    heroImage: '/images/work/angi-ask-a-pro-hero.jpg',
-    heroAlt:
-      'Professional service worker in a kitchen reviewing his phone',
-    heroEyebrow: 'Case study · Web · Content',
-    metaItems: [
-      { label: 'Company', value: 'Angi' },
-      { label: 'Role', value: 'Design Lead' },
-      { label: 'Timeline', value: '2022–2024' },
-      { label: 'Platform', value: 'Web (Mobile First)' },
-    ],
-    sections: [
-      { id: 'overview', label: 'Overview' },
-      { id: 'the-work', label: 'The work' },
-      { id: 'outcome', label: 'Outcome' },
-      { id: 'reflection', label: 'Reflection' },
-    ],
-  },
-  {
     slug: 'angislab',
     company: 'Angi',
     role: 'Senior Product Designer',
@@ -140,6 +108,38 @@ export const caseStudies: CaseStudy[] = [
     metaItems: [
       { label: 'Company', value: 'Angi' },
       { label: 'Role', value: 'Senior Product Design Lead' },
+      { label: 'Timeline', value: '2022–2024' },
+      { label: 'Platform', value: 'Web (Mobile First)' },
+    ],
+    sections: [
+      { id: 'overview', label: 'Overview' },
+      { id: 'the-work', label: 'The work' },
+      { id: 'outcome', label: 'Outcome' },
+      { id: 'reflection', label: 'Reflection' },
+    ],
+  },
+  {
+    slug: 'angiugc',
+    company: 'Angi',
+    role: 'Senior Product Designer',
+    year: '2025-2026',
+    tags: ['Web', 'SEO', 'Content', 'Growth', 'CRO'],
+    metric: '63%',
+    metricLabel: 'engagement increase',
+    summary:
+      "Turning Angi's untapped content into an SEO engine — and a reason for homeowners to stay.",
+    thumbnail: '/images/work/angi-ask-a-pro-card.jpg',
+    readTime: '9 min read',
+    protected: false,
+    headline:
+      "Turning Angi's untapped content into an SEO engine — and a reason for homeowners to stay.",
+    heroImage: '/images/work/angi-ask-a-pro-hero.jpg',
+    heroAlt:
+      'Professional service worker in a kitchen reviewing his phone',
+    heroEyebrow: 'Case study · Web · Content',
+    metaItems: [
+      { label: 'Company', value: 'Angi' },
+      { label: 'Role', value: 'Design Lead' },
       { label: 'Timeline', value: '2022–2024' },
       { label: 'Platform', value: 'Web (Mobile First)' },
     ],
