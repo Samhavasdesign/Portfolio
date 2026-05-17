@@ -18,6 +18,7 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
   const isAngislabCard = project.slug === "angislab";
   const isAngiugcCard = project.slug === "angiugc";
   const isAngisemCard = project.slug === "angisem";
+  const isGrammarEditorCard = project.slug === "grammar-editor";
   const isHeroObjectTop = isAngisemCard || isAngislabCard;
 
   return (
@@ -41,7 +42,10 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
     >
       <div
         className="relative w-full overflow-hidden"
-        style={{ aspectRatio: "16/9", background: "var(--c-border)" }}
+        style={{
+          aspectRatio: "16/9",
+          background: isGrammarEditorCard ? "var(--c-bg)" : "var(--c-border)",
+        }}
       >
         <div
           className="absolute inset-0 z-0 flex items-center justify-center"
@@ -57,7 +61,7 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
             quality={95}
-            className={`relative z-[1] h-full w-full object-cover opacity-80 transition-opacity duration-200 group-hover:opacity-100${isHeroObjectTop ? " object-top" : ""}`}
+            className={`relative z-[1] h-full w-full opacity-80 transition-opacity duration-200 group-hover:opacity-100${isGrammarEditorCard ? " object-contain" : " object-cover"}${isHeroObjectTop ? " object-top" : ""}`}
             onError={() => setImgFailed(true)}
           />
         )}

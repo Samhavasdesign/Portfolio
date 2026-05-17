@@ -2,6 +2,20 @@ import type { CaseStudy } from "@/lib/work";
 
 export const labProjects: CaseStudy[] = [
   {
+    slug: "grammar-editor",
+    company: "Grammar Editor",
+    role: "Claude API · React · Vercel",
+    year: "2025",
+    tags: ["AI", "Writing", "Claude"],
+    metric: "Real-time",
+    metricLabel: "inline rewrites",
+    summary: "A lightweight writing editor wired to the Claude API. Highlights grammar issues and suggests rewrites inline.",
+    thumbnail: "/images/lab/say-that-better-hero.png",
+    readTime: "",
+    protected: false,
+    sections: [],
+  },
+  {
     slug: "flight-finder",
     company: "Flight Finder",
     role: "Scraping · Claude · Vercel",
@@ -12,20 +26,6 @@ export const labProjects: CaseStudy[] = [
     summary:
       "A Claude-assisted scrape pipeline that pulls airline deals and surfaces them in a clean, scannable UI.",
     thumbnail: "/images/lab/flight-finder-thumb.jpg",
-    readTime: "",
-    protected: false,
-    sections: [],
-  },
-  {
-    slug: "grammar-editor",
-    company: "Grammar Editor",
-    role: "Claude API · React · Vercel",
-    year: "2025",
-    tags: ["AI", "Writing", "Claude"],
-    metric: "Real-time",
-    metricLabel: "inline rewrites",
-    summary: "A lightweight writing editor wired to the Claude API. Highlights grammar issues and suggests rewrites inline.",
-    thumbnail: "/images/lab/grammar-editor-thumb.jpg",
     readTime: "",
     protected: false,
     sections: [],
