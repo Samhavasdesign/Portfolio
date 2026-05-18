@@ -1176,6 +1176,66 @@ h3 {
   line-height: 1.65;
 }
 
+.case-study-hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  border-bottom: 0.5px solid var(--c-border);
+}
+
+.case-study-hero--homerwebsite {
+  aspect-ratio: 7685 / 5115;
+  background: var(--c-bg);
+}
+
+.case-study-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.case-study-hero__media > span {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.case-study-hero__media .case-study-hero__image {
+  object-fit: cover;
+}
+
+.case-study-hero--contain .case-study-hero__media .case-study-hero__image {
+  object-fit: contain;
+}
+
+.case-study-hero--top .case-study-hero__media .case-study-hero__image {
+  object-position: center top;
+}
+
+.case-study-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--grid-margin);
+  background: color-mix(in srgb, var(--c-code-mid) 35%, var(--c-bg) 65%);
+}
+
+.case-study-hero-overlay__message {
+  margin: 0;
+  max-width: 22rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-base);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-tight);
+  color: var(--c-text);
+  text-align: center;
+}
+
 .case-study-meta-strip {
   display: grid;
   grid-template-columns: repeat(2, auto);

@@ -16,6 +16,7 @@ export type CaseStudy = {
   heroImage?: string;
   heroAlt?: string;
   heroEyebrow?: string;
+  heroInProgress?: boolean;
   metaItems?: { label: string; value: string }[];
   externalUrl?: string;
 };
@@ -138,6 +139,7 @@ export const caseStudies: CaseStudy[] = [
     heroAlt:
       'Professional service worker in a kitchen reviewing his phone',
     heroEyebrow: 'Case study · Web · Content',
+    heroInProgress: true,
     metaItems: [
       { label: 'Company', value: 'Angi' },
       { label: 'Role', value: 'Design Lead' },

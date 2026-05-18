@@ -114,30 +114,33 @@ export default function CaseStudyPage({ params }) {
 
       {/* Full-bleed hero image */}
       {study.heroImage ? (
-        <div style={{ position: 'relative', width: '100%', aspectRatio: study.slug === 'homerwebsite' ? '7685 / 5115' : '21 / 9',
-            background: study.slug === 'homerwebsite' ? 'var(--c-bg)' : undefined,
-            borderBottom: '0.5px solid var(--c-border)',
-            overflow: 'hidden',
-          }}
+        <div
+          className={[
+            'case-study-hero',
+            study.slug === 'homerwebsite' && 'case-study-hero--homerwebsite',
+            study.slug === 'homerwebsite' && 'case-study-hero--contain',
+            (study.slug === 'homer' || study.slug === 'angislab') && 'case-study-hero--top',
+          ].filter(Boolean).join(' ')}
         >
-          <Image
-            key={study.heroImage}
-            src={study.heroImage}
-            alt={study.heroAlt ?? ''}
-            fill
-            sizes="100vw"
-            quality={90}
-            priority
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: study.slug === 'homerwebsite' ? 'contain' : 'cover',
-              display: 'block',
-              ...(study.slug === 'homer' || study.slug === 'angislab'
-                ? { objectPosition: 'center top' }
-                : {}),
-            }}
-          />
+          <div className="case-study-hero__media">
+            <Image
+              key={study.heroImage}
+              src={study.heroImage}
+              alt={study.heroAlt ?? ''}
+              fill
+              sizes="100vw"
+              quality={90}
+              priority
+              className="case-study-hero__image"
+            />
+          </div>
+          {study.heroInProgress && (
+            <div className="case-study-hero-overlay" role="status">
+              <p className="case-study-hero-overlay__message">
+                Case study in progress — full visuals coming soon
+              </p>
+            </div>
+          )}
         </div>
       ) : (
         <div
