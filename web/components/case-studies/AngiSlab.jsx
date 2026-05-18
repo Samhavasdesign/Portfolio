@@ -9,6 +9,7 @@ import {
   ImgBlock,
   StatGrid,
 } from './CaseStudyShared';
+import AngiSlabCarousel from './AngiSlabCarousel';
 
 const h3Work = {
   fontFamily: 'var(--font-serif)',
@@ -55,7 +56,7 @@ export default function AngiSlab() {
           37% conversion lift. 36% increase in funnel entry.
           <br />
           <br />
-          Behind those numbers was a rebuild of Angi&apos;s marketing infrastructure: unifying Angi, HomeAdvisor, and Instapro, replacing ad hoc page creation with a scalable component system, and enabling growth teams to launch experiments without engineering support.
+          Behind those numbers was a rebuild of Angi&apos;s marketing infrastructure: unifying Angi (consumer-facing and pro-facing) and HomeAdvisor onto a scalable component system, and enabling growth teams to launch experiments without engineering support.
         </Title>
 
         <TwoCol>
@@ -65,25 +66,54 @@ export default function AngiSlab() {
               The existing system had fractured across brands, teams, and tooling. Pages were rebuilt from scratch repeatedly, components lacked consistency, and even small growth experiments required engineering support.
             </P>
             <P>
-              Three distinct brand expressions needed to run on the same underlying component architecture — each with its own visual language, but sharing the same structural foundation.
+              Two distinct brand expressions — Angi (consumer-facing and pro-facing) and HomeAdvisor — needed to run on the same underlying component architecture, each with its own visual language but sharing the same structural foundation. Instapro was later brought onto the system after their acquisition by Angi.
             </P>
           </div>
           <div>
             <Sub>My role</Sub>
             <P>
-              I led product design for the migration from a legacy page builder to SLAB, defining the component system, responsive behavior, and authoring experience used across Angi, HomeAdvisor, and Instapro.
+              I led product design for the migration from a legacy page builder to SLAB, defining the component system, responsive behavior, and authoring experience used across Angi and HomeAdvisor.
             </P>
           </div>
         </TwoCol>
       </Section>
+
+      <h3 style={h3Work}>Project roadmap</h3>
+
+      <ImgBlock
+        id="project-flow"
+        label="Overall project flow"
+        src="/images/work/Overall-project-flow.png"
+        hug
+        intrinsicWidth={9084}
+        intrinsicHeight={1896}
+      />
 
       <Section id="the-work">
         <Eyebrow>The work</Eyebrow>
 
         <h3 style={h3Work}>Audit first, build second.</h3>
         <P>
-          I started with a full component library audit across Angi, HomeAdvisor, and Instapro — cataloging what existed in SLAB, what was inconsistent, and what was missing entirely. Rather than designing new components speculatively, the audit drove the roadmap: fix what could be fixed, build what was genuinely absent, deprecate what was redundant. The rule was simple: standardize what already worked, rebuild only what was broken, and avoid creating net-new components unless they solved a recurring need.
+          I started with a full component library audit across Angi and HomeAdvisor — cataloging what existed in SLAB, what was inconsistent, and what was missing entirely. Rather than designing new components speculatively, the audit drove the roadmap: fix what could be fixed, build what was genuinely absent, deprecate what was redundant. The rule was simple: standardize what already worked, rebuild only what was broken, and avoid creating net-new components unless they solved a recurring need.
         </P>
+
+        <ImgBlock
+          id="hero-audit"
+          label="Hero component audit"
+          src="/images/work/Hero-Audit.png"
+          hug
+          intrinsicWidth={11520}
+          intrinsicHeight={4938}
+        />
+
+        <ImgBlock
+          id="buttons"
+          label="Button component audit"
+          src="/images/work/Buttons.png"
+          hug
+          intrinsicWidth={11520}
+          intrinsicHeight={5892}
+        />
 
         <ImgBlock
           id="02"
@@ -104,7 +134,7 @@ export default function AngiSlab() {
 
         <h3 style={h3Work}>Designing the system beneath the UI</h3>
         <P>
-          The goal was a single token layer that all three brands — Angi, HomeAdvisor, and Instapro — could run on. Each brand had its own visual language, but semantic tokens meant brand-specific values lived in one place rather than being hardcoded into every component. Swap the token set, the brand changes. The components stay the same. Instead of rebuilding components for every brand, teams could swap token sets and instantly reskin experiences across Angi, HomeAdvisor, and Instapro.
+          The goal was a single token layer that both brands — Angi and HomeAdvisor — could run on. Each brand had its own visual language, but semantic tokens meant brand-specific values lived in one place rather than being hardcoded into every component. Swap the token set, the brand changes. The components stay the same. When Instapro was later acquired, this architecture made it straightforward to extend the system to support a third brand without rebuilding from scratch.
         </P>
 
         <ImgBlock
@@ -127,10 +157,26 @@ export default function AngiSlab() {
 
         <h3 style={h3Work}>Speccing for scale</h3>
         <P>
-          At this scale, ambiguity became operational debt. A spacing inconsistency in one component could silently propagate across hundreds of pages. Beyond the token layer, every component shipped with detailed spec documentation — spacing, typography, color, and interactive states called out explicitly. With three brands building on the same system, handoff precision wasn&apos;t optional.
+          At this scale, ambiguity became operational debt. A spacing inconsistency in one component could silently propagate across hundreds of pages. Beyond the token layer, every component shipped with detailed spec documentation — spacing, typography, color, and interactive states called out explicitly. With multiple brands building on the same system, handoff precision wasn&apos;t optional.
         </P>
 
-        <ImgBlock id="04" label="Spec documentation — spacing, typography, color, and interactive states" />
+        <ImgBlock
+          id="04"
+          label="Page spec documentation"
+          src="/images/work/Page-spec.png"
+          hug
+          intrinsicWidth={7050}
+          intrinsicHeight={5469}
+        />
+
+        <ImgBlock
+          id="04b"
+          label="Component spec documentation"
+          src="/images/work/Component-spec.png"
+          hug
+          intrinsicWidth={7050}
+          intrinsicHeight={7497}
+        />
 
         <h3 style={h3Work}>Designing for operational scale</h3>
         <P>
@@ -150,7 +196,8 @@ export default function AngiSlab() {
         />
       </Section>
 
-      <ImgBlock id="06" label="Outcome — GeoCat results, experimentation, or live landing pages" />
+      <h3 style={h3Work}>Sample projects built with the new components</h3>
+      <AngiSlabCarousel />
 
       <Section id="outcome">
         <Eyebrow>Outcome</Eyebrow>

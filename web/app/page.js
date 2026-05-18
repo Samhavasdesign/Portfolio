@@ -18,8 +18,8 @@ export default function Home() {
       <ClientLogoMarquee />
       <WorkGrid projects={caseStudies} />
       <WorkGrid
-        title="AI Lab Experiments"
-        meta={`${labProjects.length} PROJECTS · 2025`}
+        title="AI lab experiments"
+        meta={`${labProjects.length} PROJECTS · 2026`}
         projects={labProjects}
         id="Lab"
         linkPrefix="/lab"

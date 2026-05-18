@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import Image from 'next/image';
+import { useSwipe } from '../../hooks/useSwipe';
 
 const SLIDES = [
   { src: '/images/work/SEMfullpage-final.png', alt: 'Angi SEM final concept — full page stepped approach mockup', width: 5355, height: 21633 },
@@ -25,6 +26,11 @@ export default function AngiSemCarousel() {
     if (e.key === 'ArrowRight') { e.preventDefault(); goTo(active + 1); }
   };
 
+  const { onTouchStart, onTouchEnd } = useSwipe(
+    () => goTo(active + 1),
+    () => goTo(active - 1),
+  );
+
   return (
     <div
       className="homer-page-carousel"
@@ -38,6 +44,8 @@ export default function AngiSemCarousel() {
           tabIndex={0}
           aria-live="polite"
           onKeyDown={onKeyDown}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
         >
           {SLIDES.map((slide, i) => (
             <div

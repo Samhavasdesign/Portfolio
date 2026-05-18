@@ -19,12 +19,17 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
   const isAngiugcCard = project.slug === "angiugc";
   const isAngisemCard = project.slug === "angisem";
   const isGrammarEditorCard = project.slug === "grammar-editor";
+  const isFlightFinderCard = project.slug === "flight-finder";
   const isHeroObjectTop = isAngisemCard || isAngislabCard;
+  const isHeroObjectContain = isGrammarEditorCard || isFlightFinderCard;
+  const href = project.externalUrl ?? `${linkPrefix}/${project.slug}`;
+  const isExternal = Boolean(project.externalUrl);
 
   return (
     <MotionLink
       data-work-card
-      href={`${linkPrefix}/${project.slug}`}
+      href={href}
+      {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       className="group block border-solid no-underline"
       style={{
         background: "var(--c-bg-raised)",
@@ -44,7 +49,7 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
         className="relative w-full overflow-hidden"
         style={{
           aspectRatio: "16/9",
-          background: isGrammarEditorCard ? "var(--c-bg)" : "var(--c-border)",
+          background: isHeroObjectContain ? "var(--c-bg)" : "var(--c-border)",
         }}
       >
         <div
@@ -61,7 +66,7 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
             quality={95}
-            className={`relative z-[1] h-full w-full opacity-80 transition-opacity duration-200 group-hover:opacity-100${isGrammarEditorCard ? " object-contain" : " object-cover"}${isHeroObjectTop ? " object-top" : ""}`}
+            className={`relative z-[1] h-full w-full opacity-80 transition-opacity duration-200 group-hover:opacity-100${isHeroObjectContain ? " object-contain" : " object-cover"}${isHeroObjectTop ? " object-top" : ""}`}
             onError={() => setImgFailed(true)}
           />
         )}

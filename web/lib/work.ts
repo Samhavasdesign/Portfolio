@@ -17,6 +17,7 @@ export type CaseStudy = {
   heroAlt?: string;
   heroEyebrow?: string;
   metaItems?: { label: string; value: string }[];
+  externalUrl?: string;
 };
 
 export const caseStudies: CaseStudy[] = [
