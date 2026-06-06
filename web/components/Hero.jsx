@@ -530,7 +530,7 @@ export default function Hero() {
               className="hero-stats-grid-cell px-3 py-3"
             >
               <p className="hero-stat-value tabular-nums">16M+</p>
-              <p className="hero-stat-label">PROJECTS IMPACTED</p>
+              <p className="hero-stat-label">USERS IMPACTED</p>
             </motion.div>
           </div>
         </div>
