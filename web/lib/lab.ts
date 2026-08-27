@@ -2,19 +2,36 @@ import type { CaseStudy } from "@/lib/work";
 
 export const labProjects: CaseStudy[] = [
   {
-    slug: "grammar-editor",
-    company: "Grammar Editor",
-    role: "Claude API · React · Vercel",
-    year: "2025",
-    tags: ["AI", "Writing", "Claude"],
-    metric: "Real-time",
-    metricLabel: "inline rewrites",
-    summary: "A lightweight writing editor wired to the Claude API. Highlights grammar issues and suggests rewrites inline.",
-    thumbnail: "/images/lab/say-that-better-hero.png",
+    slug: "rethink-wallet",
+    company: "Digital Experience for Rethink",
+    role: "Claude Code · Cursor",
+    year: "2026",
+    tags: ["Nonprofit", "Prototype", "Dashboard"],
+    metric: "",
+    metricLabel: "",
+    summary:
+      "A donor wallet prototype that makes impact tangible — balance, giving history, and where support goes.",
+    thumbnail: "/images/lab/rethink-wallet-hero.jpg",
     readTime: "",
     protected: false,
     sections: [],
-    externalUrl: "https://text-refiner--samhavas.replit.app/",
+    externalUrl: "https://digitizing-44tt.vercel.app/dashboard?wallet=all",
+  },
+  {
+    slug: "design-eval-toolkit",
+    company: "AI Design Evaluation Toolkit",
+    role: "Claude API · Claude Code",
+    year: "2026",
+    tags: ["SaaS Tool", "AI Evaluation", "API Integration", "Workflow Optimization", "Personal Project"],
+    metric: "",
+    metricLabel: "",
+    summary:
+      "A Claude-powered evaluation toolkit that scores AI generated designs against the original prompt — aesthetics, usability, and adherence in one pass.",
+    thumbnail: "/images/lab/design-eval-toolkit-hero.jpg",
+    readTime: "",
+    protected: false,
+    sections: [],
+    externalUrl: "https://design-eval-checklist.vercel.app/",
   },
   {
     slug: "flight-finder",
@@ -30,5 +47,8 @@ export const labProjects: CaseStudy[] = [
     readTime: "",
     protected: false,
     sections: [],
+    hidden: true,
   },
 ];
+
+export const visibleLabProjects = labProjects.filter((project) => !project.hidden);

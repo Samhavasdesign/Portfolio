@@ -6,7 +6,7 @@ import AboutSection from "@/components/AboutSection";
 import ClientLogoMarquee from "@/components/ClientLogoMarquee";
 import Footer from "@/components/Footer";
 import WorkGrid from "@/components/WorkGrid";
-import { labProjects } from "@/lib/lab";
+import { visibleLabProjects } from "@/lib/lab";
 import { caseStudies } from "@/lib/work";
 
 export default function Home() {
@@ -16,14 +16,16 @@ export default function Home() {
       <Nav />
       <Hero />
       <ClientLogoMarquee />
-      <WorkGrid projects={caseStudies} />
       <WorkGrid
-        title="AI lab experiments"
-        meta={`${labProjects.length} PROJECTS · 2026`}
-        projects={labProjects}
+        title="AI builds"
+        meta={`${visibleLabProjects.length} BUILDS · 2026`}
+        description="Working prototypes I designed and coded end to end — from idea to live product."
+        projects={visibleLabProjects}
         id="Lab"
         linkPrefix="/lab"
+        className="section-container--tight-bottom"
       />
+      <WorkGrid projects={caseStudies} className="section-container--tight-top" />
       <AboutSection />
       <Footer />
       <Chatbot />

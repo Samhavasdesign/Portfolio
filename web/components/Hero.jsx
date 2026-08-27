@@ -498,7 +498,7 @@ export default function Hero() {
               </div>
               <motion.a
                 className="hero-cta self-start"
-                href="#work"
+                href="#Lab"
                 whileHover={{ y: -3, scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 480, damping: 26 }}

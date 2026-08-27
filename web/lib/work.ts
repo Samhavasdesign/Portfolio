@@ -19,6 +19,7 @@ export type CaseStudy = {
   heroInProgress?: boolean;
   metaItems?: { label: string; value: string }[];
   externalUrl?: string;
+  hidden?: boolean;
 };
 
 export const caseStudies: CaseStudy[] = [

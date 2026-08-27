@@ -9,9 +9,11 @@ import WorkGridCard from "@/components/WorkGridCard";
 export default function WorkGrid({
   title = "Selected work",
   meta,
+  description,
   projects = caseStudies,
   id = "work",
   linkPrefix = "/work",
+  className = "",
 }) {
   const sectionMeta = meta ?? `${projects.length} PROJECTS · 2020-2026`;
   const rootRef = useRef(null);
@@ -49,7 +51,7 @@ export default function WorkGrid({
     <section
       ref={rootRef}
       id={id}
-      className="section-container relative overflow-hidden"
+      className={`section-container relative overflow-hidden${className ? ` ${className}` : ""}`}
       style={{
         background: "var(--c-bg)",
         // Decorative glow — local scope only, not part of the global token system
@@ -65,17 +67,21 @@ export default function WorkGrid({
       </div>
 
       <div className="relative z-10">
-        <div
-          ref={headerRef}
-          className="mb-10 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-4 lg:mb-14"
-        >
-          <h2 className="section-heading">{title}</h2>
-          <span className="section-meta">{sectionMeta}</span>
+        <div ref={headerRef} className="mb-10 lg:mb-14">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-4">
+            <h2 className="section-heading">{title}</h2>
+            <span className="section-meta">{sectionMeta}</span>
+          </div>
+          {description ? (
+            <p className="section-subtext mt-4 max-w-2xl">{description}</p>
+          ) : null}
         </div>
 
         <div
           ref={gridRef}
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7 lg:grid-cols-3 lg:gap-8 xl:gap-10"
+          className={`grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-7 lg:gap-8 xl:gap-10 ${
+            projects.length <= 2 ? "lg:grid-cols-2" : "lg:grid-cols-3"
+          }`}
         >
           {projects.map((project) => (
             <WorkGridCard key={project.slug} project={project} linkPrefix={linkPrefix} />

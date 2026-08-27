@@ -167,7 +167,7 @@ Q: What does working with you look like?
 A: It's not super formal. I move quickly, I show work early, and I'll push on things if they don't feel right—but I'm also very open to being wrong. If you like working in tight loops and figuring things out as you go, it works really well. If you want everything perfectly defined upfront, probably less so.
 
 Q: What have you built in your Lab?
-A: It's basically where I go to build things without overthinking them. A lot of it is AI-powered prototypes, scrappy tools using things like Firecrawl, quick frontends deployed with Vercel. Usually I'm testing something like "would this actually be useful?" or "does this behavior work in reality?" Most are built in a few days, sometimes faster. Some recent examples are a flight deal finder and a grammar editor linked to the ChatGPT API.
+A: It's basically where I go to build things without overthinking them. A lot of it is AI-powered prototypes, scrappy tools using things like Firecrawl, quick frontends deployed with Vercel. Usually I'm testing something like "would this actually be useful?" or "does this behavior work in reality?" Most are built in a few days, sometimes faster. Some recent examples are a flight deal finder and an AI design evaluation toolkit.
 
 Q: What kind of problems do you love solving?
 A: The slightly messy ones. Where the problem isn't clean, and you can't just apply a framework and be done. You have to actually think, build something, see what breaks, and adjust. That's usually where the interesting work is.

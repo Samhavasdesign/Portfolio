@@ -18,10 +18,20 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
   const isAngislabCard = project.slug === "angislab";
   const isAngiugcCard = project.slug === "angiugc";
   const isAngisemCard = project.slug === "angisem";
-  const isGrammarEditorCard = project.slug === "grammar-editor";
+  const isRethinkCard = project.slug === "rethink-wallet";
   const isFlightFinderCard = project.slug === "flight-finder";
   const isHeroObjectTop = isAngisemCard || isAngislabCard;
-  const isHeroObjectContain = isGrammarEditorCard || isFlightFinderCard;
+  const isHeroObjectContain = isFlightFinderCard;
+  const showCardMetric = Boolean(project.metric);
+  const showCardLogo =
+    isSesameCard ||
+    isHomerCard ||
+    isHomerWebsiteCard ||
+    isAngislabCard ||
+    isAngiugcCard ||
+    isAngisemCard ||
+    isRethinkCard;
+  const showMetricFooter = showCardMetric || showCardLogo;
   const href = project.externalUrl ?? `${linkPrefix}/${project.slug}`;
   const isExternal = Boolean(project.externalUrl);
 
@@ -59,7 +69,7 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
         >
           <span className="card-placeholder-label">{project.company.toUpperCase()}</span>
         </div>
-        {!imgFailed && (
+        {!imgFailed && project.thumbnail && (
           <Image
             src={project.thumbnail}
             alt={project.company}
@@ -105,47 +115,64 @@ export default function WorkGridCard({ project, linkPrefix = "/work" }) {
 
         <div className="mt-6 mb-4 flex flex-wrap gap-1.5">
           {project.tags.map((tag) => (
-            <span key={tag} className="card-tag">{tag.toUpperCase()}</span>
+            <span key={tag} className="card-tag">
+              {tag.toUpperCase()}
+            </span>
           ))}
         </div>
 
-        <div className="card-metric-footer">
-          {isSesameCard ? (
-            <>
-              <span className="card-metric-value card-metric-value--sesame">
-                {project.metric}
-              </span>
-              <p className="card-metric-label card-metric-label--sesame">
-                <span className="card-metric-label-sesame-muted">
-                  {project.metricLabel}
-                </span>
-              </p>
-            </>
-          ) : (
-            <>
-              <span className="card-metric-value">{project.metric}</span>
-              <p className="card-metric-label">{project.metricLabel}</p>
-            </>
-          )}
-          {(isSesameCard || isHomerCard || isHomerWebsiteCard || isAngislabCard || isAngiugcCard || isAngisemCard) && (
-            <div className="card-metric-footer__logo-slot">
-              <Image
-                src={
-                  isSesameCard
-                    ? "/clientlogos/sesame_street_white.svg"
-                    : isHomerCard || isHomerWebsiteCard
-                      ? "/clientlogos/homer_cropped.svg"
-                      : "/clientlogos/angi.svg"
-                }
-                alt={isSesameCard ? "Sesame Street" : isHomerCard || isHomerWebsiteCard ? "Homer" : "Angi"}
-                width={120}
-                height={28}
-                className={`card-metric-footer__logo${isHomerCard || isHomerWebsiteCard ? " card-metric-footer__logo--compact" : ""}`}
-                decoding="async"
-              />
-            </div>
-          )}
-        </div>
+        {showMetricFooter && (
+          <div className="card-metric-footer">
+            {showCardMetric &&
+              (isSesameCard ? (
+                <>
+                  <span className="card-metric-value card-metric-value--sesame">
+                    {project.metric}
+                  </span>
+                  <p className="card-metric-label card-metric-label--sesame">
+                    <span className="card-metric-label-sesame-muted">
+                      {project.metricLabel}
+                    </span>
+                  </p>
+                </>
+              ) : (
+                <>
+                  <span className="card-metric-value">{project.metric}</span>
+                  <p className="card-metric-label">{project.metricLabel}</p>
+                </>
+              ))}
+            {showCardLogo && (
+              <div
+                className={`card-metric-footer__logo-slot${isRethinkCard ? " card-metric-footer__logo-slot--start" : ""}`}
+              >
+                <Image
+                  src={
+                    isSesameCard
+                      ? "/clientlogos/sesame_street_white.svg"
+                      : isHomerCard || isHomerWebsiteCard
+                        ? "/clientlogos/homer_cropped.svg"
+                        : isRethinkCard
+                          ? "/clientlogos/rethink_food_white.png"
+                          : "/clientlogos/angi.svg"
+                  }
+                  alt={
+                    isSesameCard
+                      ? "Sesame Street"
+                      : isHomerCard || isHomerWebsiteCard
+                        ? "Homer"
+                        : isRethinkCard
+                          ? "Rethink Food"
+                          : "Angi"
+                  }
+                  width={isRethinkCard ? 160 : 120}
+                  height={28}
+                  className={`card-metric-footer__logo${isHomerCard || isHomerWebsiteCard ? " card-metric-footer__logo--compact" : ""}${isRethinkCard ? " card-metric-footer__logo--rethink" : ""}`}
+                  decoding="async"
+                />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </MotionLink>
   );

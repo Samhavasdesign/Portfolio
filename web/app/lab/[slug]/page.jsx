@@ -5,7 +5,7 @@ import { labProjects } from "@/lib/lab";
 
 export default async function LabProjectPage({ params }) {
   const { slug } = await params;
-  const project = labProjects.find((p) => p.slug === slug);
+  const project = labProjects.find((p) => p.slug === slug && !p.hidden);
 
   if (!project) {
     return (
@@ -59,7 +59,7 @@ export default async function LabProjectPage({ params }) {
           Sorry, this project is still under construction. Check back soon! :)
         </h1>
         <Link href="/#Lab" className="nav-link" style={{ fontSize: "var(--fs-base)" }}>
-          ← Back to AI Lab
+          ← Back to AI builds
         </Link>
       </main>
     </div>
