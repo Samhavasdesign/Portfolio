@@ -282,6 +282,7 @@ h3 {
   text-transform: uppercase;
   letter-spacing: var(--ls-wide);
   color: #4a8c4a;
+  white-space: nowrap;
 }
 
 .hero-github-repo {

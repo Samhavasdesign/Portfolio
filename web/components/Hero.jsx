@@ -135,11 +135,21 @@ function getEventMessage(event) {
   }
 }
 
+const EVENT_TYPE_LABELS = {
+  PushEvent: "PUSH",
+  CreateEvent: "CREATE",
+  PullRequestEvent: "PR",
+  IssuesEvent: "ISSUE",
+  WatchEvent: "WATCH",
+  ForkEvent: "FORK",
+};
+
 function getTypeLabel(type) {
+  if (EVENT_TYPE_LABELS[type]) return EVENT_TYPE_LABELS[type];
   try {
-    return type.replace("Event", "");
+    return String(type).replace(/Event$/i, "").toUpperCase() || "EVENT";
   } catch {
-    return "Event";
+    return "EVENT";
   }
 }
 
@@ -557,7 +567,7 @@ export default function Hero() {
               ? [0, 1, 2, 3, 4].map((i) => (
                   <div
                     key={`github-skeleton-${i}`}
-                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${i >= 3 ? "hidden md:grid" : "grid"} grid-cols-[70px_78px_1fr] items-center gap-3 py-3 md:py-4 xl:py-5`}
+                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${i >= 3 ? "hidden md:grid" : "grid"} grid-cols-[4.375rem_5.25rem_minmax(0,1fr)] items-center gap-3 py-3 md:py-4 xl:py-5`}
                     aria-hidden="true"
                   >
                     <span className="h-3 w-10 rounded-sm bg-[var(--c-border)]" />
@@ -573,7 +583,7 @@ export default function Hero() {
                     key={event.id}
                     whileHover={{ y: -2 }}
                     transition={{ type: "spring", stiffness: 500, damping: 28 }}
-                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${index >= 3 ? "hidden md:grid" : "grid"} grid-cols-[70px_78px_1fr] items-start gap-3 py-3 md:py-4 xl:py-5`}
+                    className={`hero-at-wide-github hero-github hero-github-row hero-github-divider-b ${index >= 3 ? "hidden md:grid" : "grid"} grid-cols-[4.375rem_5.25rem_minmax(0,1fr)] items-start gap-3 py-3 md:py-4 xl:py-5`}
                   >
                     <span>{toRelativeTime(event.created_at)}</span>
                     <span className="hero-event-pill inline-flex w-fit rounded-full bg-[var(--hero-pill-bg)] px-2 py-[2px]">

@@ -11,7 +11,7 @@ export const labProjects: CaseStudy[] = [
     metricLabel: "",
     summary:
       "A donor wallet prototype that makes impact tangible — balance, giving history, and where support goes.",
-    thumbnail: "/images/lab/rethink-wallet-hero.jpg",
+    thumbnail: "/images/lab/rethink-wallet-hero.webp",
     readTime: "",
     protected: false,
     sections: [],
@@ -27,7 +27,7 @@ export const labProjects: CaseStudy[] = [
     metricLabel: "",
     summary:
       "A Claude-powered evaluation toolkit that scores AI generated designs against the original prompt — aesthetics, usability, and adherence in one pass.",
-    thumbnail: "/images/lab/design-eval-toolkit-hero.jpg",
+    thumbnail: "/images/lab/design-eval-toolkit-hero.webp",
     readTime: "",
     protected: false,
     sections: [],
