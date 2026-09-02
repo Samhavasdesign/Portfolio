@@ -293,28 +293,6 @@ h3 {
   color: var(--c-code-dim);
 }
 
-.hero-refresh {
-  font-family: var(--font-hero-mono);
-  font-size: var(--hero-fs-github);
-  text-transform: uppercase;
-  letter-spacing: var(--ls-wide);
-  color: var(--c-code-dim);
-  border: 0.5px solid var(--c-border-mid);
-  background: transparent;
-  border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  transition: color var(--duration-slow) ease;
-}
-
-.hero-refresh:hover:not(:disabled) {
-  color: var(--c-code-bright);
-}
-
-.hero-refresh:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
 @media (min-width: 640px) {
   :root { --grid-margin: 2rem; }
 }

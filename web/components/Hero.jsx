@@ -223,12 +223,9 @@ export default function Hero() {
   const [feedEvents, setFeedEvents] = useState([]);
   const [githubMode, setGithubMode] = useState("loading");
   const [clock, setClock] = useState("");
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [didUseFallback, setDidUseFallback] = useState(false);
   const [isPanePulsing, setIsPanePulsing] = useState(false);
   const previousTopEventId = useRef(null);
-  /** After the first fetch, show the refresh control as busy during polls and manual refresh. */
-  const githubFetchCount = useRef(0);
   const heroSectionRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
   const ambientDrift = prefersReducedMotion !== true;
@@ -247,8 +244,6 @@ export default function Hero() {
   }, []);
 
   const fetchEvents = useCallback(async () => {
-    const showBusyRefresh = githubFetchCount.current > 0;
-    if (showBusyRefresh) setIsRefreshing(true);
     try {
       const headers = { Accept: "application/vnd.github+json" };
       if (process.env.NEXT_PUBLIC_GITHUB_TOKEN) {
@@ -273,9 +268,6 @@ export default function Hero() {
       previousTopEventId.current = FALLBACK_EVENTS[0]?.id ?? null;
       setDidUseFallback(true);
       setGithubMode("fallback");
-    } finally {
-      setIsRefreshing(false);
-      githubFetchCount.current += 1;
     }
   }, []);
 
@@ -596,23 +588,12 @@ export default function Hero() {
                   </motion.div>
                 ))}
           </div>
-          <div className="hero-at-wide-github hero-github hero-github-footer flex items-center justify-between py-4">
+          <div className="hero-at-wide-github hero-github hero-github-footer flex items-center py-4">
             <span>
               {githubMode === "loading"
                 ? "…"
                 : `${feedEvents.length} events${didUseFallback ? " (fallback)" : ""}`}
             </span>
-            <motion.button
-              type="button"
-              onClick={fetchEvents}
-              disabled={isRefreshing}
-              whileHover={isRefreshing ? undefined : { y: -2, scale: 1.03 }}
-              whileTap={isRefreshing ? undefined : { scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 500, damping: 28 }}
-              className="hero-refresh transition-colors duration-200"
-            >
-              {isRefreshing ? "refreshing..." : "refresh"}
-            </motion.button>
           </div>
         </div>
       </div>
