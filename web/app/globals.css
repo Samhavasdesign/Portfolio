@@ -447,6 +447,18 @@ h3 {
   max-width: none;
 }
 
+.client-logo-marquee-logo--avianu {
+  height: clamp(1.85rem, 3.6vw, 2.45rem);
+  width: auto;
+  max-width: none;
+}
+
+.client-logo-marquee-logo--mercor {
+  height: clamp(1.55rem, 3.1vw, 2.1rem);
+  width: auto;
+  max-width: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .client-logo-marquee-track {
     animation: none;

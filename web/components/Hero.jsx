@@ -279,7 +279,7 @@ export default function Hero() {
     }
   }, []);
 
-  const statYears = useCountUpStat(10, prefersReducedMotion === true);
+  const statYears = useCountUpStat(12, prefersReducedMotion === true);
 
   useEffect(() => {
     updateClock();
@@ -523,8 +523,8 @@ export default function Hero() {
               transition={{ type: "spring", stiffness: 420, damping: 28 }}
               className="hero-stats-grid-cell px-3 py-3"
             >
-              <p className="hero-stat-value tabular-nums">{statYears}</p>
-              <p className="hero-stat-label">YEARS EXP.</p>
+              <p className="hero-stat-value tabular-nums">{statYears}+</p>
+              <p className="hero-stat-label">YEARS IN DESIGN</p>
             </motion.div>
             <motion.div
               whileHover={{ y: -3 }}
@@ -539,8 +539,8 @@ export default function Hero() {
               transition={{ type: "spring", stiffness: 420, damping: 28 }}
               className="hero-stats-grid-cell px-3 py-3"
             >
-              <p className="hero-stat-value tabular-nums">16M+</p>
-              <p className="hero-stat-label">USERS IMPACTED</p>
+              <p className="hero-stat-value tabular-nums">18+</p>
+              <p className="hero-stat-label">BRANDS & ORGANIZATIONS</p>
             </motion.div>
           </div>
         </div>

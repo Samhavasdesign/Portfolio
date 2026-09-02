@@ -14,7 +14,19 @@ const CLIENT_LOGOS = [
   { src: "/clientlogos/sephora.svg", name: "Sephora" },
   { src: "/clientlogos/amex_white_transparent.svg", name: "American Express" },
   { src: "/clientlogos/bu_white_no_bg.svg", name: "Boston University" },
+  { src: "/clientlogos/avianu_white.png", name: "avianu", width: 240, height: 88 },
+  { src: "/clientlogos/mercor_white.png", name: "Mercor", width: 990, height: 343 },
 ];
+
+function logoModifierClass(src) {
+  if (src.includes("amex_white_transparent")) return " client-logo-marquee-logo--amex";
+  if (src.includes("bu_white_no_bg")) return " client-logo-marquee-logo--bu";
+  if (src.includes("sarankco_white")) return " client-logo-marquee-logo--sarankco";
+  if (src.includes("fmc_white")) return " client-logo-marquee-logo--fmc";
+  if (src.includes("avianu_white")) return " client-logo-marquee-logo--avianu";
+  if (src.includes("mercor_white")) return " client-logo-marquee-logo--mercor";
+  return "";
+}
 
 function ClientLogoStrip() {
   return (
@@ -24,25 +36,9 @@ function ClientLogoStrip() {
           key={logo.src}
           src={logo.src}
           alt=""
-          width={120}
-          height={32}
-          className={`client-logo-marquee-logo${
-            logo.src.includes("amex_white_transparent")
-              ? " client-logo-marquee-logo--amex"
-              : ""
-          }${
-            logo.src.includes("bu_white_no_bg")
-              ? " client-logo-marquee-logo--bu"
-              : ""
-          }${
-            logo.src.includes("sarankco_white")
-              ? " client-logo-marquee-logo--sarankco"
-              : ""
-          }${
-            logo.src.includes("fmc_white")
-              ? " client-logo-marquee-logo--fmc"
-              : ""
-          }`}
+          width={logo.width ?? 120}
+          height={logo.height ?? 32}
+          className={`client-logo-marquee-logo${logoModifierClass(logo.src)}`}
           aria-hidden="true"
           loading="lazy"
           decoding="async"

@@ -84,27 +84,32 @@ export default function AboutSection() {
           <h2 className="section-heading">About my design process</h2>
 
           <div className="about-body mt-6" data-about-reveal>
-            <p>I design and ship AI-native products—usually faster than people expect.</p>
+            <p>I design and ship products—usually faster than people expect.</p>
 
             <p>
-              I&apos;m not big on decks or long discovery phases. I&apos;d rather get something real in
-              front of people and figure it out from there. Most things go from idea to something
-              usable in days, not months.
+              I keep the process lightweight and focused. Rather than spending weeks polishing a
+              deck, I like to turn ideas into something tangible, put it in front of people, and
+              learn from what happens. Early concepts often become usable prototypes in days, helping
+              teams test assumptions and make better decisions sooner.
             </p>
 
             <p>
-              I use AI across the entire process—not just to generate, but to think. It lets me move
-              quickly, test more directions, and stay close to what actually works.
+              I use AI throughout the process—not just to generate, but to explore, think, prototype,
+              and evaluate. It helps me consider more directions without losing sight of the people
+              I&apos;m designing for.
             </p>
 
             <p>
-              I design for humans, not ideal users—people who are distracted, emotional, and not
-              always paying that much attention. If something technically works but feels off, they
-              notice. And they leave. I care about that—and about making things that feel good, or
-              actually make life a little better in the real world.
+              And I design for real people, not ideal users. People are distracted, emotional, and
+              rarely paying as much attention as we imagine. When something technically works but
+              feels confusing or frustrating, they notice—and they leave. I care about making
+              products that are intuitive, useful, and genuinely good to use.
             </p>
 
-            <p>I&apos;m most at home in 0 → 1—where things are messy, undefined, and a little chaotic.</p>
+            <p>
+              I&apos;m most at home in 0→1 work, where the problem is still taking shape and the path
+              forward isn&apos;t obvious.
+            </p>
 
             <p>Between New York and Rhode Island. Usually remote. Often elsewhere.</p>
             <p>Available for select projects.</p>
