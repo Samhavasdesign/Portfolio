@@ -73,7 +73,7 @@ export default function WorkGrid({
             <span className="section-meta">{sectionMeta}</span>
           </div>
           {description ? (
-            <p className="section-subtext mt-4 max-w-2xl">{description}</p>
+            <p className="section-subtext mt-4 lg:whitespace-nowrap">{description}</p>
           ) : null}
         </div>
 
