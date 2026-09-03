@@ -15,7 +15,7 @@ export const labProjects: CaseStudy[] = [
     readTime: "",
     protected: false,
     sections: [],
-    externalUrl: "https://purrsist.app",
+    externalUrl: "https://purrsist.co",
   },
   {
     slug: "rethink-wallet",
