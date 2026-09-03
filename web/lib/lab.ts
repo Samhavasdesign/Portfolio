@@ -2,6 +2,22 @@ import type { CaseStudy } from "@/lib/work";
 
 export const labProjects: CaseStudy[] = [
   {
+    slug: "purrsist",
+    company: "Purrsist",
+    role: "Next.js · Claude Code · Cursor",
+    year: "2026",
+    tags: ["Productivity App", "AI Sorting", "PWA", "Solo Build", "Personal Project"],
+    metric: "",
+    metricLabel: "",
+    summary:
+      "A calm capture tool for a brain that loses things — text in, AI sorts it, and the app hands it back on its own schedule instead of asking you to manage it.",
+    thumbnail: "/images/lab/purrsist-hero.jpg",
+    readTime: "",
+    protected: false,
+    sections: [],
+    externalUrl: "https://purrsist.app",
+  },
+  {
     slug: "rethink-wallet",
     company: "Digital Experience for Rethink",
     role: "Claude Code · Cursor",
