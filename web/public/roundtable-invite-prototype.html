@@ -1,0 +1,1165 @@
+<title>Roundtable Invite Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light;
+    --bg: #f6f5f3;
+    --surface: #ffffff;
+    --surface-2: #efeeec;
+    --ink: #222220;
+    --ink-soft: #5c5b58;
+    --ink-faint: #8b8a86;
+    --line: #c9c7c2;
+    --line-soft: #ddd8d2;
+    --btn: #5c5b58;
+    --btn-hover: #47463f;
+    --btn-disabled: #cfcdc8;
+    --btn-disabled-ink: #9a9892;
+    --chrome-bg: #2a2926;
+    --chrome-ink: #f2f1ee;
+    --chrome-ink-dim: #b6b4ae;
+    --chrome-active: #47463f;
+    --focus: #7a7970;
+    --page-bg: #dbd9d4;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--page-bg);
+    color:var(--ink);
+    font-family: "Gaegu", "Bradley Hand", "Segoe Print", cursive, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-inline:0;
+    padding-block:0;
+  }
+  h1,h2,p{ margin:0; }
+  a{ color:inherit; }
+  button{ font-family:inherit; }
+
+  /* Always renders as a single mobile-width column, regardless of viewport */
+  .mobile-frame{
+    max-width:430px;
+    margin:0 auto;
+    background:var(--bg);
+    min-height:100vh;
+    box-shadow:0 0 0 1px var(--line), 0 24px 60px -24px rgba(20,19,17,0.35);
+  }
+
+  /* ---------------- Prototype chrome ---------------- */
+  .chrome{
+    position:sticky;
+    top:0;
+    z-index:300;
+    background:var(--chrome-bg);
+    color:var(--chrome-ink);
+    padding:10px 16px calc(10px + env(safe-area-inset-top,0px));
+    padding-top:calc(10px + env(safe-area-inset-top,0px));
+    border-bottom:1px solid #000;
+    font-size:12px;
+  }
+  .chrome-inner{
+    max-width:1120px;
+    margin:0 auto;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .chrome-label{
+    letter-spacing:.08em;
+    font-size:9.5px;
+    color:var(--chrome-ink-dim);
+    margin-bottom:2px;
+  }
+  .chrome-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .screen-indicator{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .screen-indicator-text{
+    color:var(--chrome-ink-dim);
+    font-variant-numeric: tabular-nums;
+    white-space:nowrap;
+  }
+  .dots{
+    display:flex;
+    gap:6px;
+  }
+  .dot{
+    appearance:none;
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    border:1px solid var(--chrome-ink-dim);
+    background:transparent;
+    padding:0;
+    cursor:pointer;
+  }
+  .dot.active{
+    background:var(--chrome-ink);
+    border-color:var(--chrome-ink);
+  }
+  .restart-link{
+    color:var(--chrome-ink-dim);
+    text-decoration:underline;
+    font-size:11.5px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .restart-link:hover{ color:var(--chrome-ink); }
+  .dot:focus-visible, .restart-link:focus-visible{
+    outline:2px solid var(--chrome-ink);
+    outline-offset:2px;
+  }
+
+  /* ---------------- App logo ---------------- */
+  .app-header{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    margin-bottom:24px;
+  }
+  .app-logo-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .app-logo-icon{
+    width:26px;
+    height:26px;
+    flex:0 0 auto;
+    color:var(--ink-soft);
+  }
+  .app-logo-text{
+    font-size:20px;
+    font-weight:700;
+    color:var(--ink);
+    letter-spacing:.01em;
+  }
+  .app-logo-tagline{
+    font-size:13px;
+    color:var(--ink-faint);
+    font-style:italic;
+  }
+
+  /* ---------------- Product shell ---------------- */
+  .product{
+    padding: 20px 16px 120px;
+  }
+  .container{
+    max-width:1040px;
+    margin:0 auto;
+  }
+  .screen{ }
+
+  /* Incoming iMessage mock (screen 1) */
+  .screen-imessage{
+    margin:-20px -16px -120px;
+    min-height:calc(100vh - 78px);
+    display:flex;
+    flex-direction:column;
+    background:var(--bg);
+  }
+  .imessage-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    padding:14px 16px 12px;
+    border-bottom:1px solid var(--line-soft);
+    flex:0 0 auto;
+  }
+  .imessage-icon-btn{
+    appearance:none;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    cursor:pointer;
+    flex:0 0 auto;
+    margin-top:8px;
+  }
+  .imessage-icon-btn:hover{ background:var(--surface-2); color:var(--ink); }
+  .imessage-icon-btn:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+  .imessage-icon-btn svg{
+    display:block;
+  }
+  .imessage-contact{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    flex:1 1 auto;
+    min-width:0;
+  }
+  .imessage-avatar{
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+  }
+  .imessage-avatar::before{
+    content:"";
+    position:absolute;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:var(--ink-faint);
+    top:12px;
+    left:50%;
+    transform:translateX(-50%);
+  }
+  .imessage-avatar::after{
+    content:"";
+    position:absolute;
+    width:30px;
+    height:22px;
+    border-radius:14px 14px 0 0;
+    background:var(--ink-faint);
+    bottom:-1px;
+    left:50%;
+    transform:translateX(-50%);
+  }
+  .imessage-contact-name{
+    display:flex;
+    align-items:center;
+    gap:3px;
+    font-size:14px;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.2;
+  }
+  .imessage-name-chevron{
+    width:7px;
+    height:7px;
+    border-right:1.5px solid var(--ink-soft);
+    border-bottom:1.5px solid var(--ink-soft);
+    transform:rotate(-45deg);
+    margin-top:1px;
+  }
+  .imessage-encrypted{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    font-size:11px;
+    color:var(--ink-faint);
+    line-height:1.2;
+  }
+  .imessage-encrypted svg{
+    display:block;
+    flex:0 0 auto;
+  }
+  .imessage-thread{
+    flex:1 1 auto;
+    padding:18px 16px 88px;
+  }
+  .imessage-time{
+    text-align:center;
+    font-size:12px;
+    color:var(--ink-faint);
+    margin-bottom:14px;
+  }
+  .imessage-bubble{
+    background:var(--surface-2);
+    border:1px solid var(--line-soft);
+    border-radius:18px;
+    border-bottom-left-radius:6px;
+    padding:14px 16px;
+    font-size:16px;
+    line-height:1.45;
+    color:var(--ink);
+    max-width:92%;
+  }
+  .imessage-link{
+    color:var(--ink);
+    text-decoration:underline;
+    cursor:pointer;
+  }
+  .imessage-link:hover{ color:var(--btn-hover); }
+  .imessage-link:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+  .imessage-composer{
+    position:fixed;
+    left:50%;
+    transform:translateX(-50%);
+    bottom:0;
+    width:100%;
+    max-width:430px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
+    background:var(--bg);
+    border-top:1px solid var(--line-soft);
+    z-index:150;
+  }
+  .imessage-composer-btn{
+    appearance:none;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    border:1.5px solid var(--ink-soft);
+    background:transparent;
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    cursor:pointer;
+    flex:0 0 auto;
+  }
+  .imessage-composer-btn:hover{ color:var(--ink); border-color:var(--ink); }
+  .imessage-composer-btn:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+  .imessage-field{
+    flex:1 1 auto;
+    min-width:0;
+    border:1.5px solid var(--line);
+    border-radius:20px;
+    padding:8px 14px;
+    font-size:15px;
+    color:var(--ink-faint);
+    background:var(--surface);
+  }
+
+  .layout{
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+  }
+
+  .back-link{
+    display:inline-block;
+    font-size:13px;
+    color:var(--ink-soft);
+    text-decoration:none;
+    margin-bottom:14px;
+    cursor:pointer;
+  }
+  .back-link:hover{ color:var(--ink); text-decoration:underline; }
+
+  .desktop-only{ display:none; }
+
+  /* Event card */
+  .event-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px 18px;
+  }
+  .event-card-title{
+    font-size:17px;
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  .event-card-meta{
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.6;
+  }
+  .event-card-row{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+  }
+  .event-card-meta-group{
+    flex:1 1 auto;
+    min-width:0;
+  }
+  .event-photo-placeholder{
+    width:90px;
+    height:90px;
+    flex:0 0 auto;
+    border-radius:8px;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+  }
+  .event-details-label{
+    font-size:14px;
+    font-weight:700;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+  .inline-link{
+    color:var(--ink);
+    text-decoration:underline;
+    cursor:pointer;
+  }
+  .learn-more-link{
+    display:block;
+    margin-top:10px;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+
+  /* Chain */
+  .chain-block{
+    margin-top:16px;
+  }
+  .chain-scroll{
+    overflow-x:auto;
+    padding-bottom:2px;
+  }
+  .chain{
+    display:flex;
+    align-items:flex-start;
+    width:max-content;
+    min-width:100%;
+  }
+  .chain-node{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:50px;
+    flex:0 0 auto;
+  }
+  .chain-circle{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    border:1.5px solid var(--ink-soft);
+    background:var(--surface);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .chain-circle.you{
+    background:var(--surface-2);
+    border-color:var(--ink);
+  }
+  .chain-circle.empty{
+    border-style:dashed;
+    color:var(--ink-faint);
+    background:transparent;
+  }
+  .chain-circle.pending{
+    border-style:dashed;
+    color:var(--ink-soft);
+    font-size:14px;
+    background:transparent;
+  }
+  .chain-label{
+    margin-top:6px;
+    font-size:9.5px;
+    color:var(--ink-soft);
+    text-align:center;
+    line-height:1.25;
+  }
+  .chain-connector{
+    flex:0 0 12px;
+    height:1px;
+    background:var(--line);
+    margin-top:16px;
+  }
+  .chain-caption{
+    margin-top:12px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+
+  /* Task column typography */
+  .headline{
+    font-size:24px;
+    font-weight:700;
+    line-height:1.25;
+    text-wrap:balance;
+    margin-bottom:12px;
+  }
+  .subheadline{
+    font-size:18px;
+    font-weight:700;
+    line-height:1.3;
+    text-wrap:balance;
+    margin-bottom:12px;
+  }
+  .framing{
+    font-size:15px;
+    font-weight:700;
+    margin-bottom:8px;
+    line-height:1.5;
+  }
+  .supporting{
+    font-size:14px;
+    color:var(--ink-soft);
+    line-height:1.55;
+    margin-bottom:10px;
+  }
+  .confirmation{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  .chain-note{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:18px;
+  }
+  .note-quote{
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--surface);
+    padding:16px 18px;
+    font-size:16px;
+    font-style:italic;
+    line-height:1.5;
+    color:var(--ink);
+    margin-top:18px;
+    margin-bottom:22px;
+  }
+  .section-heading{
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+
+  /* Invitee cards (screen 2) */
+  .invitee-card{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px;
+    background:var(--surface);
+    margin-bottom:24px;
+  }
+  .helper-link{
+    display:inline-block;
+    font-size:13px;
+    color:var(--ink-soft);
+    text-decoration:underline;
+    cursor:pointer;
+    margin-bottom:36px;
+  }
+  .helper-link:hover{ color:var(--ink); }
+  .add-guest-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:20px;
+  }
+  .add-guest-row{
+    display:flex;
+    align-items:center;
+    border:1.5px solid var(--ink-soft);
+    border-radius:9px;
+    background:transparent;
+    padding-right:2px;
+  }
+  .add-guest-row.filled{
+    border-color:var(--ink);
+    background:var(--surface-2);
+  }
+  .add-guest-btn{
+    appearance:none;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex:1 1 auto;
+    min-width:0;
+    border:none;
+    background:transparent;
+    color:var(--ink);
+    font-size:15px;
+    font-weight:700;
+    padding:10px 14px;
+    border-radius:9px;
+    cursor:pointer;
+    font-family:inherit;
+    text-align:left;
+  }
+  .add-guest-btn:hover{ background:transparent; }
+  .add-guest-btn:focus-visible{ outline:none; }
+  .add-guest-row:focus-within{
+    outline:2px solid var(--focus);
+    outline-offset:2px;
+  }
+  .add-guest-label{
+    flex:1 1 auto;
+  }
+  .clear-guest{
+    appearance:none;
+    border:none;
+    background:transparent;
+    width:36px;
+    height:36px;
+    flex:0 0 auto;
+    font-size:22px;
+    line-height:1;
+    color:var(--ink-soft);
+    cursor:pointer;
+    font-family:inherit;
+    border-radius:8px;
+  }
+  .clear-guest:hover{ color:var(--ink); background:var(--surface); }
+  .clear-guest:focus-visible{ outline:2px solid var(--focus); outline-offset:1px; }
+  .clear-guest[hidden]{ display:none; }
+  .guest-smile{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:var(--surface-2);
+    border:1.5px solid var(--line);
+    position:relative;
+    flex:0 0 auto;
+  }
+  .guest-smile::before{
+    content:"";
+    position:absolute;
+    top:13px;
+    left:11px;
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:var(--ink-soft);
+    box-shadow:13px 0 0 var(--ink-soft);
+  }
+  .guest-smile::after{
+    content:"";
+    position:absolute;
+    left:12px;
+    bottom:11px;
+    width:16px;
+    height:8px;
+    border-bottom:2px solid var(--ink-soft);
+    border-radius:0 0 12px 12px;
+  }
+
+  .field-label{
+    display:block;
+    font-size:12px;
+    color:var(--ink-faint);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin-bottom:6px;
+  }
+  .note-input{
+    width:100%;
+    min-height:88px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:11px 12px;
+    font-family:inherit;
+    font-size:14px;
+    color:var(--ink);
+    background:var(--surface);
+    resize:vertical;
+  }
+  .note-input:focus-visible{ outline:2px solid var(--focus); outline-offset:1px; }
+  .guest-note-input{
+    min-height:196px;
+    line-height:1.45;
+  }
+
+  /* CTA — always a fixed bottom bar, capped to the mobile-frame width */
+  .cta-bar{
+    position:fixed;
+    left:50%;
+    transform:translateX(-50%);
+    bottom:0;
+    width:100%;
+    max-width:430px;
+    background:var(--surface);
+    border-top:1px solid var(--line);
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
+    z-index:150;
+  }
+  .btn-primary{
+    appearance:none;
+    border:none;
+    background:var(--btn);
+    color:#fff;
+    font-size:15px;
+    font-weight:700;
+    padding:14px 20px;
+    border-radius:9px;
+    cursor:pointer;
+    width:100%;
+    font-family:inherit;
+  }
+  .btn-primary:hover:not(:disabled){ background:var(--btn-hover); }
+  .btn-primary:disabled{
+    background:var(--btn-disabled);
+    color:var(--btn-disabled-ink);
+    cursor:not-allowed;
+  }
+  .btn-primary:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+  .btn-secondary{
+    appearance:none;
+    border:1.5px solid var(--ink-soft);
+    background:transparent;
+    color:var(--ink);
+    font-size:15px;
+    font-weight:700;
+    padding:12.5px 20px;
+    border-radius:9px;
+    cursor:pointer;
+    width:100%;
+    font-family:inherit;
+    margin-top:10px;
+  }
+  .btn-secondary:hover{ background:var(--surface-2); }
+  .btn-secondary:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+  .cta-footnote{
+    font-size:12px;
+    color:var(--ink-faint);
+    text-align:center;
+    margin-top:10px;
+  }
+
+  /* Helper overlay — always a bottom sheet, capped to the mobile-frame width */
+  .helper-backdrop{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(20,19,17,0.4);
+    z-index:400;
+  }
+  .helper-backdrop.open{ display:block; }
+  .helper-panel{
+    position:fixed;
+    left:50%;
+    bottom:0;
+    width:100%;
+    max-width:430px;
+    background:var(--surface);
+    border-top:1px solid var(--line);
+    border-radius:16px 16px 0 0;
+    padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));
+    transform:translate(-50%,100%);
+    transition:transform .22s ease;
+    z-index:401;
+    max-height:78vh;
+    overflow-y:auto;
+  }
+  .helper-panel.open{ transform:translate(-50%,0); }
+  .helper-handle{
+    width:36px; height:4px;
+    border-radius:2px;
+    background:var(--line);
+    margin:0 auto 16px;
+  }
+  .helper-headline{
+    font-size:17px;
+    font-weight:700;
+    margin-bottom:8px;
+    text-wrap:balance;
+  }
+  .helper-supporting{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+    line-height:1.5;
+  }
+  .helper-list{
+    margin:0 0 20px;
+    padding-left:18px;
+    color:var(--ink-soft);
+    font-size:13.5px;
+    line-height:1.9;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .helper-panel{ transition:none; }
+  }
+</style>
+
+<div class="mobile-frame">
+<div class="chrome">
+  <div class="chrome-inner">
+    <div class="chrome-label">Roundtable feature prototype</div>
+    <div class="chrome-row">
+      <div class="screen-indicator">
+        <span class="screen-indicator-text" id="screen-label">Screen 1 of 5</span>
+        <div class="dots" aria-label="Jump to screen">
+          <button class="dot" data-dot="1" aria-label="Screen 1"></button>
+          <button class="dot" data-dot="2" aria-label="Screen 2"></button>
+          <button class="dot" data-dot="3" aria-label="Screen 3"></button>
+          <button class="dot" data-dot="4" aria-label="Screen 4"></button>
+          <button class="dot" data-dot="5" aria-label="Screen 5"></button>
+        </div>
+      </div>
+      <a class="restart-link" id="restart-link" tabindex="0">Restart</a>
+    </div>
+  </div>
+</div>
+
+<div class="product">
+  <div class="container">
+
+    <!-- SCREEN 1 -->
+    <section class="screen screen-imessage" data-screen="1">
+      <div class="imessage-header">
+        <button type="button" class="imessage-icon-btn" data-noop aria-label="Back">
+          <svg width="10" height="16" viewBox="0 0 10 16" fill="none" aria-hidden="true">
+            <path d="M8.5 1.5L2 8l6.5 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="imessage-contact">
+          <div class="imessage-avatar" aria-hidden="true"></div>
+          <div class="imessage-contact-name">Roundtable <span class="imessage-name-chevron" aria-hidden="true"></span></div>
+          <div class="imessage-encrypted">
+            <svg width="8" height="10" viewBox="0 0 8 10" fill="none" aria-hidden="true">
+              <rect x="1" y="4" width="6" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M2.4 4V2.8a1.6 1.6 0 0 1 3.2 0V4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            iMessage Encrypted
+          </div>
+        </div>
+        <button type="button" class="imessage-icon-btn" data-noop aria-label="Video">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
+            <rect x="0.75" y="1.75" width="9.5" height="8.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M11.5 4.5L15 2.5v7l-3.5-2" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="imessage-thread">
+        <p class="imessage-time">Today</p>
+        <div class="imessage-bubble">
+          Roundtable saved you a seat for dinner on Thurs at Pizza Pizza at 7p.<br><br>
+          It's a small Roundtable dinner in the East Village where everyone comes through someone they know, so you'll meet a few new people!<br><br>
+          <a class="imessage-link" href="#" data-next>See the dinner &rarr;</a>
+        </div>
+      </div>
+      <div class="imessage-composer">
+        <button type="button" class="imessage-composer-btn" data-noop aria-label="Add">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="imessage-field">iMessage</div>
+        <button type="button" class="imessage-composer-btn" data-noop aria-label="Voice message">
+          <svg width="12" height="16" viewBox="0 0 12 16" fill="none" aria-hidden="true">
+            <rect x="3.5" y="1" width="5" height="9" rx="2.5" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M2 8.5a4 4 0 0 0 8 0M6 12.5V15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- SCREEN 2 -->
+    <section class="screen" data-screen="2">
+      <a class="back-link" data-back tabindex="0">&larr; Back</a>
+      <div class="layout">
+        <div class="task-col">
+          <div class="app-header">
+            <div class="app-logo-row">
+              <svg class="app-logo-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="20" cy="20" r="11" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="20" cy="5.5" r="3" fill="currentColor"/>
+                <circle cx="33" cy="13.5" r="3" fill="currentColor"/>
+                <circle cx="33" cy="26.5" r="3" fill="currentColor"/>
+                <circle cx="20" cy="34.5" r="3" fill="currentColor"/>
+                <circle cx="7" cy="26.5" r="3" fill="currentColor"/>
+                <circle cx="7" cy="13.5" r="3" fill="currentColor"/>
+              </svg>
+              <span class="app-logo-text">Roundtable</span>
+            </div>
+            <span class="app-logo-tagline">Bringing people together IRL</span>
+          </div>
+          <h1 class="headline">You're invited! Max saved you a seat at dinner <span aria-hidden="true">&#127881;</span></h1>
+          <div class="event-card">
+            <div class="event-card-row">
+              <div class="event-card-meta-group">
+                <p class="event-details-label">Event details:</p>
+                <div class="event-card-meta">Thursday Sept 16th &middot; 7pm</div>
+                <div class="event-card-meta">Pizza Pizza, East Village (<a class="inline-link" href="https://www.google.com/maps/search/?api=1&amp;query=pizza+east+village+new+york" target="_blank" rel="noopener noreferrer">view map</a>)</div>
+                <div class="event-card-meta">8 seats</div>
+              </div>
+              <div class="event-photo-placeholder" aria-label="Placeholder dinner photo"></div>
+            </div>
+            <a class="inline-link learn-more-link" id="learnmore-open" tabindex="0">Learn more about how Roundtable works</a>
+          </div>
+          <div class="cta-bar">
+            <button class="btn-primary" data-next>Take the seat*</button>
+            <button class="btn-secondary" data-noop>Politefully decline</button>
+            <p class="cta-footnote">*If you join, you'll need to invite the next guest too.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 3 -->
+    <section class="screen" data-screen="3">
+      <a class="back-link" data-back tabindex="0">&larr; Back</a>
+      <div class="layout">
+        <div class="task-col">
+          <h1 class="headline">Woohoo, you're in!</h1>
+          <h2 class="subheadline">Pick two people you'd love to bring.</h2>
+          <p class="supporting">Your invite goes to one of them at random. If they can't make it, it goes to the other. No ranking required.</p>
+          <a class="helper-link" id="helper-open" tabindex="0">Can't think of someone?</a>
+          <div class="add-guest-list">
+            <div class="add-guest-row">
+              <button type="button" class="add-guest-btn" data-guest-slot="1">
+                <span class="guest-smile" aria-hidden="true"></span>
+                <span class="add-guest-label">Add guest from contacts</span>
+              </button>
+              <button type="button" class="clear-guest" data-clear-slot="1" hidden aria-label="Remove guest">&times;</button>
+            </div>
+            <div class="add-guest-row">
+              <button type="button" class="add-guest-btn" data-guest-slot="2">
+                <span class="guest-smile" aria-hidden="true"></span>
+                <span class="add-guest-label">Add guest from contacts</span>
+              </button>
+              <button type="button" class="clear-guest" data-clear-slot="2" hidden aria-label="Remove guest">&times;</button>
+            </div>
+          </div>
+          <div class="cta-bar">
+            <button class="btn-primary" id="screen2-next" data-next disabled>Next: Add a note</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 4 -->
+    <section class="screen" data-screen="4">
+      <div class="layout">
+        <div class="ctx-col desktop-only">
+          <div class="event-card">
+            <div class="event-card-title">Saturday dinner</div>
+            <div class="event-card-meta">7pm &middot; East Village</div>
+            <div class="event-card-meta">Hosted by Priya &middot; 8 seats</div>
+          </div>
+          <div class="chain-block">
+            <div class="chain-scroll">
+              <div class="chain">
+                <div class="chain-node"><div class="chain-circle">P</div><div class="chain-label">Priya</div></div>
+                <div class="chain-connector"></div>
+                <div class="chain-node"><div class="chain-circle">M</div><div class="chain-label">Max</div></div>
+                <div class="chain-connector"></div>
+                <div class="chain-node"><div class="chain-circle you">S</div><div class="chain-label">You</div></div>
+                <div class="chain-connector"></div>
+                <div class="chain-node"><div class="chain-circle empty"></div><div class="chain-label">Your guest</div></div>
+                <div class="chain-connector"></div>
+                <div class="chain-node"><div class="chain-circle empty"></div><div class="chain-label">Their guest</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="task-col">
+          <a class="back-link" data-back tabindex="0">&larr; Back</a>
+          <h1 class="headline">Add a note</h1>
+          <p class="supporting">A quick personal message helps the invite feel like it came from you. We wrote some copy to get you started but feel free to edit.</p>
+          <p class="supporting">We'll send this as a text message like the one you received from Max.</p>
+          <div class="invitee-card">
+            <div class="guest-field">
+              <label class="field-label" for="guest-note">Note to guest</label>
+              <textarea class="note-input guest-note-input" id="guest-note">Sam saved you a seat at dinner Saturday at Pizza Pizza at 7p.
+
+It's a small Roundtable dinner in the East Village where everyone comes through someone they know, so you'll meet a few new people.
+
+See the dinner &rarr;</textarea>
+            </div>
+          </div>
+
+          <div class="cta-bar">
+            <button class="btn-primary" data-next>Next: Send invite</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 5 -->
+    <section class="screen" data-screen="5">
+      <div class="layout">
+        <div class="task-col">
+          <a class="back-link" data-back tabindex="0">&larr; Back</a>
+          <h1 class="headline">Yay! Your invite is moving</h1>
+          <p class="confirmation"><span aria-hidden="true">&#9989;</span> We've invited Jess.</p>
+          <p class="supporting">If Jess can't make it or doesn't reply in time, we'll send you a text to let you know when she confirms. If she declines, we'll notify you and then we'll invite Alex.</p>
+          <a class="inline-link" data-noop tabindex="0">Add event to calendar</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+</div>
+
+<div class="helper-backdrop" id="helper-backdrop"></div>
+<div class="helper-panel" id="helper-panel" role="dialog" aria-modal="true" aria-labelledby="helper-headline">
+  <div class="helper-handle"></div>
+  <h2 class="helper-headline" id="helper-headline">It doesn't have to be a close friend.</h2>
+  <p class="helper-supporting">Think of someone you'd enjoy getting to know better.</p>
+  <ul class="helper-list">
+    <li>Someone from work you'd grab lunch with</li>
+    <li>A neighbor you've chatted with</li>
+    <li>Someone from a class, gym, club, or group</li>
+    <li>An old friend you've been meaning to reconnect with</li>
+  </ul>
+  <button class="btn-primary" id="helper-close">Back</button>
+</div>
+
+<div class="helper-backdrop" id="learnmore-backdrop"></div>
+<div class="helper-panel" id="learnmore-panel" role="dialog" aria-modal="true" aria-labelledby="learnmore-headline">
+  <div class="helper-handle"></div>
+  <h2 class="helper-headline" id="learnmore-headline">How Roundtable works</h2>
+  <div class="chain-block">
+    <div class="chain-scroll">
+      <div class="chain">
+        <div class="chain-node"><div class="chain-circle">P</div><div class="chain-label">Priya</div></div>
+        <div class="chain-connector"></div>
+        <div class="chain-node"><div class="chain-circle">M</div><div class="chain-label">Max</div></div>
+        <div class="chain-connector"></div>
+        <div class="chain-node"><div class="chain-circle you">S</div><div class="chain-label">You</div></div>
+        <div class="chain-connector"></div>
+        <div class="chain-node"><div class="chain-circle empty"></div><div class="chain-label">Your guest</div></div>
+        <div class="chain-connector"></div>
+        <div class="chain-node"><div class="chain-circle empty"></div><div class="chain-label">Their guest</div></div>
+      </div>
+    </div>
+  </div>
+  <p class="helper-supporting">Everyone joins through someone they know. If you take this seat, you'll choose someone new to continue the circle. You'll know Max and the person you invite next. Everyone else will be new. Its an awesome chance to connect with new people in your network.</p>
+  <button class="btn-primary" id="learnmore-close">Back to invite</button>
+</div>
+
+<script>
+(function(){
+  var defaults = {
+    screen: 1,
+    guest1: false,
+    guest2: false
+  };
+  var state = Object.assign({}, defaults);
+
+  var screenLabel = document.getElementById('screen-label');
+  var screens = document.querySelectorAll('.screen');
+  var dots = document.querySelectorAll('.dot');
+  var screen2Next = document.getElementById('screen2-next');
+  var addGuestBtns = document.querySelectorAll('.add-guest-btn');
+  var helperBackdrop = document.getElementById('helper-backdrop');
+  var helperPanel = document.getElementById('helper-panel');
+
+  function render(){
+    screens.forEach(function(s){
+      s.style.display = (Number(s.dataset.screen) === state.screen) ? '' : 'none';
+    });
+
+    screenLabel.textContent = 'Screen ' + state.screen + ' of 5';
+    dots.forEach(function(d){
+      d.classList.toggle('active', Number(d.dataset.dot) === state.screen);
+    });
+
+    if (screen2Next) screen2Next.disabled = !(state.guest1 && state.guest2);
+    addGuestBtns.forEach(function(btn){
+      var slot = btn.dataset.guestSlot;
+      var filled = slot === '1' ? state.guest1 : state.guest2;
+      var row = btn.closest('.add-guest-row');
+      if (row) row.classList.toggle('filled', filled);
+      var label = btn.querySelector('.add-guest-label');
+      if (label) label.textContent = filled ? (slot === '1' ? 'Jess' : 'Alex') : 'Add guest from contacts';
+      var clearBtn = row ? row.querySelector('.clear-guest') : null;
+      if (clearBtn) clearBtn.hidden = !filled;
+    });
+  }
+
+  function goTo(n){
+    state.screen = Math.max(1, Math.min(5, n));
+    render();
+    window.scrollTo(0,0);
+  }
+
+  dots.forEach(function(d){
+    d.addEventListener('click', function(){
+      goTo(Number(d.dataset.dot));
+    });
+  });
+
+  document.getElementById('restart-link').addEventListener('click', function(){
+    state = Object.assign({}, defaults);
+    closeHelper();
+    closeLearnmore();
+    render();
+  });
+
+  document.querySelectorAll('[data-next]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      if (btn.disabled) return;
+      goTo(state.screen + 1);
+    });
+  });
+
+  document.querySelectorAll('[data-back]').forEach(function(link){
+    link.addEventListener('click', function(e){
+      e.preventDefault();
+      goTo(state.screen - 1);
+    });
+  });
+
+  document.querySelectorAll('[data-noop]').forEach(function(link){
+    link.addEventListener('click', function(e){ e.preventDefault(); });
+  });
+
+  addGuestBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if (btn.dataset.guestSlot === '1') state.guest1 = true;
+      else state.guest2 = true;
+      render();
+    });
+  });
+
+  document.querySelectorAll('.clear-guest[data-clear-slot]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      if (btn.dataset.clearSlot === '1') state.guest1 = false;
+      else state.guest2 = false;
+      render();
+    });
+  });
+
+  function openHelper(){
+    helperBackdrop.classList.add('open');
+    helperPanel.classList.add('open');
+  }
+  function closeHelper(){
+    helperBackdrop.classList.remove('open');
+    helperPanel.classList.remove('open');
+  }
+  document.getElementById('helper-open').addEventListener('click', function(e){
+    e.preventDefault();
+    openHelper();
+  });
+  document.getElementById('helper-close').addEventListener('click', closeHelper);
+  helperBackdrop.addEventListener('click', closeHelper);
+
+  var learnmoreBackdrop = document.getElementById('learnmore-backdrop');
+  var learnmorePanel = document.getElementById('learnmore-panel');
+  function openLearnmore(){
+    learnmoreBackdrop.classList.add('open');
+    learnmorePanel.classList.add('open');
+  }
+  function closeLearnmore(){
+    learnmoreBackdrop.classList.remove('open');
+    learnmorePanel.classList.remove('open');
+  }
+  document.getElementById('learnmore-open').addEventListener('click', function(e){
+    e.preventDefault();
+    openLearnmore();
+  });
+  document.getElementById('learnmore-close').addEventListener('click', closeLearnmore);
+  learnmoreBackdrop.addEventListener('click', closeLearnmore);
+
+  render();
+})();
+</script>
