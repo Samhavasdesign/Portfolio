@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>YukiHomes — Navigation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,300..800;1,62..125,300..800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   YukiHomes navigation
+   Rebuilt to address audit findings 1.3, 1.4, 8.7, 9.2 and the
+   mobile alignment issues observed in the current build.
+   ============================================================ */
+
+:root{
+  /* Surfaces */
+  --bg:            #0D0D0D;
+  --surface:       #1C1A1F;
+  --surface-2:     #24222A;
+
+  /* Brand — taken from the YukiHomes logo mark */
+  --brand-red:     #E03127;
+  --brand-navy:    #26256B;
+
+  /* Hero system: ink / warm cream / acid green. Acid is the single
+     accent — CTAs, rules, hover states, and one or two graphic
+     accents only, never a background or a dominant colour. */
+  --acid:          #DFFF00;
+  --gray:          #767676;
+
+  /* Text */
+  --text:          #F5F1E8;
+  --text-muted:    #BDB8AC;
+  --text-dim:      rgba(245,241,232,.62);
+
+  /* The header sits over the hero. This scrim guarantees a contrast
+     floor that the translucent pill alone did not provide. (8.9) */
+  --header-scrim:  linear-gradient(180deg, rgba(13,13,13,.78) 0%, rgba(13,13,13,.45) 55%, rgba(13,13,13,0) 100%);
+  --pill-border:   rgba(255,255,255,.14);
+
+  /* Focus — owned by the design system, not inherited from the
+     browser. Two-tone so it survives light and dark backdrops. (8.7) */
+  --focus-ring:    #FFFFFF;
+  --focus-halo:    #0D0D0D;
+
+  /* Type scale — 6 steps, replacing the 11 sizes measured on the
+     live homepage. (8.5) */
+  --t-xs:  0.75rem;   /* 12 */
+  --t-sm:  0.875rem;  /* 14 */
+  --t-md:  1rem;      /* 16 */
+  --t-lg:  1.125rem;  /* 18 */
+  --t-xl:  1.5rem;    /* 24 */
+  --t-2xl: 2rem;      /* 32 */
+
+  --radius-pill: 999px;
+  --radius-btn:  8px;   /* buttons and nav items: soft-cornered rectangles */
+  --radius-cta:  6px;   /* hero primary CTA: sharper than the nav's 8px */
+
+  /* Nav and CTA face: Helvetica Bold. "Helvetica New" is the brand
+     face hosted in Webflow; Helvetica Neue / Helvetica cover the
+     prototype. */
+  --font-ui:     "Helvetica New","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --radius-md: 14px;
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --ease-soft: cubic-bezier(.32,.72,0,1);
+
+  /* Minimum interactive target. WCAG 2.5.8 asks for 24px; 44px is
+     the comfortable touch figure and costs nothing here. (8.8) */
+  --tap: 44px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html,body{margin:0;padding:0}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  /* Type exploration: Archivo, a variable grotesque with a width
+     axis. Normal width keeps the nav as clean and legible as the
+     current Helvetica; the expanded cut (font-stretch 125%) is used
+     for display type to get the wide, board-graphic energy without
+     tipping into a lux/real-estate serif feel. The brand face
+     (Helvetica New) stays as the fallback. */
+  font-family:"Archivo","Helvetica New","Helvetica Neue",Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+img{max-width:100%;display:block}
+
+/* Shared focus treatment ------------------------------------ */
+:where(a,button,[tabindex]):focus-visible{
+  outline:2px solid var(--focus-ring);
+  outline-offset:2px;
+  border-radius:6px;
+  box-shadow:0 0 0 5px var(--focus-halo);
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.site-header{
+  /* Sticky: fixed to the viewport so the nav and CTA stay in reach
+     for the whole page. Its size never changes on scroll: the logo,
+     nav and padding are identical in both states. Only the
+     background layer behind it swaps. */
+  position:fixed;
+  inset:0 0 auto 0;
+  z-index:100;
+  padding:calc(13px + env(safe-area-inset-top,0px)) clamp(16px,4vw,40px) 13px;
+  pointer-events:none; /* empty header area shouldn't eat clicks */
+}
+/* Top of page: the fading scrim, extending 40px below the bar so it
+   blends into the hero. */
+.site-header::before,
+.site-header::after{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+  z-index:-1;
+  transition:opacity .3s var(--ease);
+}
+.site-header::before{
+  inset:0 0 -40px 0;
+  background:var(--header-scrim);
+}
+/* After scrolling: a solid, blurred bar of the same height, so white
+   links keep their contrast over any content. */
+.site-header::after{
+  inset:0;
+  background:rgba(20,19,23,.86);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 1px 0 rgba(255,255,255,.08);
+  opacity:0;
+}
+.site-header.is-scrolled{pointer-events:auto}
+.site-header.is-scrolled::before{opacity:0}
+.site-header.is-scrolled::after{opacity:1}
+.site-header > *{pointer-events:auto}
+
+.header-inner{
+  max-width:1440px;
+  margin:0 auto;
+  display:grid;
+  /* logo | nav (centered in this track) | CTA + burger */
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:20px;
+}
+/* Explicit column assignment, not auto-placement: at <=900px
+   .nav-desktop goes display:none and drops out of the grid flow
+   entirely, so auto-placement would slide .header-actions into
+   the vacated middle (1fr) track instead of the last one, leaving
+   the burger stranded off-centre rather than flush right. Pinning
+   each child to its column keeps the burger in the far-right slot
+   no matter which siblings are hidden. */
+.header-inner .logo{grid-column:1}
+.nav-desktop{grid-column:2}
+.header-actions{
+  grid-column:3;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+}
+
+/* Logo ------------------------------------------------------- */
+.logo{
+  display:inline-flex;
+  align-items:center;
+  min-height:var(--tap);
+  flex:0 0 auto;
+  text-decoration:none;
+}
+.logo-img{height:50px;width:auto;display:block}
+@media (min-width:901px){.logo-img{height:62px}}
+.logo-text{
+  font-size:var(--t-md);
+  font-weight:700;
+  font-stretch:125%;
+  letter-spacing:.04em;
+  color:var(--text);
+  margin-left:10px;
+}
+
+/* Desktop nav ------------------------------------------------ */
+.nav-desktop{
+  /* The middle grid track is the flexible space between the logo
+     and the CTA/burger — centering the links here centers them
+     across the whole header, not just in the leftover space. */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+}
+
+.nav-item{position:relative}
+
+/* Every top-level nav control — link or dropdown trigger — uses
+   the same box. This is what keeps one alignment axis. */
+.nav-link{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  min-height:38px;
+  padding:0 14px;
+  border:0;
+  background:transparent;
+  border-radius:var(--radius-btn);
+  color:var(--text);
+  font:inherit;
+  font-size:var(--t-md);
+  font-family:inherit;  /* Archivo, same as the headline */
+  font-weight:700;
+  font-stretch:125%;
+  text-transform:uppercase;  /* same all-caps treatment as the H1 */
+  line-height:1;
+  text-decoration:none;
+  cursor:pointer;
+  transition:background .18s var(--ease), color .18s var(--ease);
+}
+.nav-link:hover{background:rgba(255,255,255,.1)}
+.nav-link[aria-expanded="true"]{background:rgba(255,255,255,.14)}
+.nav-link[aria-current="page"]{color:var(--text)}
+.nav-link[aria-current="page"]::after{
+  content:"";
+  position:absolute;
+  left:16px;right:16px;bottom:2px;
+  height:2px;
+  background:var(--acid);
+  border-radius:2px;
+}
+
+/* Chevron sits immediately after its label, sharing the label's
+   baseline. In the current build it is pinned to the far right of
+   the row, which visually detaches it from what it controls. */
+.chev{
+  width:10px;height:10px;
+  flex:0 0 auto;
+  opacity:1;
+  transition:transform .42s var(--ease-soft), opacity .2s var(--ease);
+}
+.nav-link:hover .chev,.m-row:hover .chev{opacity:1}
+.m-row[aria-expanded="true"] .chev{opacity:1}
+.nav-link[aria-expanded="true"] .chev{transform:rotate(180deg)}
+
+/* Dropdown -----------------------------------------------------
+   Editorial, not a SaaS menu card: near-black, cream text, one
+   accent colour reserved for hover. Items are specific destinations
+   — the parent label ("Resources") is never repeated inside. */
+.dropdown{
+  position:absolute;
+  top:calc(100% + 10px);
+  left:50%;
+  translate:-50% 0;
+  min-width:220px;
+  padding:10px;
+  background:var(--bg);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--radius-md);
+  box-shadow:0 14px 32px rgba(0,0,0,.5);
+  display:flex;
+  flex-direction:column;
+  gap:2px;   /* generous-but-minimal vertical rhythm between rows */
+  opacity:0;
+  visibility:hidden;
+  translate:-50% -6px;
+  transition:opacity .18s var(--ease), translate .18s var(--ease), visibility .18s;
+}
+.nav-item[data-open="true"] .dropdown{
+  opacity:1;
+  visibility:visible;
+  translate:-50% 0;
+}
+.dropdown a{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:46px;
+  padding:0 14px;
+  border-radius:var(--radius-btn);
+  color:var(--text);
+  font-size:var(--t-md);
+  font-family:var(--font-ui);  /* secondary links: Helvetica regular */
+  font-weight:400;
+  text-decoration:none;
+  transition:background .14s var(--ease), color .14s var(--ease);
+}
+/* Hover/focus: acid green text plus a barely-there dark-gray wash
+   — a colour shift and a highlight, never a heavy fill. */
+.dropdown a:hover,
+.dropdown a:focus-visible{
+  background:rgba(255,255,255,.05);
+  color:var(--acid);
+}
+
+/* NipponHomes is a separate product, not an editorial resource —
+   set apart at the base of the menu by a hairline divider, with an
+   external-link arrow rather than a "leaves the site" badge. */
+.dropdown-external{
+  margin-top:6px;
+  padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+.ext-arrow{
+  flex:0 0 auto;
+  font-size:.85em;
+  color:var(--gray);
+}
+.dropdown a:hover .ext-arrow,
+.dropdown a:focus-visible .ext-arrow{color:var(--acid)}
+
+/* Primary CTA ------------------------------------------------ */
+.cta{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:var(--tap);
+  padding:0 24px;
+  flex:0 0 auto;
+  /* Transparent with a thin cream stroke and cream label. Hover
+     inverts to acid green with ink text — the system's one accent
+     colour, reserved for CTAs, rules and hover states. */
+  background:transparent;
+  color:var(--text);
+  box-shadow:inset 0 0 0 .75px var(--text);
+  border-radius:var(--radius-btn);
+  font-size:var(--t-sm);
+  font-family:var(--font-ui);
+  font-weight:700;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  text-decoration:none;
+  transition:transform .18s var(--ease), background .18s var(--ease), color .18s var(--ease), box-shadow .18s var(--ease);
+}
+.cta:hover{background:var(--acid);color:#111111;box-shadow:inset 0 0 0 .75px var(--acid);transform:translateY(-1px)}
+.cta:active{transform:translateY(0)}
+
+/* Hamburger -------------------------------------------------- */
+.burger{
+  display:none;
+  width:var(--tap);height:var(--tap);
+  flex:0 0 auto;
+  align-items:center;justify-content:center;
+  background:transparent;
+  border:1px solid var(--pill-border);
+  border-radius:var(--radius-btn);
+  cursor:pointer;
+}
+.burger span{
+  display:block;
+  width:20px;height:1.5px;
+  background:var(--text);
+  position:relative;
+  transition:background .2s var(--ease);
+}
+.burger span::before,.burger span::after{
+  content:"";position:absolute;left:0;
+  width:20px;height:1.5px;background:var(--text);
+  transition:transform .26s var(--ease);
+}
+.burger span::before{top:-6px}
+.burger span::after{top:6px}
+.burger[aria-expanded="true"] span{background:transparent}
+.burger[aria-expanded="true"] span::before{transform:translateY(6px) rotate(45deg)}
+.burger[aria-expanded="true"] span::after{transform:translateY(-6px) rotate(-45deg)}
+
+/* ============================================================
+   MOBILE PANEL
+   Full-bleed. The current build insets the overlay, leaving strips
+   of hero video down both edges, which reads as a render error.
+   ============================================================ */
+.panel{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  background:
+    radial-gradient(120% 80% at 50% 0%, #1B1920 0%, #131217 62%, #101015 100%);
+  display:flex;
+  flex-direction:column;
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(-6px) scale(.995);
+  transition:opacity .32s var(--ease-soft), transform .42s var(--ease-soft), visibility .42s;
+}
+.panel[data-open="true"]{opacity:1;visibility:visible;transform:none}
+
+.panel-head{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:18px clamp(16px,5vw,32px);
+  border-bottom:1px solid rgba(255,255,255,.055);
+}
+
+.panel-body{
+  flex:1;
+  overflow-y:auto;
+  padding:8px clamp(16px,5vw,32px) 32px;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* ONE alignment axis for every row, at every level.
+   The current build centres two items, left-aligns two others, and
+   pins both chevrons to the far right edge. */
+.m-row{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  width:100%;
+  min-height:64px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--text);
+  font:inherit;
+  font-size:var(--t-lg);
+  font-family:inherit;  /* Archivo, same as the headline */
+  font-weight:700;
+  font-stretch:125%;
+  letter-spacing:-.011em;
+  text-align:left;
+  text-decoration:none;
+  cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,.055);
+  transition:color .2s var(--ease), opacity .2s var(--ease);
+}
+.m-row:last-of-type{border-bottom:0}
+/* Dim the siblings of an open section so the active branch leads. */
+.m-row .chev{width:12px;height:12px}
+.m-row[aria-expanded="true"] .chev{transform:rotate(180deg)}
+
+/* Submenu reveal.
+   No rules, no rails, no boxes. The group reads as a group because
+   it is recessed, indented and typographically quieter than its
+   parent — hierarchy carried by weight and depth rather than lines. */
+.m-sub{
+  display:grid;
+  grid-template-rows:0fr;
+  transition:grid-template-rows .34s var(--ease);
+}
+.m-row[aria-expanded="true"] + .m-sub{grid-template-rows:1fr}
+.m-sub-inner{overflow:hidden}
+
+/* No plate, no rules, no rails. The group holds together through
+   indentation and a quieter text colour alone. */
+.m-sub-panel{
+  margin:0 0 8px;
+  padding:0;
+}
+
+/* An expanded parent loses its divider so the pair reads as one
+   block rather than two stacked rows. */
+.m-row[aria-expanded="true"]{border-bottom-color:transparent}
+
+.m-row{position:relative}
+
+.m-sub a{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:44px;
+  margin:0;
+  padding:0 14px 0 12px;   /* indent carries the grouping */
+  color:var(--text);
+  font-size:var(--t-sm);
+  font-family:var(--font-ui);  /* secondary links: Helvetica regular */
+  font-weight:400;
+  letter-spacing:.004em;
+  text-decoration:none;
+  border-radius:8px;
+  /* Staggered entrance — children settle in sequence rather than
+     appearing as a block. */
+  opacity:0;
+  transform:translateY(-6px);
+  transition:opacity .34s var(--ease-soft), transform .34s var(--ease-soft), color .2s var(--ease), padding-left .26s var(--ease-soft);
+}
+.m-row[aria-expanded="true"] + .m-sub a{opacity:1;transform:none}
+.m-row[aria-expanded="true"] + .m-sub .m-sub-panel a:nth-child(1){transition-delay:.03s}
+.m-row[aria-expanded="true"] + .m-sub .m-sub-panel a:nth-child(2){transition-delay:.07s}
+.m-row[aria-expanded="true"] + .m-sub .m-sub-panel a:nth-child(3){transition-delay:.11s}
+.m-row[aria-expanded="true"] + .m-sub .m-sub-panel a:nth-child(4){transition-delay:.15s}
+.m-row[aria-expanded="true"] + .m-sub .m-sub-panel a:nth-child(5){transition-delay:.19s}
+
+/* Hover advances the item rather than filling a box behind it. */
+.m-sub a:hover,.m-sub a:focus-visible{
+  color:var(--text);
+  padding-left:17px;
+}
+
+/* NipponHomes: a separate product, not an editorial resource — set
+   apart at the base of its submenu by a hairline divider, mirroring
+   the desktop dropdown's .dropdown-external treatment. */
+.m-sub-external{
+  margin-top:8px;
+  padding-top:20px;
+  border-top:1px solid rgba(255,255,255,.09);
+}
+
+/* Pinned CTA area at the base of the mobile panel. */
+.panel-foot{
+  flex:0 0 auto;
+  padding:16px clamp(16px,5vw,32px) calc(16px + env(safe-area-inset-bottom,0px));
+  border-top:1px solid rgba(255,255,255,.09);
+  background:var(--surface);
+}
+.cta-block{width:100%;min-height:54px;letter-spacing:.07em}
+.panel-foot-note{
+  margin:12px 0 0;
+  text-align:center;
+  font-size:var(--t-sm);
+  color:var(--text-dim);
+}
+.panel-foot-note a{color:var(--text)}
+
+/* ============================================================
+   BREAKPOINT
+   Set at 900px, not Webflow's default 991px. On the live site the
+   full nav collapses while there is still ample room, hiding every
+   content link behind a tap on tablet. (9.2)
+   ============================================================ */
+@media (max-width:900px){
+  .nav-desktop{display:none}
+  .burger{display:inline-flex}
+  .header-inner .cta{display:none}
+  /* The grid's logo/nav/actions columns already put the logo at
+     the far left and the burger at the far right once the nav and
+     CTA are hidden — no flex overrides needed here. */
+}
+@media (min-width:901px){
+  .panel{display:none}
+}
+/* Tablet (641–900px): the full-screen panel stretched rows and the CTA
+   edge to edge across a wide screen. Here it becomes a right-hand
+   drawer with a fixed max width, over a dimmed backdrop. */
+.panel-scrim{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:199;
+  background:rgba(8,8,10,.55);
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .32s var(--ease-soft), visibility .32s;
+}
+.panel[data-open="true"] + .panel-scrim{opacity:1;visibility:visible}
+@media (min-width:641px) and (max-width:900px){
+  .panel{
+    left:auto;
+    width:min(440px,100%);
+    border-left:1px solid rgba(255,255,255,.08);
+    box-shadow:-30px 0 80px rgba(0,0,0,.45);
+    transform:translateX(32px);
+  }
+  .panel[data-open="true"]{transform:none}
+  .panel-scrim{display:block}
+  /* The page logo stays visible behind the scrim, so the drawer
+     doesn't repeat it. */
+  .panel-head .logo{visibility:hidden}
+}
+
+
+/* Respect reduced motion ------------------------------------- */
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+
+/* ============================================================
+   DEMO PAGE CHROME — not part of the component
+   ============================================================ */
+.hero{
+  position:relative;
+  min-height:100svh;
+  display:flex;
+  align-items:center;
+  background:var(--bg);
+  padding:calc(128px + env(safe-area-inset-top,0px)) clamp(16px,4vw,40px) clamp(48px,8vh,90px);
+  overflow:hidden;
+}
+.hero-inner{position:relative;max-width:1440px;margin:0 auto;width:100%}
+
+/* Two-column editorial grid: headline block left, single image
+   right. No full-bleed background — negative space does the work
+   a photograph would otherwise fill. */
+.hero-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:56px;
+  align-items:center;
+}
+@media (min-width:901px){
+  .hero-grid{
+    /* Media column widened again (1.4fr → 1.15fr split) so the
+       collage can carry real visual weight — roughly 55% headline /
+       45% imagery, instead of the headline dominating at ~75%. */
+    grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+    gap:clamp(32px,5vw,72px);
+  }
+}
+
+/* Eyebrow ----------------------------------------------------- */
+.eyebrow{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:0 0 24px;
+}
+.eyebrow-rule{width:32px;height:2px;flex:0 0 auto;background:var(--acid)}
+.eyebrow-text{
+  font-family:var(--font-ui);
+  font-size:13.75px;  /* 11px, 25% larger */
+  font-weight:500;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--text);
+}
+
+/* Headline ------------------------------------------------------
+   Archivo pushed to its widest cut (font-stretch:125%) and heaviest
+   weight, set in caps with tight tracking and a compressed line
+   height — wide letterforms held close together, rather than an
+   airy display setting. */
+.hero-headline{
+  margin:0 0 28px;
+  font-family:"Archivo","Helvetica New","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-weight:800;
+  font-stretch:125%;
+  text-transform:uppercase;
+  /* Scaled down slightly from an earlier clamp(2.25rem,6.4vw,5.75rem)
+     — the media column widened to give the collage more room, so the
+     headline column is narrower; this keeps "BUY JAPAN." on one line
+     without changing the copy or the hero's structure. */
+  font-size:clamp(2.25rem,5.6vw,5rem);
+  line-height:.94;
+  letter-spacing:-.015em;
+  color:var(--text);
+}
+
+.hero-sub{
+  /* No max-width: this paragraph's box should span the same width
+     as the H1's — both are full-width blocks in .hero-copy. */
+  margin:0 0 36px;
+  font-family:var(--font-ui);
+  font-size:clamp(18.75px,1.375vw,21.25px);  /* clamp(15px,1.1vw,17px), 25% larger */
+  font-weight:400;
+  line-height:1.6;
+  color:var(--text);
+  opacity:.82;
+}
+
+/* Primary CTA — acid green fill, sharp corners, no shadow or
+   gradient. Compact rather than oversized. */
+.btn-acid{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  min-height:46px;
+  padding:0 22px;
+  background:var(--acid);
+  color:#111111;
+  border-radius:var(--radius-cta);
+  font-family:var(--font-ui);
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  text-decoration:none;
+  transition:background .18s var(--ease), transform .18s var(--ease);
+}
+.btn-acid:hover{background:#EAFF57;transform:translateY(-1px)}
+.btn-acid:active{transform:translateY(0)}
+.btn-acid svg{width:14px;height:14px;flex:0 0 auto}
+
+/* Right column: a large, immersive editorial collage — the image
+   side now carries real visual weight instead of sitting in mostly
+   negative space. */
+.hero-media{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;   /* hug the hero's right edge */
+  width:100%;
+  max-width:600px;
+  margin:0 0 0 auto;
+}
+/* Collage: one dominant, near-stable horizontal image (Niseko) with
+   four smaller cards overlapping its edges — a dense, connected
+   cluster, not five floating cards. Cards assemble on load, then
+   drift at different rates on scroll — the parallax is applied to
+   the card itself; the entrance animation lives on a nested
+   wrapper, so the two motions never fight over the same transform. */
+.hero-collage{
+  position:relative;
+  width:100%;
+  /* Taller than the old 3/2 — the collage now reads as a block that
+     balances the headline's height, not a wide strip beside it. */
+  aspect-ratio:6/5;
+}
+.collage-card{
+  position:absolute;
+  border-radius:2px;
+  overflow:hidden;
+  background:var(--surface);
+  /* Subtle depth only — enough to separate overlapping cards, no
+     heavy glow or card-like elevation. */
+  box-shadow:0 8px 20px rgba(0,0,0,.18);
+  will-change:transform;
+}
+/* Main image (a): the clear anchor, ~72% of the collage width,
+   just off dead centre, almost no rotation. The other four overlap
+   its edges by a controlled amount rather than floating separately:
+   b (interior) its upper-right, c (Tokyo) its lower-left, d (snowy
+   street) its lower-right, e (lifestyle detail) tucked between c
+   and d, touching both. f sits behind the main image's upper-left
+   corner (z-index below it), showing only as a small peek. */
+.collage-card--a{top:18%;left:12%;width:72%;height:55%;z-index:2;transform:rotate(-1deg)}
+.collage-card--b{top:0;right:2%;width:40%;height:38%;z-index:3;transform:rotate(2deg)}
+.collage-card--c{top:62%;left:2%;width:35%;height:24%;z-index:4;transform:rotate(-2deg)}
+.collage-card--d{top:47%;right:0;width:30%;height:42%;z-index:3;transform:rotate(0deg)}
+.collage-card--e{top:77%;left:34%;width:22%;height:20%;z-index:5;transform:rotate(1deg)}
+.collage-card--f{top:8%;left:0;width:26%;height:24%;z-index:1;transform:rotate(3deg)}
+
+.collage-card-enter{
+  width:100%;height:100%;
+  opacity:0;
+  animation:collageIn .8s var(--ease-soft) forwards;
+}
+.collage-card--f .collage-card-enter{animation-delay:.02s}
+.collage-card--a .collage-card-enter{animation-delay:.12s}
+.collage-card--b .collage-card-enter{animation-delay:.24s}
+.collage-card--c .collage-card-enter{animation-delay:.36s}
+.collage-card--d .collage-card-enter{animation-delay:.48s}
+.collage-card--e .collage-card-enter{animation-delay:.6s}
+@keyframes collageIn{
+  from{opacity:0;transform:translateY(20px) scale(.94)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@media (prefers-reduced-motion:reduce){
+  .collage-card-enter{animation:none;opacity:1;transform:none}
+}
+
+/* Cinematic, slightly subdued treatment — cooler, less saturated,
+   a touch more contrast than the source photos, so the collage
+   doesn't read like polished resort-advertising photography. */
+.collage-card svg,.collage-card img,.collage-video{
+  display:block;width:100%;height:100%;object-fit:cover;
+  filter:saturate(.82) contrast(1.08) brightness(.97) hue-rotate(-3deg);
+}
+/* A faint grain, via a tiled noise SVG blended over the image —
+   no glow, no glassmorphism, just enough texture to feel shot
+   rather than rendered. */
+.collage-card::after{
+  content:"";
+  position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.05;
+  mix-blend-mode:overlay;
+  pointer-events:none;
+}
+
+/* Editorial labels — only on the main image, Tokyo and the snowy
+   street card; the interior and lifestyle-detail cards stay
+   unlabelled so the tags read as occasional captions, not a chip
+   on every corner. */
+.collage-label{
+  position:absolute;
+  left:8px;bottom:8px;
+  z-index:6;
+  padding:3px 7px;
+  background:rgba(17,17,17,.72);
+  border-radius:4px;
+  font-family:var(--font-ui);
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--text);
+}
+/* The main card's bottom-left corner sits under card c (Tokyo);
+   top-left is the one corner of the main image nothing overlaps. */
+.collage-card--a .collage-label{left:8px;bottom:auto;top:8px}
+
+.collage-pause{
+  /* No card overlaps card C's top-left corner. */
+  position:absolute;
+  top:9px;left:9px;
+  z-index:2;
+  width:28px;height:28px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.35);
+  background:rgba(13,13,13,.55);
+  color:var(--text);
+  display:grid;place-items:center;
+  cursor:pointer;
+}
+.collage-pause:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;box-shadow:0 0 0 4px var(--focus-halo)}
+.collage-pause svg{width:11px;height:11px}
+
+/* ============================================================
+   FOOTER
+   Same surface as the mobile panel, so header and footer read as
+   one system. Every group is single-purpose: Contact holds contact
+   details only, Company holds the rest of what used to live under
+   "Contact Us".
+   ============================================================ */
+.site-footer{
+  background:
+    radial-gradient(120% 80% at 50% 0%, #1B1920 0%, #131217 62%, #101015 100%);
+}
+.footer-inner{
+  max-width:1440px;
+  margin:0 auto;
+  padding:64px clamp(16px,4vw,40px) 0;
+}
+
+/* Mobile-first: brand block stacked full width, the four groups
+   below it as a 2-column grid — never three, so no label wraps. */
+.footer-top{
+  display:flex;
+  flex-direction:column;
+  gap:40px;
+}
+.footer-brand{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.footer-tagline{
+  margin:0;
+  max-width:none;
+  font-family:var(--font-ui);
+  font-size:calc(var(--t-md) * .8);  /* 20% smaller than the base --t-md */
+  font-weight:400;
+  font-style:normal;  /* the old italic tagline hurt legibility at small sizes */
+  line-height:1.6;
+  color:var(--text-dim);
+}
+.footer-social{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:4px;
+  /* Each icon sits in a 44px tap target for touch, which insets the
+     glyph itself from the button's edge — pull the row left by that
+     inset so the icons line up with the logo and tagline above them. */
+  margin-left:calc((var(--tap) - 18px) / -2);
+}
+.footer-social a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:var(--tap);
+  height:var(--tap);
+  border-radius:var(--radius-btn);
+  color:var(--text-dim);
+  transition:background .18s var(--ease), color .18s var(--ease);
+}
+.footer-social a:hover,.footer-social a:focus-visible{background:rgba(255,255,255,.1);color:var(--text)}
+.footer-social svg{width:18px;height:18px}
+
+.footer-columns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:32px 24px;
+}
+.footer-heading{
+  margin:0 0 20px;
+  font-family:inherit;  /* Archivo Expanded — same face as the top nav's links */
+  font-size:var(--t-sm);
+  font-weight:700;
+  font-stretch:125%;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  color:var(--text);
+}
+.footer-links{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+.footer-links a{
+  display:flex;
+  align-items:center;
+  padding:7.5px 0;  /* 50% more than the original 5px */
+  color:var(--text-dim);
+  font-size:calc(var(--t-md) * .85);  /* 15% smaller */
+  font-weight:400;
+  text-decoration:none;
+  transition:color .18s var(--ease);
+}
+.footer-links a:hover,.footer-links a:focus-visible{color:var(--text)}
+.footer-links a:hover .ext-arrow,.footer-links a:focus-visible .ext-arrow{color:var(--acid)}
+
+/* Contact: an <address>, not a nav — contact details only. Sized and
+   spaced to match .footer-links so all four columns stay uniform. */
+.footer-contact address{margin:0;font-style:normal}
+.footer-contact-list{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+.footer-contact-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:7.5px 0;  /* 50% more than the original 5px, matches .footer-links a */
+  color:var(--text-dim);
+  font-size:calc(var(--t-md) * .85);  /* matches .footer-links a */
+  text-decoration:none;
+  transition:color .18s var(--ease);
+}
+a.footer-contact-item:hover,a.footer-contact-item:focus-visible{color:var(--text)}
+.footer-icon{width:16px;height:16px;flex:0 0 auto}
+
+.footer-base{
+  margin-top:48px;
+  padding:20px 0 calc(20px + env(safe-area-inset-bottom,0px));
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.footer-legal{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px 24px;
+}
+.footer-legal a{
+  display:inline-flex;
+  align-items:center;
+  min-height:var(--tap);
+  color:var(--text-dim);
+  font-size:var(--t-xs);
+  text-decoration:none;
+  transition:color .18s var(--ease);
+}
+.footer-legal a:hover,.footer-legal a:focus-visible{color:var(--text)}
+.footer-copyright{margin:0;font-size:var(--t-sm);color:var(--gray)}
+
+/* Tablet (700–1099px): the four groups become a 2x2 grid; the base
+   bar goes horizontal. Brand stays a simple stacked logo+tagline. */
+@media (min-width:700px){
+  .footer-base{flex-direction:row;align-items:center;justify-content:space-between}
+}
+
+/* Desktop (>=1100px): one 5-column grid — brand at roughly a third,
+   Services / Resources / Company / Contact as four equal columns.
+   .footer-columns becomes display:contents so its four children
+   join the same grid as .footer-brand, instead of nesting a grid
+   inside a grid. */
+@media (min-width:1100px){
+  .footer-top{
+    display:grid;
+    grid-template-columns:minmax(240px,1.8fr) repeat(4,1fr);
+    gap:0 40px;
+    align-items:start;
+  }
+  .footer-brand{grid-column:1}
+  .footer-columns{display:contents}
+}
+
+.note{
+  max-width:1440px;
+  margin:0 auto;
+  padding:64px clamp(16px,4vw,40px) 96px;
+  color:var(--text-dim);
+  font-size:var(--t-md);
+  line-height:1.65;
+}
+.note h2{color:var(--text);font-size:var(--t-xl);margin:0 0 20px;font-weight:500}
+.note ul{padding-left:1.1em;margin:0}
+.note li{margin-bottom:11px}
+.note strong{color:var(--text-muted);font-weight:500}
+.note code{
+  background:var(--surface-2);
+  padding:2px 6px;
+  border-radius:5px;
+  font-size:.9em;
+  color:var(--text-muted);
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+
+    <a class="logo" href="#" aria-label="YukiHomes — home">
+      <img class="logo-img" src="assets/yukihomes-logo-wordmark.png" alt="" width="1961" height="802">
+    </a>
+
+    <!-- Desktop -->
+    <nav class="nav-desktop" aria-label="Main">
+
+      <div class="nav-item" data-dropdown>
+        <button class="nav-link" aria-expanded="false" aria-haspopup="true" aria-controls="dd-services">
+          Services
+          <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5L6 8.5L10 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="dropdown" id="dd-services" role="group" aria-label="Services">
+          <a href="/tax-utility-management">Tax, Utilities, Insurance</a>
+          <a href="/inspections">Home Inspections</a>
+          <a href="/renovation-services">Renovations</a>
+          <a href="/interior-design">Interior Design</a>
+          <a href="/str-management">Rental Management</a>
+        </div>
+      </div>
+
+      <div class="nav-item">
+        <a class="nav-link" href="/stories">Client Stories</a>
+      </div>
+
+      <div class="nav-item" data-dropdown>
+        <button class="nav-link" aria-expanded="false" aria-haspopup="true" aria-controls="dd-resources">
+          Resources
+          <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5L6 8.5L10 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="dropdown" id="dd-resources" role="group" aria-label="Resources">
+          <a href="/blogs">Journal</a>
+          <a href="/podcast">Podcast</a>
+          <a href="/investment-guide">Investment Guide</a>
+          <a href="/trips">Travel Guides</a>
+          <!-- A separate product, not an editorial resource: set apart
+               by the divider above and the external-link arrow. -->
+          <a class="dropdown-external" href="https://nipponhomes.com">NipponHomes <span class="ext-arrow" aria-hidden="true">&#8599;</span></a>
+        </div>
+      </div>
+
+      <div class="nav-item">
+        <a class="nav-link" href="/about-us">About Us</a>
+      </div>
+    </nav>
+
+    <div class="header-actions">
+      <a class="cta" href="/start">Get Started</a>
+
+      <button class="burger" aria-expanded="false" aria-controls="mobile-panel" aria-label="Open menu">
+        <span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile panel -->
+<div class="panel" id="mobile-panel" data-open="false" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="panel-head">
+    <a class="logo" href="#" aria-label="YukiHomes — home">
+      <img class="logo-img" src="assets/yukihomes-logo-wordmark.png" alt="" width="1961" height="802">
+    </a>
+    <button class="burger" aria-expanded="true" aria-controls="mobile-panel" aria-label="Close menu" data-close style="margin-left:auto">
+      <span></span>
+    </button>
+  </div>
+
+  <div class="panel-body">
+    <button class="m-row" aria-expanded="false" data-acc>
+      Services
+      <svg class="chev" viewBox="0 0 12 12" aria-hidden="true" style="margin-left:2px"><path d="M2 4.5L6 8.5L10 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="m-sub"><div class="m-sub-inner"><div class="m-sub-panel">
+      <a href="/tax-utility-management">Tax, Utilities, Insurance</a>
+      <a href="/inspections">Home Inspections</a>
+      <a href="/renovation-services">Renovations</a>
+      <a href="/interior-design">Interior Design</a>
+      <a href="/str-management">Rental Management</a>
+    </div></div></div>
+
+    <a class="m-row" href="/stories">Client Stories</a>
+
+    <button class="m-row" aria-expanded="false" data-acc>
+      Resources
+      <svg class="chev" viewBox="0 0 12 12" aria-hidden="true" style="margin-left:2px"><path d="M2 4.5L6 8.5L10 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="m-sub"><div class="m-sub-inner"><div class="m-sub-panel">
+      <a href="/blogs">Journal</a>
+      <a href="/podcast">Podcast</a>
+      <a href="/investment-guide">Investment Guide</a>
+      <a href="/trips">Travel Guides</a>
+      <a class="m-sub-external" href="https://nipponhomes.com">NipponHomes <span class="ext-arrow" aria-hidden="true">&#8599;</span></a>
+    </div></div></div>
+
+    <a class="m-row" href="/about-us">About Us</a>
+  </div>
+
+  <!-- Pinned CTA. Sits in thumb reach and never scrolls away, even
+       with every accordion open. Previously this sat in the panel
+       header beside the close control. -->
+  <div class="panel-foot">
+    <a class="cta cta-block" href="/start">Get Started</a>
+    <p class="panel-foot-note">Not ready? <a href="/meet">Book a call</a></p>
+  </div>
+</div>
+<div class="panel-scrim" aria-hidden="true"></div>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-grid">
+
+      <div class="hero-copy">
+        <p class="eyebrow">
+          <span class="eyebrow-rule" aria-hidden="true"></span>
+          <span class="eyebrow-text">Real estate for a different kind of life</span>
+        </p>
+        <h1 class="hero-headline">Buy Japan.<br>Skip the<br>bullshit.</h1>
+        <p class="hero-sub">Local expertise. Clear answers. A smoother way to own property in Japan.</p>
+        <a class="btn-acid" href="/start">
+          Find your dream home
+          <svg viewBox="0 0 16 10" aria-hidden="true"><path d="M0 5h14M9 1l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+
+      <div class="hero-media">
+        <!-- Collage: six cards built as one dense, connected
+             cluster — mountains, cities, homes, life in Japan. The
+             anchor (a), interior (b) and Tokyo (c) are real
+             photography; the snowy-street (d), lifestyle-detail (e)
+             and the train-platform peek behind the anchor (f) are
+             placeholder graphics — there's no licensed photo for any
+             of the three in this project. See CLAUDE.md. -->
+        <div class="hero-collage" data-collage>
+
+          <!-- Sits behind the main image's upper-left corner — a
+               small peek, not a sixth equal card. -->
+          <figure class="collage-card collage-card--f" data-depth="0.04" data-rot="3">
+            <div class="collage-card-enter">
+              <svg viewBox="0 0 240 185" role="img" aria-labelledby="collageTitleF" xmlns="http://www.w3.org/2000/svg">
+                <title id="collageTitleF">A train arriving at a platform at dusk</title>
+                <defs>
+                  <linearGradient id="skyF" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#1B2028"/>
+                    <stop offset="100%" stop-color="#3C4550"/>
+                  </linearGradient>
+                </defs>
+                <rect width="240" height="185" fill="url(#skyF)"/>
+                <rect x="10" y="40" width="220" height="100" rx="6" fill="#12151B"/>
+                <rect x="10" y="118" width="220" height="6" fill="#2A2E36"/>
+                <rect x="24" y="58" width="34" height="30" fill="#E8A24A" opacity=".55"/>
+                <rect x="70" y="58" width="34" height="30" fill="#E8A24A" opacity=".4"/>
+                <rect x="116" y="58" width="34" height="30" fill="#E8A24A" opacity=".55"/>
+                <rect x="162" y="58" width="34" height="30" fill="#E8A24A" opacity=".4"/>
+                <rect x="0" y="140" width="240" height="45" fill="#1B1E24"/>
+                <rect x="0" y="140" width="240" height="6" fill="#C9A227" opacity=".8"/>
+              </svg>
+            </div>
+          </figure>
+
+          <!-- Main hero image: the anchor, ~50% of the collage's
+               visual weight. -->
+          <figure class="collage-card collage-card--a" data-depth="0.02" data-rot="-1">
+            <div class="collage-card-enter">
+              <img src="assets/niseko-snowboarder.webp" alt="A snowboarder overlooking Mt. Yotei from a ridge above Niseko, Japan">
+            </div>
+            <span class="collage-label">Niseko</span>
+          </figure>
+
+          <!-- Interior: a substantial second piece, not a corner
+               accent. -->
+          <figure class="collage-card collage-card--b" data-depth="0.06" data-rot="2">
+            <div class="collage-card-enter">
+              <img src="assets/ryokan-room-balcony.jpg" alt="A ryokan room with shoji screens opening onto a balcony overlooking a mountain town in Karuizawa">
+            </div>
+          </figure>
+
+          <!-- Tokyo, as the moving piece — still a placeholder for
+               real Japan motion content; see CLAUDE.md. -->
+          <figure class="collage-card collage-card--c" data-depth="0.08" data-rot="-2">
+            <div class="collage-card-enter">
+              <video class="collage-video" muted loop playsinline autoplay preload="auto" poster="assets/hero-poster.jpg" aria-hidden="true">
+                <source src="assets/shibuya-crossing.mp4" type="video/mp4">
+              </video>
+            </div>
+            <span class="collage-label">Tokyo</span>
+            <button class="collage-pause" type="button" aria-label="Pause background video" aria-pressed="false">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" rx="1" fill="currentColor"/><rect x="9.5" y="2" width="3.5" height="12" rx="1" fill="currentColor"/></svg>
+            </button>
+          </figure>
+
+          <!-- Snowy street/village: placeholder graphic. -->
+          <figure class="collage-card collage-card--d" data-depth="0.07" data-rot="0">
+            <div class="collage-card-enter">
+              <svg viewBox="0 0 260 300" role="img" aria-labelledby="collageTitleD" xmlns="http://www.w3.org/2000/svg">
+                <title id="collageTitleD">A narrow snowy street between low buildings in a Hokkaido village at dusk</title>
+                <defs>
+                  <linearGradient id="skyD" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#232A34"/>
+                    <stop offset="100%" stop-color="#6E7C86"/>
+                  </linearGradient>
+                </defs>
+                <rect width="260" height="300" fill="url(#skyD)"/>
+                <path d="M0 40 L95 92 L95 300 L0 300 Z" fill="#171B22"/>
+                <path d="M260 40 L165 92 L165 300 L260 300 Z" fill="#12151B"/>
+                <path d="M0 40 L95 92 L95 102 L0 54 Z" fill="#DCE2E6" opacity=".85"/>
+                <path d="M260 40 L165 92 L165 102 L260 54 Z" fill="#DCE2E6" opacity=".85"/>
+                <path d="M95 300 L95 205 L130 152 L165 205 L165 300 Z" fill="#B9C2C7"/>
+                <rect x="24" y="160" width="16" height="22" fill="#E8A24A" opacity=".8"/>
+                <rect x="52" y="200" width="14" height="18" fill="#E8A24A" opacity=".65"/>
+                <rect x="204" y="150" width="16" height="22" fill="#E8A24A" opacity=".8"/>
+                <rect x="178" y="195" width="14" height="18" fill="#E8A24A" opacity=".65"/>
+                <circle cx="118" cy="118" r="4" fill="#E8A24A" opacity=".9"/>
+                <circle cx="142" cy="118" r="4" fill="#E8A24A" opacity=".9"/>
+              </svg>
+            </div>
+            <span class="collage-label">Hokkaido</span>
+          </figure>
+
+          <!-- Lifestyle detail: placeholder graphic. -->
+          <figure class="collage-card collage-card--e" data-depth="0.1" data-rot="1">
+            <div class="collage-card-enter">
+              <svg viewBox="0 0 260 190" role="img" aria-labelledby="collageTitleE" xmlns="http://www.w3.org/2000/svg">
+                <title id="collageTitleE">A glowing vending machine on a snowy street at night</title>
+                <defs>
+                  <linearGradient id="skyE" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#0B0E13"/>
+                    <stop offset="100%" stop-color="#1B2027"/>
+                  </linearGradient>
+                </defs>
+                <rect width="260" height="190" fill="url(#skyE)"/>
+                <rect x="66" y="18" width="128" height="162" rx="4" fill="#181B21"/>
+                <rect x="78" y="30" width="104" height="92" fill="#E8A24A" opacity=".16"/>
+                <rect x="78" y="30" width="104" height="12" fill="#DFFF00" opacity=".35"/>
+                <rect x="84" y="50" width="20" height="34" fill="#E8A24A" opacity=".55"/>
+                <rect x="110" y="50" width="20" height="34" fill="#C97B4A" opacity=".55"/>
+                <rect x="136" y="50" width="20" height="34" fill="#E8A24A" opacity=".4"/>
+                <rect x="84" y="92" width="20" height="24" fill="#C97B4A" opacity=".4"/>
+                <rect x="110" y="92" width="20" height="24" fill="#E8A24A" opacity=".55"/>
+                <rect x="136" y="92" width="20" height="24" fill="#C97B4A" opacity=".5"/>
+                <rect x="150" y="132" width="18" height="14" rx="2" fill="#0D0F13"/>
+                <circle cx="30" cy="40" r="2" fill="#E7ECEF" opacity=".7"/>
+                <circle cx="48" cy="80" r="2" fill="#E7ECEF" opacity=".6"/>
+                <circle cx="20" cy="120" r="2" fill="#E7ECEF" opacity=".7"/>
+                <circle cx="230" cy="55" r="2" fill="#E7ECEF" opacity=".6"/>
+                <circle cx="216" cy="95" r="2" fill="#E7ECEF" opacity=".7"/>
+                <circle cx="238" cy="135" r="2" fill="#E7ECEF" opacity=".6"/>
+              </svg>
+            </div>
+          </figure>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     Rebuilt per the footer audit: every header destination now also
+     lives here (finding 1), the brand column no longer wastes desktop
+     width (3), Contact holds contact details only — the rest moved to
+     Company (4), the cream wordmark replaces the low-contrast navy
+     mark (5), legal links clear the 44px tap target (6), and FAQs
+     points at the FAQ anchor rather than the top of checkout (7).
+
+     Two deliberate departures from the brief, both to keep the
+     footer honest with what the header actually does today:
+     — NipponHomes reuses the header's external-link arrow
+       (.ext-arrow) rather than a "Search" label. The changelog above
+       already records that badge as a defect removed from the
+       header; repeating it here would reopen the inconsistency this
+       rebuild exists to close.
+     — The Resources labels are "Journal" and "Travel Guides", not
+       "Blog" / "Travel" — those are the header's current labels, and
+       "mirrors the header dropdown exactly, same labels" is the
+       literal rule finding 1 asks for.
+     ============================================================ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+
+      <div class="footer-brand">
+        <a class="logo" href="/" aria-label="YukiHomes — home">
+          <img class="logo-img" src="assets/yukihomes-logo-wordmark.png" alt="" width="1961" height="802">
+        </a>
+        <p class="footer-tagline">Trusted Japanese Real Estate Consulting Services, helping you find a home — wherever you are.</p>
+        <div class="footer-social">
+          <a href="https://instagram.com/yukihomes" aria-label="YukiHomes on Instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg>
+          </a>
+          <a href="https://x.com/yukihomes" aria-label="YukiHomes on X">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 4.5L19.5 19.5M19.5 4.5L4.5 19.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </a>
+          <a href="https://facebook.com/yukihomes" aria-label="YukiHomes on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13.2 20v-6.6h2.2l.3-2.6h-2.5v-1.6c0-.75.2-1.3 1.3-1.3h1.3V5.4c-.2 0-1-.1-1.9-.1-1.9 0-3.2 1.2-3.2 3.3v1.8H8.6v2.6h1.9V20h2.7z" fill="currentColor"/></svg>
+          </a>
+          <a href="https://youtube.com/@yukihomes" aria-label="YukiHomes on YouTube">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 9.5l5 2.5l-5 2.5z" fill="currentColor"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-columns">
+
+        <nav class="footer-col" aria-label="Services">
+          <h2 class="footer-heading">Services</h2>
+          <ul class="footer-links">
+            <li><a href="/tax-utility-management">Tax, Utilities, Insurance</a></li>
+            <li><a href="/inspections">Home Inspections</a></li>
+            <li><a href="/renovation-services">Renovations</a></li>
+            <li><a href="/interior-design">Interior Design</a></li>
+            <li><a href="/str-management">Rental Management</a></li>
+          </ul>
+        </nav>
+
+        <nav class="footer-col" aria-label="Resources">
+          <h2 class="footer-heading">Resources</h2>
+          <ul class="footer-links">
+            <li><a href="https://nipponhomes.com">NipponHomes <span class="ext-arrow" aria-hidden="true">&#8599;</span></a></li>
+            <li><a href="/podcast">Podcast</a></li>
+            <!-- TODO: confirm dropping "Blog"/"Travel" from the live nav was
+                 an oversight and not a decision. Using the header's current
+                 labels ("Journal", "Travel Guides") until confirmed. -->
+            <li><a href="/blogs">Journal</a></li>
+            <!-- TODO: Investment Guide may be the same asset as the HubSpot
+                 "Buyer's Guide" lander — confirm and retire one. -->
+            <li><a href="/investment-guide">Investment Guide</a></li>
+            <li><a href="/trips">Travel Guides</a></li>
+          </ul>
+        </nav>
+
+        <nav class="footer-col" aria-label="Company">
+          <h2 class="footer-heading">Company</h2>
+          <ul class="footer-links">
+            <li><a href="/stories">Client Stories</a></li>
+            <li><a href="/about-us">About Us</a></li>
+            <!-- TODO: confirm /business-ethics is the correct slug -->
+            <li><a href="/business-ethics">Business Ethics</a></li>
+            <li><a href="/start#faq">FAQs</a></li>
+            <!-- TODO: real URL unconfirmed -->
+            <li><a href="#">YukiHomes Merch</a></li>
+          </ul>
+        </nav>
+
+        <section class="footer-col footer-contact" aria-label="Contact">
+          <h2 class="footer-heading">Contact Us</h2>
+          <address class="footer-contact-list">
+            <a class="footer-contact-item" href="/meet">
+              <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="1.6"/><line x1="8" y1="3" x2="8" y2="7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              Book on our calendar
+            </a>
+            <a class="footer-contact-item" href="mailto:hello@yukihomes.com">
+              <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 6.5l8 6.5l8-6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              hello@yukihomes.com
+            </a>
+            <a class="footer-contact-item" href="tel:+13322175322">
+              <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.8 3.5H5a1.5 1.5 0 0 0-1.5 1.5c0 8.28 6.72 15 15 15A1.5 1.5 0 0 0 20 18.2v-2.8a1.5 1.5 0 0 0-1.24-1.48l-3.2-.6a1.5 1.5 0 0 0-1.44.44l-1.1 1.1a11.4 11.4 0 0 1-5.28-5.28l1.1-1.1a1.5 1.5 0 0 0 .44-1.44l-.6-3.2A1.5 1.5 0 0 0 7.8 3.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              +1 (332) 217-5322
+            </a>
+            <span class="footer-contact-item footer-contact-static">
+              <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+              Rockville Centre, NY 11570
+            </span>
+          </address>
+        </section>
+
+      </div>
+    </div>
+
+    <div class="footer-base">
+      <ul class="footer-legal">
+        <li><a href="/privacy-policy">Privacy Policy</a></li>
+        <li><a href="/terms-of-service">Terms of Service</a></li>
+        <li><a href="/cookie-policy">Cookie Policy</a></li>
+      </ul>
+      <p class="footer-copyright">&copy; 2026 Yuki Homes &middot; Powered by avianu.&trade;</p>
+    </div>
+  </div>
+</footer>
+
+<section class="note">
+  <h2>What changed, and why</h2>
+  <ul>
+    <li><strong>One alignment axis on mobile.</strong> Every row — link or accordion — shares a left edge, and each chevron sits immediately after its own label. The live build centres two items, left-aligns two, and pins both chevrons to the far right.</li>
+    <li><strong>Submenus use indentation and colour, not lines or boxes.</strong> Children sit slightly indented, entering in a short stagger. The parent's divider drops away while open so the pair reads as one block. The live build nests a bordered card under a centred parent — a third alignment system in one menu.</li>
+    <li><strong>The panel is full-bleed on phones.</strong> The live overlay is inset, leaving strips of hero video down both edges.</li>
+    <li><strong>Breakpoint moved to 900px.</strong> Webflow's 991px default hides every content link on tablet while there's still room for them.</li>
+    <li><strong>Focus is owned, not inherited.</strong> A two-tone ring defined in the design system, so it survives dark buttons and video backdrops rather than depending on each browser's default.</li>
+    <li><strong>A scrim behind the header.</strong> Gives white text a contrast floor over moving video.</li>
+    <li><strong>Four top-level items.</strong> Services and About Us establish the offer, Client Stories proves it, Resources holds supporting material for people who already care. Reached after the main story has done its work.</li>
+    <li><strong>Resources holds specific destinations, not a repeat of its own label.</strong> Journal, Podcast, Investment Guide, Travel Guides — then NipponHomes, set apart by a divider and an external-link arrow rather than mixed in as just another item. The live menu's separate "Search" badge and orphaned Blog slot are gone; nothing in the tray repeats the word "Resources."</li>
+    <li><strong>The mobile CTA is pinned to the base of the panel.</strong> In thumb reach, and it never scrolls away with both accordions open. It previously sat in the panel header beside the close control, where the destructive action was the easier target.</li>
+    <li><strong>44px minimum targets</strong> on every interactive element.</li>
+    <li><strong>The burger is pinned to its own grid column, not auto-placed.</strong> Below 900px <code>.nav-desktop</code> goes <code>display:none</code> and drops out of the grid entirely, so implicit auto-placement slid <code>.header-actions</code> into the vacated centre track — the burger sat off-centre instead of flush against the right edge. Each header child now gets an explicit <code>grid-column</code>, so the burger stays far-right regardless of which siblings are hidden.</li>
+    <li><strong>Six type steps</strong> as CSS variables, replacing the eleven sizes measured on the live homepage.</li>
+  </ul>
+
+  <h2 style="margin-top:56px">Design revisions</h2>
+  <ul>
+    <li><strong>Hero rebuilt as a type-first editorial layout.</strong> The full-bleed Shibuya Crossing video is gone. The hero is now a flat ink-black (<code>#0D0D0D</code>) two-column composition — an oversized three-line headline on the left (~60% width), a single cropped landscape image on the right (~35%), with deliberate negative space around it rather than a background that fills the frame.</li>
+    <li><strong>A new accent colour: acid green (<code>#DFFF00</code>).</strong> Used only for the eyebrow rule, the primary hero CTA, hover states and the active-nav underline — never as a background or a dominant colour.</li>
+    <li><strong>Body text warmed from white to cream (<code>#F5F1E8</code>).</strong> Across the nav, headline and copy, for a softer, editorial-print feel in place of stark white-on-black.</li>
+    <li><strong>Typeface changed to Archivo.</strong> A variable grotesque with a width axis, free on Google Fonts. It stays sans serif to keep the studio's action-sports roots and avoid a lux real-estate feel. Helvetica New remains in the stack as the fallback.</li>
+    <li><strong>Expanded, heavier display type in the hero.</strong> The headline pushes Archivo to its widest cut (125%) and heaviest weight (800), set in caps with tight tracking and a compressed 0.92 line height — wide letterforms held close together, scaling up to 108px. The nav and wordmark keep the same expanded cut at a much smaller size and weight 700, for a lighter touch than the hero.</li>
+    <li><strong>Hero copy: "Buy Japan. Skip the bullshit."</strong> Three short, oversized lines replace the original single-sentence H1, with a small uppercase eyebrow above it ("Real estate for a different kind of life") and a short supporting line below.</li>
+    <li><strong>The collage is dramatically larger — six cards, ~44% of the hero's width.</strong> A stable, near-horizontal Niseko photograph (−1°) anchors the composition at roughly 50% of its visual weight; five smaller cards connect to it: a ryokan interior overlapping the upper-right corner, the Shibuya video tucked under the lower-left, a placeholder "snowy village" graphic at the lower-right, a small placeholder "vending machine" detail bridging the two, and a placeholder "train platform" card sitting behind the anchor's upper-left corner — a small peek of depth, not a sixth equal card. Every overlap is controlled (roughly 10–15%), not the heavy 30–40% stacking of an earlier pass. The hero grid's column split widened again, from <code>1.4fr/1fr</code> to <code>1.15fr/1fr</code> — imagery now carries close to 45% of the hero's visual weight, up from roughly 25%.</li>
+    <li><strong>The headline scaled down slightly to make room.</strong> With the media column wider, the H1's clamp dropped from <code>6.4vw</code>/max <code>5.75rem</code> to <code>5.6vw</code>/max <code>5rem</code> — enough that "BUY JAPAN." still holds one line. The copy, CTA and structure are untouched.</li>
+    <li><strong>A cinematic photo treatment, not straight source images.</strong> Every card — real photo or placeholder — carries a shared filter (desaturated, cooler, slightly more contrast) plus a faint tiled-noise grain, so the collage doesn't read like polished resort-advertising photography.</li>
+    <li><strong>Three labels, not five.</strong> <code>Niseko</code>, <code>Tokyo</code> and <code>Hokkaido</code> caption the anchor, Shibuya and snowy-village cards; the interior and lifestyle-detail cards stay unlabelled, so the tags read as occasional captions rather than a chip on every corner.</li>
+    <li><strong>The collage assembles on load, then drifts on scroll.</strong> Each card fades and settles into place with a short stagger (the anchor photo first, then the three smaller cards). On scroll, the cards move upward at different rates — the smaller foreground cards drift a little more than the large anchor frame — for a subtle parallax. Both are skipped under <code>prefers-reduced-motion</code>.</li>
+    <li><strong>Nav in the headline face, secondary links and CTAs in Helvetica.</strong> Top-level links and mobile menu rows use the same Archivo Expanded Bold as the wordmark. Secondary links in the dropdowns and mobile submenus drop to Helvetica regular, so the hierarchy between parent and child reads at a glance. The CTAs use Helvetica bold in uppercase.</li>
+    <li><strong>All links are cream in every state.</strong> Dropdown items, mobile sub-links, external-link labels, chevrons and the footer link are no longer greyed or dimmed. Unselected mobile rows no longer fade when an accordion is open. Hover feedback is a background tint or a small shift almost everywhere — the one exception is the Resources dropdown, where hover shifts to acid green (see below).</li>
+    <li><strong>Resources dropdown rebuilt around specific destinations.</strong> Journal, Podcast, Investment Guide, Travel Guides, then NipponHomes — set apart at the base by a hairline divider and an external-link arrow (↗) instead of the live site's "Search" badge, and no item repeats the word "Resources." The tray itself is near-black with a hairline border, no card shadow or gradient; items hover to acid green text on a barely-there gray wash, quick (140ms) and understated.</li>
+    <li><strong>Nav moved out of the pill and centered.</strong> The links no longer sit in a pill immediately after the logo — the header is now a three-column grid (logo, nav, CTA/burger) with the nav centered in the middle track, logo far left, Get Started and the burger far right.</li>
+    <li><strong>Top nav set in the headline face, all caps.</strong> "Services", "Client Stories", "Resources" and "About Us" now match the H1's all-caps treatment, still in Archivo Expanded at nav weight (700) rather than the H1's heavier 800.</li>
+    <li><strong>Sticky header.</strong> The header stays fixed to the top of the screen. After a short scroll its fading scrim is replaced by a solid, blurred background so cream links keep their contrast over any content. The logo, nav and header height stay exactly the same in both states. It also respects the notch and status bar on phones.</li>
+    <li><strong>Header slimmed down.</strong> Vertical padding cut from 18px to 13px and the logo from 65px (54px on phones) down to a single 50px height at every size, for a lighter bar that still clears the 44px tap target on every control and doesn't shrink further on small screens.</li>
+    <li><strong>Logo swapped for the cream wordmark.</strong> The acid-green eye mark now sits in place of the "O" in "HOMES" — the one spot in the nav where the eye motif and the hero's accent colour meet.</li>
+    <li><strong>Two CTA styles, split by role.</strong> The nav's "Get Started" stays a small outlined button — transparent with a 0.75px cream stroke, inverting to acid green with ink text on hover. The hero's "Find your dream home" is the bolder move: a solid acid-green rectangle with ink text and 6px corners. Neither uses a pill, gradient or shadow.</li>
+    <li><strong>Buttons use sharp-ish corners.</strong> Nav CTAs, dropdown items and the menu button keep the existing 8px radius; the hero CTA drops to 6px, slightly sharper, set from its own radius variable.</li>
+    <li><strong>Tablet menu becomes a drawer.</strong> Between 641px and 900px the menu opens as a right-hand drawer capped at 440px over a dimmed backdrop, instead of stretching rows and the CTA across the full screen. Tapping the backdrop closes it. Phones keep the full-screen panel.</li>
+    <li><strong>Footer rebuilt against a seven-point audit.</strong> Every header destination now also lives in the footer (Journal, Podcast, Investment Guide, Travel Guides, NipponHomes); it stacks to a strict two-column grid below 700px so no label wraps; the brand column no longer wastes desktop width; Contact holds contact details only, with the rest (About Us, Business Ethics, FAQs, Merch) moved to a new Company group; the logo is the cream wordmark, not the low-contrast navy mark; legal links clear the 44px tap target; and FAQs points at <code>/start#faq</code> instead of the top of checkout. The <code>tel:</code> link matches the displayed number (the old footer dialled a different one).</li>
+    <li><strong>Brand column pared down to logo and tagline.</strong> No CTA competing with the header's own "Get Started" — the social icons moved down into Contact, next to the rest of the ways to reach YukiHomes. Column headings pick up the nav's expanded, bolder Archivo cut so the two feel like one type system.</li>
+  </ul>
+  <p style="margin-top:28px">Keyboard: <code>Tab</code> through, <code>Enter</code> or <code>Space</code> to open a dropdown, <code>Esc</code> to close. Focus returns to the trigger on close.</p>
+</section>
+
+<script>
+(function(){
+  var mq = window.matchMedia('(min-width:901px)');
+
+  /* ---- Desktop dropdowns ---- */
+  var items = document.querySelectorAll('[data-dropdown]');
+
+  function closeAll(except){
+    items.forEach(function(it){
+      if(it === except) return;
+      it.dataset.open = 'false';
+      it.querySelector('.nav-link').setAttribute('aria-expanded','false');
+    });
+  }
+
+  items.forEach(function(item){
+    var btn = item.querySelector('.nav-link');
+    var hoverTimer;
+
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var open = item.dataset.open === 'true';
+      closeAll(item);
+      item.dataset.open = open ? 'false' : 'true';
+      btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+
+    /* Hover is a convenience on pointer devices; click and keyboard
+       remain the source of truth. */
+    item.addEventListener('mouseenter', function(){
+      if(!mq.matches) return;
+      clearTimeout(hoverTimer);
+      closeAll(item);
+      item.dataset.open = 'true';
+      btn.setAttribute('aria-expanded','true');
+    });
+    item.addEventListener('mouseleave', function(){
+      if(!mq.matches) return;
+      hoverTimer = setTimeout(function(){
+        item.dataset.open = 'false';
+        btn.setAttribute('aria-expanded','false');
+      }, 140);
+    });
+  });
+
+  document.addEventListener('click', function(){ closeAll(null); });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Escape') return;
+    var openItem = document.querySelector('[data-dropdown][data-open="true"]');
+    if(openItem){
+      openItem.dataset.open = 'false';
+      var b = openItem.querySelector('.nav-link');
+      b.setAttribute('aria-expanded','false');
+      b.focus();
+      return;
+    }
+    if(panel.dataset.open === 'true') closePanel();
+  });
+
+  /* ---- Mobile panel ---- */
+  var panel   = document.getElementById('mobile-panel');
+  var opener  = document.querySelector('.header-inner .burger');
+  var closers = panel.querySelectorAll('[data-close]');
+  var lastFocus = null;
+
+  function openPanel(){
+    lastFocus = document.activeElement;
+    panel.dataset.open = 'true';
+    opener.setAttribute('aria-expanded','true');
+    document.body.style.overflow = 'hidden';
+    var first = panel.querySelector('.m-row');
+    if(first) first.focus();
+  }
+  function closePanel(){
+    panel.dataset.open = 'false';
+    opener.setAttribute('aria-expanded','false');
+    document.body.style.overflow = '';
+    panel.querySelectorAll('[data-acc]').forEach(function(r){ r.setAttribute('aria-expanded','false'); });
+    panel.querySelector('.panel-body').dataset.expanded = 'false';
+    if(lastFocus) lastFocus.focus();
+  }
+
+  opener.addEventListener('click', function(){
+    panel.dataset.open === 'true' ? closePanel() : openPanel();
+  });
+  closers.forEach(function(c){ c.addEventListener('click', closePanel); });
+  /* Tapping the dimmed backdrop (tablet drawer) closes the menu. */
+  var scrim = document.querySelector('.panel-scrim');
+  if(scrim) scrim.addEventListener('click', closePanel);
+
+  /* ---- Mobile accordions ---- */
+  var body = panel.querySelector('.panel-body');
+  panel.querySelectorAll('[data-acc]').forEach(function(row){
+    row.addEventListener('click', function(){
+      var open = row.getAttribute('aria-expanded') === 'true';
+      /* One section at a time — keeps the list short and the
+         active branch unambiguous. */
+      panel.querySelectorAll('[data-acc]').forEach(function(r){
+        if(r !== row) r.setAttribute('aria-expanded','false');
+      });
+      row.setAttribute('aria-expanded', open ? 'false' : 'true');
+      body.dataset.expanded = open ? 'false' : 'true';
+    });
+  });
+
+  /* Keep state sane when crossing the breakpoint. */
+  mq.addEventListener('change', function(e){
+    if(e.matches && panel.dataset.open === 'true') closePanel();
+  });
+})();
+</script>
+<script>
+/* Sticky header: switch to the compact solid state after a small scroll. */
+(function(){
+  var h=document.querySelector('.site-header');
+  if(!h) return;
+  var ticking=false;
+  function update(){
+    h.classList.toggle('is-scrolled', window.scrollY > 24);
+    ticking=false;
+  }
+  window.addEventListener('scroll',function(){
+    if(!ticking){ticking=true;requestAnimationFrame(update);}
+  },{passive:true});
+  update();
+})();
+</script>
+<script>
+/* Collage video: the Shibuya Crossing clip standing in for the
+   collage's motion piece. Muted, looping, inline. Honors reduced
+   motion (stays on the poster frame) and exposes a pause control,
+   since looping motion runs longer than 5 seconds. */
+(function(){
+  var v=document.querySelector('.collage-video'); if(!v) return;
+  var btn=document.querySelector('.collage-pause');
+  var PAUSE='<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" rx="1" fill="currentColor"/><rect x="9.5" y="2" width="3.5" height="12" rx="1" fill="currentColor"/></svg>';
+  var PLAY='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>';
+  function setState(playing){
+    btn.setAttribute('aria-pressed',String(!playing));
+    btn.setAttribute('aria-label',playing?'Pause background video':'Play background video');
+    btn.innerHTML=playing?PAUSE:PLAY;
+  }
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  v.muted=true;
+  if(reduce){v.removeAttribute('autoplay');v.pause();setState(false);}
+  else{var p=v.play(); if(p&&p.catch)p.catch(function(){setState(false);});}
+  btn.addEventListener('click',function(){
+    if(v.paused){
+      var p=v.play();
+      setState(true);
+      if(p&&p.catch)p.catch(function(){setState(false);});
+    }else{
+      v.pause();setState(false);
+    }
+  });
+})();
+</script>
+<script>
+/* Collage parallax: on scroll, each card drifts upward at its own
+   rate (data-depth), on top of its resting rotation (data-rot) —
+   the smaller foreground cards move a little more than the large
+   anchor frame. Skipped entirely under reduced motion. */
+(function(){
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var cards = document.querySelectorAll('.collage-card[data-depth]');
+  if(!cards.length) return;
+  var ticking=false;
+  function update(){
+    var y = window.scrollY || window.pageYOffset || 0;
+    var progress = Math.min(y, 500);
+    cards.forEach(function(card){
+      var depth = parseFloat(card.dataset.depth) || 0;
+      var rot = card.dataset.rot || '0';
+      card.style.transform = 'rotate('+rot+'deg) translateY('+(-(progress*depth))+'px)';
+    });
+    ticking=false;
+  }
+  window.addEventListener('scroll',function(){
+    if(!ticking){ticking=true;requestAnimationFrame(update);}
+  },{passive:true});
+  update();
+})();
+</script>
+</body>
+</html>
