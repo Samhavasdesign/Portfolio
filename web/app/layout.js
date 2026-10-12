@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import VisibilityReload from "@/components/VisibilityReload";
 import "./globals.css";
 
@@ -26,6 +27,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
         <VisibilityReload />
         {children}
+        <Analytics />
       </body>
     </html>
   );
