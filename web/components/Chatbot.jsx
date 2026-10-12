@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { track } from "@vercel/analytics";
 
 const SYSTEM_PROMPT = `
 FORMATTING RULES:
@@ -396,6 +397,7 @@ export default function Chatbot() {
     const text = rawText.trim();
     if (!text || isLoading) return;
 
+    track("chat_message");
     const nextHistory = [...conversationHistory, { role: "user", content: text }];
     setConversationHistory(nextHistory);
     setInputValue("");

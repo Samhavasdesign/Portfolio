@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { track } from "@vercel/analytics";
 
 const INQUIRY_OPTIONS = [
   "Job opportunity",
@@ -131,6 +132,7 @@ export default function ContactModal({ triggerClassName = "", triggerLabel = "Le
       }
 
       setIsSuccess(true);
+      track("contact_submit", { inquiry: form.inquiry });
     } catch (error) {
       setSubmitError(error?.message || "Unable to send message right now.");
     } finally {
